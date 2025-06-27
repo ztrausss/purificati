@@ -10,15 +10,15 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(to right, #fdf2f8, #f0f9ff); /* Light gradient background */
-            color: #333;
+            background: linear-gradient(to right, #1a202c, #2d3748); /* Dark gradient background: slate-900 to gray-800 */
+            color: #e2e8f0; /* Light text for dark background */
         }
-        /* Custom scrollbar for better aesthetics */
+        /* Custom scrollbar for better aesthetics in dark mode */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f0f9ff;
+            background: #2d3748; /* Dark gray for track */
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
@@ -41,34 +41,34 @@
             padding-bottom: 1rem;
         }
         .prayer-button.marked {
-            background-color: #d1fae5; /* Green-100 */
-            border-color: #34d399; /* Green-400 */
-            color: #065f46; /* Green-900 */
+            background-color: #fcd34d; /* Amber-300 - slightly golden */
+            border-color: #fbbf24; /* Amber-400 */
+            color: #78350f; /* Amber-900 for dark text on golden background */
             text-decoration: line-through;
         }
         .prayer-button:active {
             transform: scale(0.98);
         }
         .text-shadow {
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4); /* Slightly stronger shadow for dark background */
         }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-6 md:p-10 border border-purple-200">
+    <div class="max-w-4xl mx-auto bg-gray-800 shadow-xl rounded-2xl p-6 md:p-10 border border-gray-700">
         <!-- Header Section -->
         <header class="text-center mb-8">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-purple-700 mb-4 leading-tight text-shadow">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-purple-400 mb-4 leading-tight text-shadow">
                 Meditação do Santo Rosário
             </h1>
-            <p class="text-lg md:text-xl text-gray-700">
+            <p class="text-lg md:text-xl text-gray-400">
                 Um caminho para a paz e a oração.
             </p>
         </header>
 
         <!-- Why Meditate Section -->
-        <section class="mb-8 p-6 bg-purple-50 rounded-xl shadow-md border border-purple-200">
+        <section class="mb-8 p-6 bg-purple-900 rounded-xl shadow-md border border-purple-700">
             <button id="whyMeditateBtn" class="w-full py-4 px-6 bg-purple-600 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300 text-xl md:text-2xl flex items-center justify-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -78,8 +78,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            <div id="whyMeditateContent" class="expandable-content text-gray-800 bg-purple-100 mt-4 rounded-lg p-0">
-                <h3 class="text-2xl font-bold text-purple-700 mb-3">Indulgências Plenárias associadas à Recitação do Terço:</h3>
+            <div id="whyMeditateContent" class="expandable-content text-gray-300 bg-purple-800 mt-4 rounded-lg p-0">
+                <h3 class="text-2xl font-bold text-purple-400 mb-3">Indulgências Plenárias associadas à Recitação do Terço:</h3>
                 <p class="mb-2">A Igreja concede Indulgência Plenária aos fiéis que recitam piedosamente o Rosário, desde que observadas as seguintes condições:</p>
                 <ul class="list-disc list-inside space-y-1">
                     <li>A recitação deve ser feita em uma igreja ou oratório, ou em família, em comunidade religiosa, ou em piedosa associação.</li>
@@ -99,25 +99,25 @@
         </section>
 
         <!-- Initial Prayers Section -->
-        <section class="mb-8 p-6 bg-blue-50 rounded-xl shadow-md border border-blue-200">
-            <h2 class="text-3xl font-bold text-blue-700 mb-4 text-center">Orações Iniciais</h2>
+        <section class="mb-8 p-6 bg-blue-900 rounded-xl shadow-md border border-blue-700">
+            <h2 class="text-3xl font-bold text-blue-400 mb-4 text-center">Orações Iniciais</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button class="prayer-button w-full py-3 px-4 bg-white text-blue-800 rounded-lg shadow hover:bg-blue-100 border border-blue-300 transition-all duration-200">Sinal da Cruz</button>
-                <button class="prayer-button w-full py-3 px-4 bg-white text-blue-800 rounded-lg shadow hover:bg-blue-100 border border-blue-300 transition-all duration-200">Creio em Deus Pai</button>
-                <button class="prayer-button w-full py-3 px-4 bg-white text-blue-800 rounded-lg shadow hover:bg-blue-100 border border-blue-300 transition-all duration-200">Pai Nosso</button>
-                <button class="prayer-button w-full py-3 px-4 bg-white text-blue-800 rounded-lg shadow hover:bg-blue-100 border border-blue-300 transition-all duration-200">Ave Maria (1x)</button>
-                <button class="prayer-button w-full py-3 px-4 bg-white text-blue-800 rounded-lg shadow hover:bg-blue-100 border border-blue-300 transition-all duration-200">Ave Maria (2x)</button>
-                <button class="prayer-button w-full py-3 px-4 bg-white text-blue-800 rounded-lg shadow hover:bg-blue-100 border border-blue-300 transition-all duration-200">Ave Maria (3x)</button>
-                <button class="prayer-button w-full py-3 px-4 bg-white text-blue-800 rounded-lg shadow hover:bg-blue-100 border border-blue-300 transition-all duration-200">Glória ao Pai</button>
+                <button class="prayer-button w-full py-3 px-4 bg-gray-700 text-blue-200 rounded-lg shadow hover:bg-gray-600 border border-blue-500 transition-all duration-200">Sinal da Cruz</button>
+                <button class="prayer-button w-full py-3 px-4 bg-gray-700 text-blue-200 rounded-lg shadow hover:bg-gray-600 border border-blue-500 transition-all duration-200">Creio em Deus Pai</button>
+                <button class="prayer-button w-full py-3 px-4 bg-gray-700 text-blue-200 rounded-lg shadow hover:bg-gray-600 border border-blue-500 transition-all duration-200">Pai Nosso</button>
+                <button class="prayer-button w-full py-3 px-4 bg-gray-700 text-blue-200 rounded-lg shadow hover:bg-gray-600 border border-blue-500 transition-all duration-200">Ave Maria (1x)</button>
+                <button class="prayer-button w-full py-3 px-4 bg-gray-700 text-blue-200 rounded-lg shadow hover:bg-gray-600 border border-blue-500 transition-all duration-200">Ave Maria (2x)</button>
+                <button class="prayer-button w-full py-3 px-4 bg-gray-700 text-blue-200 rounded-lg shadow hover:bg-gray-600 border border-blue-500 transition-all duration-200">Ave Maria (3x)</button>
+                <button class="prayer-button w-full py-3 px-4 bg-gray-700 text-blue-200 rounded-lg shadow hover:bg-gray-600 border border-blue-500 transition-all duration-200">Glória ao Pai</button>
             </div>
         </section>
 
         <!-- Mysteries Section -->
         <section>
-            <h2 class="text-4xl font-bold text-purple-700 mb-6 text-center text-shadow">Mistérios do Rosário</h2>
+            <h2 class="text-4xl font-bold text-purple-400 mb-6 text-center text-shadow">Mistérios do Rosário</h2>
 
             <!-- Joyful Mysteries -->
-            <div class="mystery-container mb-6 p-6 bg-pink-50 rounded-xl shadow-md border border-pink-200">
+            <div class="mystery-container mb-6 p-6 bg-pink-900 rounded-xl shadow-md border border-pink-700">
                 <button class="mystery-button w-full py-4 px-6 bg-pink-600 text-white font-semibold rounded-lg shadow-lg hover:bg-pink-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-pink-300 text-xl md:text-2xl flex items-center justify-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -127,80 +127,79 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <div class="mystery-content expandable-content text-gray-800 mt-4 p-0">
-                    <div class="mb-6 p-4 bg-white rounded-lg shadow border border-pink-100">
-                        <h3 class="text-2xl font-bold text-pink-700 mb-2">Primeiro Mistério: A Anunciação do Anjo à Nossa Senhora</h3>
-                        <p class="mb-3 text-gray-700">Fruto: Humildade</p>
-                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Pai Nosso</button>
+                <div class="mystery-content expandable-content text-gray-300 mt-4 p-0">
+                    <div class="mb-6 p-4 bg-gray-700 rounded-lg shadow border border-pink-500">
+                        <h3 class="text-2xl font-bold text-pink-400 mb-2">Primeiro Mistério: A Anunciação do Anjo à Nossa Senhora</h3>
+                        <p class="mb-3 text-gray-400">Fruto: Humildade</p>
+                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Pai Nosso</button>
                         <!-- 10 Ave Marias -->
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-2">
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (1x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (2x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (3x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (4x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (5x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (6x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (7x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (8x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (9x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (10x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (1x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (2x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (3x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (4x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (5x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (6x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (7x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (8x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (9x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (10x)</button>
                         </div>
-                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Glória ao Pai</button>
-                        <button class="prayer-button w-full py-2 px-4 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ó meu Jesus</button>
+                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Glória ao Pai</button>
+                        <button class="prayer-button w-full py-2 px-4 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ó meu Jesus</button>
                     </div>
 
-                    <div class="mb-6 p-4 bg-white rounded-lg shadow border border-pink-100">
-                        <h3 class="text-2xl font-bold text-pink-700 mb-2">Segundo Mistério: A Visitação de Nossa Senhora a Santa Isabel</h3>
-                        <p class="mb-3 text-gray-700">Fruto: Caridade Fraterna</p>
-                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Pai Nosso</button>
+                    <div class="mb-6 p-4 bg-gray-700 rounded-lg shadow border border-pink-500">
+                        <h3 class="text-2xl font-bold text-pink-400 mb-2">Segundo Mistério: A Visitação de Nossa Senhora a Santa Isabel</h3>
+                        <p class="mb-3 text-gray-400">Fruto: Caridade Fraterna</p>
+                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Pai Nosso</button>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-2">
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (1x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (2x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (3x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (4x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (5x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (6x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (7x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (8x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (9x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (10x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (1x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (2x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (3x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (4x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (5x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (6x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (7x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (8x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (9x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (10x)</button>
                         </div>
-                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Glória ao Pai</button>
-                        <button class="prayer-button w-full py-2 px-4 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ó meu Jesus</button>
+                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Glória ao Pai</button>
+                        <button class="prayer-button w-full py-2 px-4 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ó meu Jesus</button>
                     </div>
 
-                    <div class="mb-6 p-4 bg-white rounded-lg shadow border border-pink-100">
-                        <h3 class="text-2xl font-bold text-pink-700 mb-2">Terceiro Mistério: O Nascimento de Jesus no Presépio de Belém</h3>
-                        <p class="mb-3 text-gray-700">Fruto: Espírito de Pobreza e Desapego</p>
-                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Pai Nosso</button>
+                    <div class="mb-6 p-4 bg-gray-700 rounded-lg shadow border border-pink-500">
+                        <h3 class="text-2xl font-bold text-pink-400 mb-2">Terceiro Mistério: O Nascimento de Jesus no Presépio de Belém</h3>
+                        <p class="mb-3 text-gray-400">Fruto: Espírito de Pobreza e Desapego</p>
+                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Pai Nosso</button>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-2">
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (1x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (2x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (3x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (4x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (5x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (6x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (7x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (8x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (9x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (10x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (1x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (2x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (3x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (4x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (5x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (6x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (7x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (8x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (9x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (10x)</button>
                         </div>
-                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Glória ao Pai</button>
-                        <button class="prayer-button w-full py-2 px-4 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ó meu Jesus</button>
+                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Glória ao Pai</button>
+                        <button class="prayer-button w-full py-2 px-4 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ó meu Jesus</button>
                     </div>
 
-                    <div class="mb-6 p-4 bg-white rounded-lg shadow border border-pink-100">
-                        <h3 class="text-2xl font-bold text-pink-700 mb-2">Quarto Mistério: A Apresentação de Jesus no Templo</h3>
-                        <p class="mb-3 text-gray-700">Fruto: Pureza e Obediência</p>
-                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Pai Nosso</button>
+                    <div class="mb-6 p-4 bg-gray-700 rounded-lg shadow border border-pink-500">
+                        <h3 class="text-2xl font-bold text-pink-400 mb-2">Quarto Mistério: A Apresentação de Jesus no Templo</h3>
+                        <p class="mb-3 text-gray-400">Fruto: Pureza e Obediência</p>
+                        <button class="prayer-button w-full py-2 px-4 mb-2 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Pai Nosso</button>
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-2">
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (1x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (2x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (3x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (4x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (5x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (6x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (7x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (8x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border border-pink-300 transition-colors">Ave Maria (9x)</button>
-                            <button class="prayer-button py-2 px-3 bg-pink-100 text-pink-800 rounded-md shadow-sm hover:bg-pink-200 border
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (1x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (2x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (3x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (4x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (5x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (6x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (7x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 rounded-md shadow-sm hover:bg-gray-500 border border-pink-500 transition-colors">Ave Maria (8x)</button>
+                            <button class="prayer-button py-2 px-3 bg-gray-600 text-pink-200 r
