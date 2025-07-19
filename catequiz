@@ -1,0 +1,367 @@
+import React, { useState, useEffect } from 'react';
+
+// Função para embaralhar um array (Fisher-Yates shuffle)
+const shuffleArray = (array) => {
+  let currentIndex = array.length, randomIndex;
+
+  // Enquanto houver elementos a embaralhar.
+  while (currentIndex !== 0) {
+    // Escolhe um elemento restante.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // Troca com o elemento atual.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+};
+
+// Dados das perguntas do Catecismo, organizadas por categoria
+const questionsDataByCategory = {
+  "A Profissão da Fé": [
+    {
+      id: 1,
+      type: 'multiple-choice',
+      question: 'Qual é a resposta adequada do homem ao convite de Deus pela Sua revelação?',
+      options: ['A dúvida', 'A indiferença', 'A fé', 'A negação'],
+      correctAnswer: 'A fé',
+      explanation: 'Pela sua revelação, Deus convida os homens à comunhão com Ele, e a resposta adequada a este convite é a fé (CIC 142).'
+    },
+    {
+      id: 2,
+      type: 'multiple-choice',
+      question: 'O que significa "obediência da fé" segundo a Sagrada Escritura?',
+      options: ['Seguir cegamente', 'Submeter-se livremente à palavra escutada', 'Questionar toda a verdade', 'Ignorar os ensinamentos'],
+      correctAnswer: 'Submeter-se livremente à palavra escutada',
+      explanation: 'Obedecer na fé é submeter-se livremente à palavra escutada, por a sua verdade ser garantida por Deus (CIC 144).'
+    },
+    {
+      id: 3,
+      type: 'multiple-choice',
+      question: 'Quem é o modelo de "obediência da fé" no Antigo Testamento?',
+      options: ['Moisés', 'Davi', 'Abraão', 'Noé'],
+      correctAnswer: 'Abraão',
+      explanation: 'Desta obediência, o modelo que a Sagrada Escritura nos propõe é Abraão (CIC 144).'
+    },
+    {
+      id: 4,
+      type: 'multiple-choice',
+      question: 'Quem é a realização mais perfeita da "obediência da fé"?',
+      options: ['Maria Madalena', 'Santa Teresa', 'A Virgem Maria', 'Santa Faustina'],
+      correctAnswer: 'A Virgem Maria',
+      explanation: 'A sua realização mais perfeita é a da Virgem Maria (CIC 144).'
+    },
+    {
+      id: 5,
+      type: 'multiple-choice',
+      question: 'A fé é um dom de Deus. O que o homem necessita para crer?',
+      options: ['Apenas sua própria inteligência', 'Auxílios interiores do Espírito Santo', 'Riqueza material', 'Poder político'],
+      correctAnswer: 'Auxílios interiores do Espírito Santo',
+      explanation: 'A fé é um dom sobrenatural de Deus. Para crer, o homem tem necessidade dos auxílios interiores do Espírito Santo (CIC 179).'
+    },
+    {
+      id: 6,
+      type: 'multiple-choice',
+      question: 'O que significa a palavra grega "symbolon" no contexto dos "símbolos da fé"?',
+      options: ['Uma canção', 'Uma metade de objeto partido', 'Um livro', 'Uma oração'],
+      correctAnswer: 'Uma metade de objeto partido',
+      explanation: 'A palavra grega «symbolon» significava a metade dum objecto partido (CIC 188).'
+    },
+    {
+      id: 7,
+      type: 'multiple-choice',
+      question: 'Qual é o objetivo principal dos "símbolos da fé" ou "Credos"?',
+      options: ['Criar divisões', 'Resumir as principais verdades da fé', 'Confundir os fiéis', 'Esconder a verdade'],
+      correctAnswer: 'Resumir as principais verdades da fé',
+      explanation: 'O «símbolo da fé» é o sumário das principais verdades da fé (CIC 188).'
+    },
+    {
+      id: 8,
+      type: 'multiple-choice',
+      question: 'Em nome de quem o Batismo é conferido, e como as verdades da fé se articulam?',
+      options: ['Em nome da Igreja', 'Em nome dos santos', 'Em nome do Pai, do Filho e do Espírito Santo', 'Em nome dos apóstolos'],
+      correctAnswer: 'Em nome do Pai, do Filho e do Espírito Santo',
+      explanation: 'O Batismo é conferido «em nome do Pai e do Filho e do Espírito Santo» (Mt 28, 19), e as verdades da fé se articulam segundo a sua referência às três pessoas da Santíssima Trindade (CIC 189).'
+    },
+    {
+      id: 9,
+      type: 'multiple-choice',
+      question: 'Qual é a primeira "profissão de fé" que se faz?',
+      options: ['Na Crisma', 'Na Primeira Comunhão', 'Por ocasião do Batismo', 'Na Unção dos Enfermos'],
+      correctAnswer: 'Por ocasião do Batismo',
+      explanation: 'A primeira «profissão de fé» faz-se por ocasião do Batismo (CIC 189).'
+    },
+    {
+      id: 10,
+      type: 'multiple-choice',
+      question: 'O que o desejo de Deus, inscrito no coração do homem, o leva a procurar?',
+      options: ['Riqueza e fama', 'Verdade e felicidade', 'Poder e controle', 'Prazeres mundanos'],
+      correctAnswer: 'Verdade e felicidade',
+      explanation: 'O desejo de Deus é um sentimento inscrito no coração do homem, porque o homem foi criado por Deus e para Deus. Só em Deus é que o homem encontra a verdade e a felicidade que procura (CIC 27).'
+    },
+    {
+      id: 11,
+      type: 'multiple-choice',
+      question: 'Como o homem pode conhecer Deus com certeza, apenas pela razão natural?',
+      options: ['Através de sonhos', 'Através de adivinhações', 'A partir da criação e da pessoa humana', 'Através de rituais mágicos'],
+      correctAnswer: 'A partir da criação e da pessoa humana',
+      explanation: 'A partir da criação, isto é, do mundo e da pessoa humana, o homem pode, só pela razão, conhecer com certeza a Deus (CIC 31-36).'
+    },
+    {
+      id: 12,
+      type: 'multiple-choice',
+      question: 'O que a Igreja ensina sobre a capacidade da razão humana para conhecer Deus?',
+      options: ['Que é impossível', 'Que é limitada e incerta', 'Que é capaz de conhecer Deus com certeza', 'Que é desnecessária'],
+      correctAnswer: 'Que é capaz de conhecer Deus com certeza',
+      explanation: 'A Igreja ensina que o Deus único e verdadeiro, nosso Criador e Senhor, pode ser conhecido com certeza pelas suas obras, graças à luz natural da razão humana (CIC 47).'
+    },
+    {
+      id: 13,
+      type: 'multiple-choice',
+      question: 'Além da razão natural, qual é a outra ordem de conhecimento que o homem não pode atingir por suas próprias forças?',
+      options: ['A filosofia', 'A ciência', 'A Revelação divina', 'A intuição'],
+      correctAnswer: 'A Revelação divina',
+      explanation: 'Existe outra ordem de conhecimento, que o homem de modo nenhum pode atingir por suas próprias forças: a da Revelação divina (CIC 50).'
+    },
+    {
+      id: 14,
+      type: 'multiple-choice',
+      question: 'O que os dogmas representam no caminho da fé?',
+      options: ['Obstáculos', 'Dúvidas', 'Luzes que iluminam e tornam seguro', 'Tradições sem sentido'],
+      correctAnswer: 'Luzes que iluminam e tornam seguro',
+      explanation: 'Os dogmas são luzes no caminho da nossa fé: iluminam-no e tornam-no seguro (CIC 89).'
+    },
+    {
+      id: 15,
+      type: 'multiple-choice',
+      question: 'O que a fé nos garante, mesmo que por enquanto "caminhamos pela fé e não vemos claramente"?',
+      options: ['Riquezas terrenas', 'As maravilhas que haveremos de gozar um dia', 'Poder sobre os outros', 'Vida sem desafios'],
+      correctAnswer: 'As maravilhas que haveremos de gozar um dia',
+      explanation: '«Enquanto, desde já, contemplamos os benefícios da fé, como reflexo num espelho, é como se possuíssemos já as maravilhas que a nossa fé nos garante havermos de gozar um dia» (CIC 164).'
+    },
+    {
+      id: 16,
+      type: 'multiple-choice',
+      question: 'Qual é a principal característica da fé, segundo o Catecismo?',
+      options: ['É um sentimento', 'É uma escolha racional', 'É uma graça', 'É uma obrigação'],
+      correctAnswer: 'É uma graça',
+      explanation: 'A fé é um dom sobrenatural de Deus (CIC 179).'
+    },
+    {
+      id: 17,
+      type: 'multiple-choice',
+      question: 'O que a fé exige do homem em relação à sua inteligência e vontade?',
+      options: ['Indiferença', 'Todo o esforço e retidão', 'Preguiça', 'Desconfiança'],
+      correctAnswer: 'Todo o esforço e retidão',
+      explanation: 'A fé exige do homem todo o esforço de sua inteligência e a retidão de sua vontade (adaptado de fontes que explicam a relação entre fé e razão).'
+    },
+    {
+      id: 18,
+      type: 'multiple-choice',
+      question: 'Por que a fé é necessária para a salvação?',
+      options: ['Para cumprir um ritual', 'Porque é o único caminho para a vida eterna', 'Para agradar os outros', 'Para obter benefícios materiais'],
+      correctAnswer: 'Porque é o único caminho para a vida eterna',
+      explanation: 'A fé é o início da vida eterna em nós (adaptado do CIC, que fala da fé como início da vida eterna).'
+    },
+    {
+      id: 19,
+      type: 'multiple-choice',
+      question: 'O que a Igreja confessa incessantemente?',
+      options: ['A existência de muitos deuses', 'A sua própria glória', 'A fé num só Deus, Pai, Filho e Espírito Santo', 'O poder dos homens'],
+      correctAnswer: 'A fé num só Deus, Pai, Filho e Espírito Santo',
+      explanation: 'A Igreja não cessa de confessar a sua fé num só Deus, Pai, Filho e Espírito Santo (CIC 170).'
+    },
+    {
+      id: 20,
+      type: 'multiple-choice',
+      question: 'Qual é a relação entre a fé e a inteligência, segundo o Catecismo?',
+      options: ['São opostas', 'A fé anula a inteligência', 'A fé e a inteligência se complementam', 'A inteligência é superior à fé'],
+      correctAnswer: 'A fé e a inteligência se complementam',
+      explanation: 'A fé não se opõe à razão humana; pelo contrário, a fé e a inteligência se complementam e se enriquecem mutuamente (adaptado do CIC, que aborda a relação entre fé e razão).'
+    },
+  ],
+  "A Celebração do Mistério Cristão": [
+    {
+      id: 21,
+      type: 'multiple-choice',
+      question: 'Qual é o mistério que a Igreja confessa no Símbolo da Fé e celebra principalmente na liturgia?',
+      options: ['O mistério da criação', 'O mistério pascal de Cristo', 'O mistério da natureza', 'O mistério do tempo'],
+      correctAnswer: 'O mistério pascal de Cristo',
+      explanation: 'Na liturgia, a Igreja celebra principalmente o mistério pascal, pelo qual Cristo realizou a obra da nossa salvação (CIC 1067).'
+    },
+    {
+      id: 22,
+      type: 'multiple-choice',
+      question: 'O que a liturgia cristã faz com os acontecimentos que nos salvaram?',
+      options: ['Apenas os recorda', 'Os ignora', 'Os atualiza e torna presentes', 'Os substitui'],
+      correctAnswer: 'Os atualiza e torna presentes',
+      explanation: 'A liturgia cristã não somente recorda os acontecimentos que nos salvaram, como também os atualiza, toma-os presentes (CIC 1104).'
+    },
+    {
+      id: 23,
+      type: 'multiple-choice',
+      question: 'Qual é o número de sacramentos na Igreja Católica?',
+      options: ['Cinco', 'Seis', 'Sete', 'Oito'],
+      correctAnswer: 'Sete',
+      explanation: 'Há na Igreja sete sacramentos: o Batismo, a Confirmação ou Crisma, a Eucaristia, a Penitência, a Unção dos Enfermos, a Ordem, o Matrimônio (CIC 1113).'
+    },
+    {
+      id: 24,
+      type: 'multiple-choice',
+      question: 'Quem é o "Cristo total" (Christus totus) que celebra a liturgia?',
+      options: ['Apenas o sacerdote', 'Apenas os fiéis', 'Cristo Cabeça e seus membros', 'Apenas os anjos'],
+      correctAnswer: 'Cristo Cabeça e seus membros',
+      explanation: 'A liturgia é «acção» do «Cristo total» (Christus totus), que inclui Cristo Cabeça e seus membros (CIC 1136).'
+    },
+    {
+      id: 25,
+      type: 'multiple-choice',
+      question: 'Qual é o significado da palavra "epiclese" nas celebrações sacramentais?',
+      options: ['Uma bênção final', 'Uma intercessão para a efusão do Espírito Santo', 'Uma leitura das Escrituras', 'Um canto de louvor'],
+      correctAnswer: 'Uma intercessão para a efusão do Espírito Santo',
+      explanation: 'A epiclese (“invocação sobre”) é a intercessão na qual o sacerdote suplica ao Pai que envie o Espírito Santo (CIC 1105).'
+    },
+    {
+      id: 26,
+      type: 'multiple-choice',
+      question: 'Qual sacramento é o "sacramento admirável de toda a Igreja", nascido do lado de Cristo adormecido na cruz?',
+      options: ['Batismo', 'Confirmação', 'Eucaristia', 'Matrimônio'],
+      correctAnswer: 'Eucaristia',
+      explanation: 'Efectivamente, foi do lado de Cristo adormecido na cruz que nasceu "o sacramento admirável de toda a Igreja" (referindo-se à Eucaristia, que é o centro da vida litúrgica).'
+    },
+    {
+      id: 27,
+      type: 'multiple-choice',
+      question: 'O que o Espírito Santo faz na liturgia para o mistério de Cristo?',
+      options: ['Oculta-o', 'Repete-o', 'Atualiza-o', 'Nega-o'],
+      correctAnswer: 'Atualiza-o',
+      explanation: 'Em cada celebração sacramental sobrevêm a efusão do Espírito Santo, que atualiza o único mistério de Cristo (CIC 1104).'
+    },
+    {
+      id: 28,
+      type: 'multiple-choice',
+      question: 'Qual é a palavra que ritma a oração da Igreja quando celebra o mistério de Cristo?',
+      options: ['Ontem', 'Amanhã', 'Hoje', 'Sempre'],
+      correctAnswer: 'Hoje',
+      explanation: 'Quando a Igreja celebra o mistério de Cristo, há uma palavra que ritma a sua oração: Hoje! (CIC 1165).'
+    },
+    {
+      id: 29,
+      type: 'multiple-choice',
+      question: 'O que a "economia sacramental" significa?',
+      options: ['A administração financeira da Igreja', 'A comunicação dos frutos do Mistério Pascal de Cristo', 'A organização de eventos', 'A distribuição de bens materiais'],
+      correctAnswer: 'A comunicação dos frutos do Mistério Pascal de Cristo',
+      explanation: 'A economia sacramental consiste na dispensação ou comunicação dos frutos de seu Mistério Pascal (adaptado de fontes que explicam a economia sacramental).'
+    },
+    {
+      id: 30,
+      type: 'multiple-choice',
+      question: 'Qual é o sacramento que nos incorpora a Cristo e nos faz participar da vida da Santíssima Trindade?',
+      options: ['Confirmação', 'Eucaristia', 'Batismo', 'Penitência'],
+      correctAnswer: 'Batismo',
+      explanation: 'Pela graça do Batismo «em nome do Pai e do Filho e do Espírito Santo», somos chamados a partilhar a vida da Trindade (CIC 1265).'
+    },
+    {
+      id: 31,
+      type: 'multiple-choice',
+      question: 'Qual o sacramento que aperfeiçoa a graça batismal e nos dá o Espírito Santo para confessar a fé publicamente?',
+      options: ['Eucaristia', 'Batismo', 'Confirmação', 'Matrimônio'],
+      correctAnswer: 'Confirmação',
+      explanation: 'O sacramento da Confirmação aperfeiçoa a graça batismal e confere o Espírito Santo para confessar a fé de Cristo publicamente (CIC 1305).'
+    },
+    {
+      id: 32,
+      type: 'multiple-choice',
+      question: 'O que a Eucaristia é para a Igreja?',
+      options: ['Apenas um símbolo', 'O ápice e a fonte de toda a vida cristã', 'Uma refeição comum', 'Uma tradição sem valor'],
+      correctAnswer: 'O ápice e a fonte de toda a vida cristã',
+      explanation: 'A Eucaristia é "a fonte e o ápice de toda a vida cristã" (CIC 1324).'
+    },
+    {
+      id: 33,
+      type: 'multiple-choice',
+      question: 'Qual é o efeito principal do sacramento da Penitência e Reconciliação?',
+      options: ['Aumento da riqueza', 'Perdão dos pecados e reconciliação com Deus e a Igreja', 'Poder sobre os outros', 'Saúde física'],
+      correctAnswer: 'Perdão dos pecados e reconciliação com Deus e a Igreja',
+      explanation: 'O sacramento da Penitência e Reconciliação concede o perdão dos pecados cometidos depois do Batismo e a reconciliação com Deus e a Igreja (CIC 1422).'
+    },
+    {
+      id: 34,
+      type: 'multiple-choice',
+      question: 'Para quem é administrado o sacramento da Unção dos Enfermos?',
+      options: ['Apenas para os moribundos', 'Para os doentes em perigo de morte ou que sofrem gravemente', 'Para os que buscam milagres', 'Apenas para sacerdotes'],
+      correctAnswer: 'Para os doentes em perigo de morte ou que sofrem gravemente',
+      explanation: 'A Unção dos Enfermos é um sacramento destinado a confortar os doentes em perigo de morte ou que sofrem gravemente (CIC 1514).'
+    },
+    {
+      id: 35,
+      type: 'multiple-choice',
+      question: 'Qual é o efeito do sacramento da Ordem?',
+      options: ['Concede poder temporal', 'Confere o ministério sacerdotal', 'Garante a salvação individual', 'Permite o casamento'],
+      correctAnswer: 'Confere o ministério sacerdotal',
+      explanation: 'O sacramento da Ordem confere o ministério sacerdotal, capacitando o ordenado a agir na pessoa de Cristo Cabeça (CIC 1536).'
+    },
+    {
+      id: 36,
+      type: 'multiple-choice',
+      question: 'Qual é a finalidade do sacramento do Matrimônio?',
+      options: ['Apenas a satisfação pessoal', 'O bem dos cônjuges e a procriação e educação dos filhos', 'A busca de poder', 'A separação das famílias'],
+      correctAnswer: 'O bem dos cônjuges e a procriação e educação dos filhos',
+      explanation: 'O Matrimônio é ordenado ao bem dos cônjuges, bem como à procriação e educação dos filhos (CIC 1601).'
+    },
+    {
+      id: 37,
+      type: 'multiple-choice',
+      question: 'O que o Ano Litúrgico celebra?',
+      options: ['A história de um país', 'A obra de salvação de Cristo ao longo do ano', 'Eventos sociais', 'Festas pagãs'],
+      correctAnswer: 'A obra de salvação de Cristo ao longo do ano',
+      explanation: 'A santa mãe Igreja considera seu dever celebrar com uma comemoração sagrada, em determinados dias do ano, a obra de salvação do seu divino Esposo (CIC 1163).'
+    },
+    {
+      id: 38,
+      type: 'multiple-choice',
+      question: 'Qual é o dia da semana em que a Igreja celebra a memória da ressurreição do Senhor?',
+      options: ['Sábado', 'Segunda-feira', 'Sexta-feira', 'Domingo'],
+      correctAnswer: 'Domingo',
+      explanation: 'Em cada semana, no dia a que chamou Domingo, celebra a memória da ressurreição do Senhor (CIC 1163).'
+    },
+    {
+      id: 39,
+      type: 'multiple-choice',
+      question: 'O que é a catequese litúrgica, segundo o Catecismo?',
+      options: ['Um estudo histórico', 'Uma iniciação ao mistério de Cristo', 'Uma aula de música', 'Uma discussão filosófica'],
+      correctAnswer: 'Uma iniciação ao mistério de Cristo',
+      explanation: 'A catequese da liturgia implica, primeiramente, a compreensão da economia sacramental e visa iniciar as pessoas no mistério de Cristo (CIC 1135, 1075).'
+    },
+    {
+      id: 40,
+      type: 'multiple-choice',
+      question: 'Qual é a função do Espírito Santo na liturgia em relação ao mistério pascal de Cristo?',
+      options: ['Apenas testemunhar', 'Torná-lo presente', 'Anulá-lo', 'Escondê-lo'],
+      correctAnswer: 'Torná-lo presente',
+      explanation: 'Em cada celebração, sobrevêm a efusão do Espírito Santo que atualiza o único mistério pascal de Cristo (CIC 1104).'
+    },
+  ],
+  "A Vida em Cristo": [
+    {
+      id: 41,
+      type: 'multiple-choice',
+      question: 'Qual é a dignidade que o cristão é chamado a reconhecer e viver, uma vez constituído participante da natureza divina?',
+      options: ['Apenas sua inteligência', 'Sua dignidade humana e divina', 'Sua capacidade de dominar o mundo', 'Sua independência de Deus'],
+      correctAnswer: 'Sua dignidade humana e divina',
+      explanation: '"Reconhece, ó cristão, a tua dignidade. Uma vez constituído participante da natureza divina..." (CIC 1691).'
+    },
+    {
+      id: 42,
+      type: 'multiple-choice',
+      question: 'Como os cristãos são chamados a levar uma vida digna do Evangelho de Cristo?',
+      options: ['Ignorando os sacramentos', 'Pelos sacramentos e pela oração', 'Apenas por seus próprios esforços', 'Através de rituais vazios'],
+      correctAnswer: 'Pelos sacramentos e pela oração',
+      explanation: 'Pelos sacramentos e pela oração, os cristãos recebem a graça de Cristo e os dons do seu Espírito, que os tornam capazes de levar uma vida digna do Evangelho (CIC 1692).'
+    },
+    {
+      id: 43,
+      type: 'multiple-choice',
+      question: 'O que Cristo Jesus sempre fez, servindo de exemplo para seus 
