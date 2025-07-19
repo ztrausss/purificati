@@ -1,989 +1,1004 @@
-import React, { useState, useEffect } from 'react';
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CateQuiz!</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and ReactDOM CDNs -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel CDN for JSX transformation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* Custom styles if needed, but Tailwind is preferred */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-// Função para embaralhar um array (Fisher-Yates shuffle)
-const shuffleArray = (array) => {
-  let currentIndex = array.length, randomIndex;
+    <script type="text/babel">
+        // Função para embaralhar um array (Fisher-Yates shuffle)
+        const shuffleArray = (array) => {
+            let currentIndex = array.length, randomIndex;
 
-  // Enquanto houver elementos a embaralhar.
-  while (currentIndex !== 0) {
-    // Escolhe um elemento restante.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
+            // Enquanto houver elementos a embaralhar.
+            while (currentIndex !== 0) {
+                // Escolhe um elemento restante.
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
 
-    // Troca com o elemento atual.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
+                // Troca com o elemento atual.
+                [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        };
 
-  return array;
-};
+        // Dados das perguntas do Catecismo, organizadas por categoria
+        const questionsDataByCategory = {
+            "A Profissão da Fé": [
+                {
+                    id: 1,
+                    type: 'multiple-choice',
+                    question: 'Qual é a resposta adequada do homem ao convite de Deus pela Sua revelação?',
+                    options: ['A dúvida', 'A indiferença', 'A fé', 'A negação'],
+                    correctAnswer: 'A fé',
+                    explanation: 'Pela sua revelação, Deus convida os homens à comunhão com Ele, e a resposta adequada a este convite é a fé (CIC 142).'
+                },
+                {
+                    id: 2,
+                    type: 'multiple-choice',
+                    question: 'O que significa "obediência da fé" segundo a Sagrada Escritura?',
+                    options: ['Seguir cegamente', 'Submeter-se livremente à palavra escutada', 'Questionar toda a verdade', 'Ignorar os ensinamentos'],
+                    correctAnswer: 'Submeter-se livremente à palavra escutada',
+                    explanation: 'Obedecer na fé é submeter-se livremente à palavra escutada, por a sua verdade ser garantida por Deus (CIC 144).'
+                },
+                {
+                    id: 3,
+                    type: 'multiple-choice',
+                    question: 'Quem é o modelo de "obediência da fé" no Antigo Testamento?',
+                    options: ['Moisés', 'Davi', 'Abraão', 'Noé'],
+                    correctAnswer: 'Abraão',
+                    explanation: 'Desta obediência, o modelo que a Sagrada Escritura nos propõe é Abraão (CIC 144).'
+                },
+                {
+                    id: 4,
+                    type: 'multiple-choice',
+                    question: 'Quem é a realização mais perfeita da "obediência da fé"?',
+                    options: ['Maria Madalena', 'Santa Teresa', 'A Virgem Maria', 'Santa Faustina'],
+                    correctAnswer: 'A Virgem Maria',
+                    explanation: 'A sua realização mais perfeita é a da Virgem Maria (CIC 144).'
+                },
+                {
+                    id: 5,
+                    type: 'multiple-choice',
+                    question: 'A fé é um dom de Deus. O que o homem necessita para crer?',
+                    options: ['Apenas sua própria inteligência', 'Auxílios interiores do Espírito Santo', 'Riqueza material', 'Poder político'],
+                    correctAnswer: 'Auxílios interiores do Espírito Santo',
+                    explanation: 'A fé é um dom sobrenatural de Deus. Para crer, o homem tem necessidade dos auxílios interiores do Espírito Santo (CIC 179).'
+                },
+                {
+                    id: 6,
+                    type: 'multiple-choice',
+                    question: 'O que significa a palavra grega "symbolon" no contexto dos "símbolos da fé"?',
+                    options: ['Uma canção', 'Uma metade de objeto partido', 'Um livro', 'Uma oração'],
+                    correctAnswer: 'Uma metade de objeto partido',
+                    explanation: 'A palavra grega «symbolon» significava a metade dum objecto partido (CIC 188).'
+                },
+                {
+                    id: 7,
+                    type: 'multiple-choice',
+                    question: 'Qual é o objetivo principal dos "símbolos da fé" ou "Credos"?',
+                    options: ['Criar divisões', 'Resumir as principais verdades da fé', 'Confundir os fiéis', 'Esconder a verdade'],
+                    correctAnswer: 'Resumir as principais verdades da fé',
+                    explanation: 'O «símbolo da fé» é o sumário das principais verdades da fé (CIC 188).'
+                },
+                {
+                    id: 8,
+                    type: 'multiple-choice',
+                    question: 'Em nome de quem o Batismo é conferido, e como as verdades da fé se articulam?',
+                    options: ['Em nome da Igreja', 'Em nome dos santos', 'Em nome do Pai, do Filho e do Espírito Santo', 'Em nome dos apóstolos'],
+                    correctAnswer: 'Em nome do Pai, do Filho e do Espírito Santo',
+                    explanation: 'O Batismo é conferido «em nome do Pai e do Filho e do Espírito Santo» (Mt 28, 19), e as verdades da fé se articulam segundo a sua referência às três pessoas da Santíssima Trindade (CIC 189).'
+                },
+                {
+                    id: 9,
+                    type: 'multiple-choice',
+                    question: 'Qual é a primeira "profissão de fé" que se faz?',
+                    options: ['Na Crisma', 'Na Primeira Comunhão', 'Por ocasião do Batismo', 'Na Unção dos Enfermos'],
+                    correctAnswer: 'Por ocasião do Batismo',
+                    explanation: 'A primeira «profissão de fé» faz-se por ocasião do Batismo (CIC 189).'
+                },
+                {
+                    id: 10,
+                    type: 'multiple-choice',
+                    question: 'O que o desejo de Deus, inscrito no coração do homem, o leva a procurar?',
+                    options: ['Riqueza e fama', 'Verdade e felicidade', 'Poder e controle', 'Prazeres mundanos'],
+                    correctAnswer: 'Verdade e felicidade',
+                    explanation: 'O desejo de Deus é um sentimento inscrito no coração do homem, porque o homem foi criado por Deus e para Deus. Só em Deus é que o homem encontra a verdade e a felicidade que procura (CIC 27).'
+                },
+                {
+                    id: 11,
+                    type: 'multiple-choice',
+                    question: 'Como o homem pode conhecer Deus com certeza, apenas pela razão natural?',
+                    options: ['Através de sonhos', 'Através de adivinhações', 'A partir da criação e da pessoa humana', 'Através de rituais mágicos'],
+                    correctAnswer: 'A partir da criação e da pessoa humana',
+                    explanation: 'A partir da criação, isto é, do mundo e da pessoa humana, o homem pode, só pela razão, conhecer com certeza a Deus (CIC 31-36).'
+                },
+                {
+                    id: 12,
+                    type: 'multiple-choice',
+                    question: 'O que a Igreja ensina sobre a capacidade da razão humana para conhecer Deus?',
+                    options: ['Que é impossível', 'Que é limitada e incerta', 'Que é capaz de conhecer Deus com certeza', 'Que é desnecessária'],
+                    correctAnswer: 'Que é capaz de conhecer Deus com certeza',
+                    explanation: 'A Igreja ensina que o Deus único e verdadeiro, nosso Criador e Senhor, pode ser conhecido com certeza pelas suas obras, graças à luz natural da razão humana (CIC 47).'
+                },
+                {
+                    id: 13,
+                    type: 'multiple-choice',
+                    question: 'Além da razão natural, qual é a outra ordem de conhecimento que o homem não pode atingir por suas próprias forças?',
+                    options: ['A filosofia', 'A ciência', 'A Revelação divina', 'A intuição'],
+                    correctAnswer: 'A Revelação divina',
+                    explanation: 'Existe outra ordem de conhecimento, que o homem de modo nenhum pode atingir por suas próprias forças: a da Revelação divina (CIC 50).'
+                },
+                {
+                    id: 14,
+                    type: 'multiple-choice',
+                    question: 'O que os dogmas representam no caminho da fé?',
+                    options: ['Obstáculos', 'Dúvidas', 'Luzes que iluminam e tornam seguro', 'Tradições sem sentido'],
+                    correctAnswer: 'Luzes que iluminam e tornam seguro',
+                    explanation: 'Os dogmas são luzes no caminho da nossa fé: iluminam-no e tornam-no seguro (CIC 89).'
+                },
+                {
+                    id: 15,
+                    type: 'multiple-choice',
+                    question: 'O que a fé nos garante, mesmo que por enquanto "caminhamos pela fé e não vemos claramente"?',
+                    options: ['Riquezas terrenas', 'As maravilhas que haveremos de gozar um dia', 'Poder sobre os outros', 'Vida sem desafios'],
+                    correctAnswer: 'As maravilhas que haveremos de gozar um dia',
+                    explanation: '«Enquanto, desde já, contemplamos os benefícios da fé, como reflexo num espelho, é como se possuíssemos já as maravilhas que a nossa fé nos garante havermos de gozar um dia» (CIC 164).'
+                },
+                {
+                    id: 16,
+                    type: 'multiple-choice',
+                    question: 'Qual é a principal característica da fé, segundo o Catecismo?',
+                    options: ['É um sentimento', 'É uma escolha racional', 'É uma graça', 'É uma obrigação'],
+                    correctAnswer: 'É uma graça',
+                    explanation: 'A fé é um dom sobrenatural de Deus (CIC 179).'
+                },
+                {
+                    id: 17,
+                    type: 'multiple-choice',
+                    question: 'O que a fé exige do homem em relação à sua inteligência e vontade?',
+                    options: ['Indiferença', 'Todo o esforço e retidão', 'Preguiça', 'Desconfiança'],
+                    correctAnswer: 'Todo o esforço e retidão',
+                    explanation: 'A fé exige do homem todo o esforço de sua inteligência e a retidão de sua vontade (adaptado de fontes que explicam a relação entre fé e razão).'
+                },
+                {
+                    id: 18,
+                    type: 'multiple-choice',
+                    question: 'Por que a fé é necessária para a salvação?',
+                    options: ['Para cumprir um ritual', 'Porque é o único caminho para a vida eterna', 'Para agradar os outros', 'Para obter benefícios materiais'],
+                    correctAnswer: 'Porque é o único caminho para a vida eterna',
+                    explanation: 'A fé é o início da vida eterna em nós (adaptado do CIC, que fala da fé como início da vida eterna).'
+                },
+                {
+                    id: 19,
+                    type: 'multiple-choice',
+                    question: 'O que a Igreja confessa incessantemente?',
+                    options: ['A existência de muitos deuses', 'A sua própria glória', 'A fé num só Deus, Pai, Filho e Espírito Santo', 'O poder dos homens'],
+                    correctAnswer: 'A fé num só Deus, Pai, Filho e Espírito Santo',
+                    explanation: 'A Igreja não cessa de confessar a sua fé num só Deus, Pai, Filho e Espírito Santo (CIC 170).'
+                },
+                {
+                    id: 20,
+                    type: 'multiple-choice',
+                    question: 'Qual é a relação entre a fé e a inteligência, segundo o Catecismo?',
+                    options: ['São opostas', 'A fé anula a inteligência', 'A fé e a inteligência se complementam', 'A inteligência é superior à fé'],
+                    correctAnswer: 'A fé e a inteligência se complementam',
+                    explanation: 'A fé não se opõe à razão humana; pelo contrário, a fé e a inteligência se complementam e se enriquecem mutuamente (adaptado do CIC, que aborda a relação entre fé e razão).'
+                },
+            ],
+            "A Celebração do Mistério Cristão": [
+                {
+                    id: 21,
+                    type: 'multiple-choice',
+                    question: 'Qual é o mistério que a Igreja confessa no Símbolo da Fé e celebra principalmente na liturgia?',
+                    options: ['O mistério da criação', 'O mistério pascal de Cristo', 'O mistério da natureza', 'O mistério do tempo'],
+                    correctAnswer: 'O mistério pascal de Cristo',
+                    explanation: 'Na liturgia, a Igreja celebra principalmente o mistério pascal, pelo qual Cristo realizou a obra da nossa salvação (CIC 1067).'
+                },
+                {
+                    id: 22,
+                    type: 'multiple-choice',
+                    question: 'O que a liturgia cristã faz com os acontecimentos que nos salvaram?',
+                    options: ['Apenas os recorda', 'Os ignora', 'Os atualiza e torna presentes', 'Os substitui'],
+                    correctAnswer: 'Os atualiza e torna presentes',
+                    explanation: 'A liturgia cristã não somente recorda os acontecimentos que nos salvaram, como também os atualiza, toma-os presentes (CIC 1104).'
+                },
+                {
+                    id: 23,
+                    type: 'multiple-choice',
+                    question: 'Qual é o número de sacramentos na Igreja Católica?',
+                    options: ['Cinco', 'Seis', 'Sete', 'Oito'],
+                    correctAnswer: 'Sete',
+                    explanation: 'Há na Igreja sete sacramentos: o Batismo, a Confirmação ou Crisma, a Eucaristia, a Penitência, a Unção dos Enfermos, a Ordem, o Matrimônio (CIC 1113).'
+                },
+                {
+                    id: 24,
+                    type: 'multiple-choice',
+                    question: 'Quem é o "Cristo total" (Christus totus) que celebra a liturgia?',
+                    options: ['Apenas o sacerdote', 'Apenas os fiéis', 'Cristo Cabeça e seus membros', 'Apenas os anjos'],
+                    correctAnswer: 'Cristo Cabeça e seus membros',
+                    explanation: 'A liturgia é «acção» do «Cristo total» (Christus totus), que inclui Cristo Cabeça e seus membros (CIC 1136).'
+                },
+                {
+                    id: 25,
+                    type: 'multiple-choice',
+                    question: 'Qual é o significado da palavra "epiclese" nas celebrações sacramentais?',
+                    options: ['Uma bênção final', 'Uma intercessão para a efusão do Espírito Santo', 'Uma leitura das Escrituras', 'Um canto de louvor'],
+                    correctAnswer: 'Uma intercessão para a efusão do Espírito Santo',
+                    explanation: 'A epiclese (“invocação sobre”) é a intercessão na qual o sacerdote suplica ao Pai que envie o Espírito Santo (CIC 1105).'
+                },
+                {
+                    id: 26,
+                    type: 'multiple-choice',
+                    question: 'Qual sacramento é o "sacramento admirável de toda a Igreja", nascido do lado de Cristo adormecido na cruz?',
+                    options: ['Batismo', 'Confirmação', 'Eucaristia', 'Matrimônio'],
+                    correctAnswer: 'Eucaristia',
+                    explanation: 'Efectivamente, foi do lado de Cristo adormecido na cruz que nasceu "o sacramento admirável de toda a Igreja" (referindo-se à Eucaristia, que é o centro da vida litúrgica).'
+                },
+                {
+                    id: 27,
+                    type: 'multiple-choice',
+                    question: 'O que o Espírito Santo faz na liturgia para o mistério de Cristo?',
+                    options: ['Oculta-o', 'Repete-o', 'Atualiza-o', 'Nega-o'],
+                    correctAnswer: 'Atualiza-o',
+                    explanation: 'Em cada celebração sacramental sobrevém a efusão do Espírito Santo, que atualiza o único mistério de Cristo (CIC 1104).'
+                },
+                {
+                    id: 28,
+                    type: 'multiple-choice',
+                    question: 'Qual é a palavra que ritma a oração da Igreja quando celebra o mistério de Cristo?',
+                    options: ['Ontem', 'Amanhã', 'Hoje', 'Sempre'],
+                    correctAnswer: 'Hoje',
+                    explanation: 'Quando a Igreja celebra o mistério de Cristo, há uma palavra que ritma a sua oração: Hoje! (CIC 1165).'
+                },
+                {
+                    id: 29,
+                    type: 'multiple-choice',
+                    question: 'O que a "economia sacramental" significa?',
+                    options: ['A administração financeira da Igreja', 'A comunicação dos frutos do Mistério Pascal de Cristo', 'A organização de eventos', 'A distribuição de bens materiais'],
+                    correctAnswer: 'A comunicação dos frutos do Mistério Pascal de Cristo',
+                    explanation: 'A economia sacramental consiste na dispensação ou comunicação dos frutos de seu Mistério Pascal (adaptado de fontes que explicam a economia sacramental).'
+                },
+                {
+                    id: 30,
+                    type: 'multiple-choice',
+                    question: 'Qual é o sacramento que nos incorpora a Cristo e nos faz participar da vida da Santíssima Trindade?',
+                    options: ['Confirmação', 'Eucaristia', 'Batismo', 'Penitência'],
+                    correctAnswer: 'Batismo',
+                    explanation: 'Pela graça do Batismo «em nome do Pai e do Filho e do Espírito Santo», somos chamados a partilhar a vida da Trindade (CIC 1265).'
+                },
+                {
+                    id: 31,
+                    type: 'multiple-choice',
+                    question: 'Qual o sacramento que aperfeiçoa a graça batismal e nos dá o Espírito Santo para confessar a fé publicamente?',
+                    options: ['Eucaristia', 'Batismo', 'Confirmação', 'Matrimônio'],
+                    correctAnswer: 'Confirmação',
+                    explanation: 'O sacramento da Confirmação aperfeiçoa a graça batismal e confere o Espírito Santo para confessar a fé de Cristo publicamente (CIC 1305).'
+                },
+                {
+                    id: 32,
+                    type: 'multiple-choice',
+                    question: 'O que a Eucaristia é para a Igreja?',
+                    options: ['Apenas um símbolo', 'O ápice e a fonte de toda a vida cristã', 'Uma refeição comum', 'Uma tradição sem valor'],
+                    correctAnswer: 'O ápice e a fonte de toda a vida cristã',
+                    explanation: 'A Eucaristia é "a fonte e o ápice de toda a vida cristã" (CIC 1324).'
+                },
+                {
+                    id: 33,
+                    type: 'multiple-choice',
+                    question: 'Qual é o efeito principal do sacramento da Penitência e Reconciliação?',
+                    options: ['Aumento da riqueza', 'Perdão dos pecados e reconciliação com Deus e a Igreja', 'Poder sobre os outros', 'Saúde física'],
+                    correctAnswer: 'Perdão dos pecados e reconciliação com Deus e a Igreja',
+                    explanation: 'O sacramento da Penitência e Reconciliação concede o perdão dos pecados cometidos depois do Batismo e a reconciliação com Deus e a Igreja (CIC 1422).'
+                },
+                {
+                    id: 34,
+                    type: 'multiple-choice',
+                    question: 'Para quem é administrado o sacramento da Unção dos Enfermos?',
+                    options: ['Apenas para os moribundos', 'Para os doentes em perigo de morte ou que sofrem gravemente', 'Para os que buscam milagres', 'Apenas para sacerdotes'],
+                    correctAnswer: 'Para os doentes em perigo de morte ou que sofrem gravemente',
+                    explanation: 'A Unção dos Enfermos é um sacramento destinado a confortar os doentes em perigo de morte ou que sofrem gravemente (CIC 1514).'
+                },
+                {
+                    id: 35,
+                    type: 'multiple-choice',
+                    question: 'Qual é o efeito do sacramento da Ordem?',
+                    options: ['Concede poder temporal', 'Confere o ministério sacerdotal', 'Garante a salvação individual', 'Permite o casamento'],
+                    correctAnswer: 'Confere o ministério sacerdotal',
+                    explanation: 'O sacramento da Ordem confere o ministério sacerdotal, capacitando o ordenado a agir na pessoa de Cristo Cabeça (CIC 1536).'
+                },
+                {
+                    id: 36,
+                    type: 'multiple-choice',
+                    question: 'Qual é a finalidade do sacramento do Matrimônio?',
+                    options: ['Apenas a satisfação pessoal', 'O bem dos cônjuges e a procriação e educação dos filhos', 'A busca de poder', 'A separação das famílias'],
+                    correctAnswer: 'O bem dos cônjuges e a procriação e educação dos filhos',
+                    explanation: 'O Matrimônio é ordenado ao bem dos cônjuges, bem como à procriação e educação dos filhos (CIC 1601).'
+                },
+                {
+                    id: 37,
+                    type: 'multiple-choice',
+                    question: 'O que o Ano Litúrgico celebra?',
+                    options: ['A história de um país', 'A obra de salvação de Cristo ao longo do ano', 'Eventos sociais', 'Festas pagãs'],
+                    correctAnswer: 'A obra de salvação de Cristo ao longo do ano',
+                    explanation: 'A santa mãe Igreja considera seu dever celebrar com uma comemoração sagrada, em determinados dias do ano, a obra de salvação do seu divino Esposo (CIC 1163).'
+                },
+                {
+                    id: 38,
+                    type: 'multiple-choice',
+                    question: 'Qual é o dia da semana em que a Igreja celebra a memória da ressurreição do Senhor?',
+                    options: ['Sábado', 'Segunda-feira', 'Sexta-feira', 'Domingo'],
+                    correctAnswer: 'Domingo',
+                    explanation: 'Em cada semana, no dia a que chamou Domingo, celebra a memória da ressurreição do Senhor (CIC 1163).'
+                },
+                {
+                    id: 39,
+                    type: 'multiple-choice',
+                    question: 'O que é a catequese litúrgica, segundo o Catecismo?',
+                    options: ['Um estudo histórico', 'Uma iniciação ao mistério de Cristo', 'Uma aula de música', 'Uma discussão filosófica'],
+                    correctAnswer: 'Uma iniciação ao mistério de Cristo',
+                    explanation: 'A catequese da liturgia implica, primeiramente, a compreensão da economia sacramental e visa iniciar as pessoas no mistério de Cristo (CIC 1135, 1075).'
+                },
+                {
+                    id: 40,
+                    type: 'multiple-choice',
+                    question: 'Qual é a função do Espírito Santo na liturgia em relação ao mistério pascal de Cristo?',
+                    options: ['Apenas testemunhar', 'Torná-lo presente', 'Anulá-lo', 'Escondê-lo'],
+                    correctAnswer: 'Torná-lo presente',
+                    explanation: 'Em cada celebração, sobrevêm a efusão do Espírito Santo que atualiza o único mistério pascal de Cristo (CIC 1104).'
+                },
+            ],
+            "A Vida em Cristo": [
+                {
+                    id: 41,
+                    type: 'multiple-choice',
+                    question: 'Qual é a dignidade que o cristão é chamado a reconhecer e viver, uma vez constituído participante da natureza divina?',
+                    options: ['Apenas sua inteligência', 'Sua dignidade humana e divina', 'Sua capacidade de dominar o mundo', 'Sua independência de Deus'],
+                    correctAnswer: 'Sua dignidade humana e divina',
+                    explanation: '"Reconhece, ó cristão, a tua dignidade. Uma vez constituído participante da natureza divina..." (CIC 1691).'
+                },
+                {
+                    id: 42,
+                    type: 'multiple-choice',
+                    question: 'Como os cristãos são chamados a levar uma vida digna do Evangelho de Cristo?',
+                    options: ['Ignorando os sacramentos', 'Pelos sacramentos e pela oração', 'Apenas por seus próprios esforços', 'Através de rituais vazios'],
+                    correctAnswer: 'Pelos sacramentos e pela oração',
+                    explanation: 'Pelos sacramentos e pela oração, os cristãos recebem a graça de Cristo e os dons do seu Espírito, que os tornam capazes de levar uma vida digna do Evangelho (CIC 1692).'
+                },
+                {
+                    id: 43,
+                    type: 'multiple-choice',
+                    question: 'O que Cristo Jesus sempre fez, servindo de exemplo para seus discípulos?',
+                    options: ['Sua própria vontade', 'Aquilo que era do agrado do Pai', 'A vontade dos homens', 'Seus próprios interesses'],
+                    correctAnswer: 'Aquilo que era do agrado do Pai',
+                    explanation: 'Cristo Jesus fez sempre aquilo que era do agrado do Pai (CIC 1693).'
+                },
+                {
+                    id: 44,
+                    type: 'multiple-choice',
+                    question: 'O que a adoção filial em Cristo transforma no crente?',
+                    options: ['Sua aparência física', 'Sua capacidade de seguir o exemplo de Cristo e agir com retidão', 'Sua riqueza material', 'Seu status social'],
+                    correctAnswer: 'Sua capacidade de seguir o exemplo de Cristo e agir com retidão',
+                    explanation: 'Quem crê em Cristo torna-se filho de Deus. Esta adoção filial transforma-o, dando-lhe a possibilidade de seguir o exemplo de Cristo. Torna-o capaz de agir com retidão e de praticar o bem (CIC 1709).'
+                },
+                {
+                    id: 45,
+                    type: 'multiple-choice',
+                    question: 'O que acontece com a vida moral, amadurecida na graça?',
+                    options: ['Termina na morte', 'Consuma-se na glória do céu', 'Torna-se irrelevante', 'Leva à tristeza'],
+                    correctAnswer: 'Consuma-se na glória do céu',
+                    explanation: 'A vida moral, crescida e amadurecida na graça, deve consumar-se na glória do céu (CIC 1715).'
+                },
+                {
+                    id: 46,
+                    type: 'multiple-choice',
+                    question: 'Qual é o ponto de partida para o homem que busca a Deus e descobre caminhos para o Seu conhecimento?',
+                    options: ['Apenas a Bíblia', 'O mundo material e a pessoa humana', 'As tradições antigas', 'A sabedoria dos filósofos'],
+                    correctAnswer: 'O mundo material e a pessoa humana',
+                    explanation: 'As "vias" para conhecer a Deus têm como ponto de partida o mundo material e a pessoa humana (CIC 31-36).'
+                },
+                {
+                    id: 47,
+                    type: 'multiple-choice',
+                    question: 'O que o pecado original fez com a natureza humana?',
+                    options: ['A aperfeiçoou', 'A tornou imune ao erro', 'A feriu e a inclinou para o mal', 'A deixou inalterada'],
+                    correctAnswer: 'A feriu e a inclinou para o mal',
+                    explanation: 'O homem, ferido na sua natureza pelo pecado original, está sujeito ao erro e inclinado para o mal no exercício da sua liberdade (CIC 1714).'
+                },
+                {
+                    id: 48,
+                    type: 'multiple-choice',
+                    question: 'Qual é a virtude pela qual cremos firmemente em todas as verdades que Deus revelou?',
+                    options: ['Esperança', 'Caridade', 'Prudência', 'Fé'],
+                    correctAnswer: 'Fé',
+                    explanation: 'A Fé é a virtude pela qual cremos firmemente todas as verdades que Deus revelou (adaptado do CIC, sobre as virtudes teologais).'
+                },
+                {
+                    id: 49,
+                    type: 'multiple-choice',
+                    question: 'Qual é a virtude pela qual confiamos firmemente que Deus nos dará a felicidade eterna e os meios para obtê-la?',
+                    options: ['Justiça', 'Temperança', 'Esperança', 'Caridade'],
+                    correctAnswer: 'Esperança',
+                    explanation: 'A Esperança é a virtude pela qual confiamos firmemente que Deus, que é todo-poderoso e fiel às Suas promessas, nos dará em Sua misericórdia a felicidade eterna e os meios para obtê-la (adaptado do CIC, sobre as virtudes teologais).'
+                },
+                {
+                    id: 50,
+                    type: 'multiple-choice',
+                    question: 'Qual é a virtude pela qual amamos a Deus sobre todas as coisas e ao próximo como a nós mesmos por amor a Deus?',
+                    options: ['Fortaleza', 'Prudência', 'Caridade', 'Temperança'],
+                    correctAnswer: 'Caridade',
+                    explanation: 'A Caridade é a virtude pela qual amamos a Deus sobre todas as coisas por Ele mesmo, e ao nosso próximo como a nós mesmos por amor a Deus (adaptado do CIC, sobre as virtudes teologais).'
+                },
+                {
+                    id: 51,
+                    type: 'multiple-choice',
+                    question: 'O que as Bem-aventuranças anunciam?',
+                    options: ['Riqueza material', 'Bênçãos e recompensas para os discípulos de Cristo', 'Sofrimento sem sentido', 'Apenas regras a seguir'],
+                    correctAnswer: 'Bênçãos e recompensas para os discípulos de Cristo',
+                    explanation: 'As Bem-aventuranças anunciam as bênçãos e as recompensas que serão dadas aos discípulos (adaptado de fontes que explicam as Bem-aventuranças no CIC).'
+                },
+                {
+                    id: 52,
+                    type: 'multiple-choice',
+                    question: 'O que o livre-arbítrio do ser humano nos capacita a fazer?',
+                    options: ['Apenas o mal', 'Apenas o bem', 'Escolher entre o bem e o mal', 'Ignorar as consequências'],
+                    correctAnswer: 'Escolher entre o bem e o mal',
+                    explanation: 'A vontade é uma condição da criatura, somos seres de vontade porque somos capazes de escolher entre o bem e o mal (adaptado de fontes que explicam a liberdade humana no CIC).'
+                },
+                {
+                    id: 53,
+                    type: 'multiple-choice',
+                    question: 'Qual é a principal ameaça à liberdade humana, que pode nos levar ao pecado?',
+                    options: ['A riqueza', 'O mau uso da liberdade', 'A ignorância', 'A falta de fé'],
+                    correctAnswer: 'O mau uso da liberdade',
+                    explanation: 'O mau uso da liberdade pode nos levar ao pecado (adaptado de fontes que explicam a liberdade e o pecado no CIC).'
+                },
+                {
+                    id: 54,
+                    type: 'multiple-choice',
+                    question: 'O que é a consciência moral?',
+                    options: ['Uma opinião pessoal', 'Um juízo da razão que nos leva a reconhecer a qualidade moral de um ato', 'Um sentimento', 'Uma emoção'],
+                    correctAnswer: 'Um juízo da razão que nos leva a reconhecer a qualidade moral de um ato',
+                    explanation: 'A consciência moral é um juízo da razão pelo qual a pessoa humana reconhece a qualidade moral de um ato concreto que vai praticar, está praticando ou já praticou (CIC 1778).'
+                },
+                {
+                    id: 55,
+                    type: 'multiple-choice',
+                    question: 'O que a formação da consciência exige?',
+                    options: ['Apenas o estudo de livros', 'Uma escuta atenta da Palavra de Deus e da doutrina da Igreja', 'Apenas a experiência pessoal', 'Apenas a opinião dos amigos'],
+                    correctAnswer: 'Uma escuta atenta da Palavra de Deus e da doutrina da Igreja',
+                    explanation: 'A formação da consciência é uma tarefa para toda a vida. Exige uma escuta atenta da Palavra de Deus e da doutrina da Igreja (CIC 1785).'
+                },
+                {
+                    id: 56,
+                    type: 'multiple-choice',
+                    question: 'O que é o pecado mortal?',
+                    options: ['Uma pequena imperfeição', 'Um ato que destrói a caridade no coração do homem', 'Um erro sem importância', 'Uma transgressão acidental'],
+                    correctAnswer: 'Um ato que destrói a caridade no coração do homem',
+                    explanation: 'O pecado mortal destrói a caridade no coração do homem por uma infração grave da Lei de Deus (CIC 1855).'
+                },
+                {
+                    id: 57,
+                    type: 'multiple-choice',
+                    question: 'O que é o pecado venial?',
+                    options: ['Um pecado que destrói a caridade', 'Um pecado que enfraquece a caridade', 'Um pecado que não tem consequências', 'Um pecado que não precisa de perdão'],
+                    correctAnswer: 'Um pecado que enfraquece a caridade',
+                    explanation: 'O pecado venial enfraquece a caridade; manifesta uma afeição desordenada pelos bens criados; impede o progresso da alma no exercício das virtudes e na prática do bem moral (CIC 1862).'
+                },
+                {
+                    id: 58,
+                    type: 'multiple-choice',
+                    question: 'Quais são os dois mandamentos de Jesus que resumem toda a Lei e os Profetas?',
+                    options: ['Não matar e não roubar', 'Amar a Deus e ao próximo', 'Honrar pai e mãe e não cobiçar', 'Não mentir e não pecar'],
+                    correctAnswer: 'Amar a Deus e ao próximo',
+                    explanation: '"Amarás o Senhor, teu Deus, de todo o teu coração, de toda a tua alma e de todo o teu entendimento. Este é o maior e o primeiro mandamento. O segundo, semelhante a este, é: Amarás o teu próximo como a ti mesmo. Destes dois mandamentos dependem toda a Lei e os Profetas" (Mateus 22:37-40).'
+                },
+                {
+                    id: 59,
+                    type: 'multiple-choice',
+                    question: 'O que significa "santificação" na vida cristã?',
+                    options: ['Tornar-se perfeito por esforço próprio', 'Um processo de purificação e conformidade com Cristo', 'Acumular bens materiais', 'Isolar-se do mundo'],
+                    correctAnswer: 'Um processo de purificação e conformidade com Cristo',
+                    explanation: 'A santificação é o processo pelo qual, pela graça do Espírito Santo, somos purificados do pecado e conformados à imagem de Cristo (adaptado do CIC, sobre a santidade).'
+                },
+                {
+                    id: 60,
+                    type: 'multiple-choice',
+                    question: 'Qual é a recompensa final para aqueles que vivem uma vida em Cristo?',
+                    options: ['Fama terrena', 'Vida eterna na glória do céu', 'Riqueza material', 'Poder sobre os outros'],
+                    correctAnswer: 'Vida eterna na glória do céu',
+                    explanation: 'A vida moral, crescida e amadurecida na graça, deve consumar-se na glória do céu (CIC 1715).'
+                },
+            ],
+            "A Oração Cristã": [
+                {
+                    id: 61,
+                    type: 'multiple-choice',
+                    question: 'O que é a oração, segundo Santa Teresinha do Menino Jesus?',
+                    options: ['Uma obrigação pesada', 'Um impulso do coração e um simples olhar lançado ao céu', 'Uma forma de manipular a Deus', 'Um ritual sem sentido'],
+                    correctAnswer: 'Um impulso do coração e um simples olhar lançado ao céu',
+                    explanation: 'Para mim, a oração é o impulso do coração, é um simples olhar lançado para o céu, é um grito de gratidão e de amor, tanto no meio da tribulação como no meio da alegria (CIC 2558).'
+                },
+                {
+                    id: 62,
+                    type: 'multiple-choice',
+                    question: 'Qual é o fundamento da oração?',
+                    options: ['A riqueza', 'A inteligência', 'A humildade', 'O poder'],
+                    correctAnswer: 'A humildade',
+                    explanation: 'A humildade é o fundamento da oração (CIC 2559).'
+                },
+                {
+                    id: 63,
+                    type: 'multiple-choice',
+                    question: 'De onde brota a oração do homem, segundo as Escrituras?',
+                    options: ['Da mente', 'Do corpo', 'Do coração', 'Da boca'],
+                    correctAnswer: 'Do coração',
+                    explanation: 'Para designar o lugar de onde brota a oração, as Escrituras falam às vezes da alma ou do espírito ou, com mais frequência, do coração (CIC 2562).'
+                },
+                {
+                    id: 64,
+                    type: 'multiple-choice',
+                    question: 'O que a oração cristã é em relação a Deus e ao homem em Cristo?',
+                    options: ['Uma imposição', 'Uma relação de aliança', 'Uma competição', 'Uma negociação'],
+                    correctAnswer: 'Uma relação de aliança',
+                    explanation: 'A oração cristã é uma relação de aliança entre Deus e o homem em Cristo (CIC 2564).'
+                },
+                {
+                    id: 65,
+                    type: 'multiple-choice',
+                    question: 'Quem ensinou os discípulos a orar, sendo o "mestre da oração"?',
+                    options: ['João Batista', 'São Pedro', 'Jesus', 'Moisés'],
+                    correctAnswer: 'Jesus',
+                    explanation: 'Não é, porventura, ao contemplar primeiro o seu Mestre em oração, que o discípulo de Cristo sente o desejo de orar? Pode então aprendê-la com o mestre da oração (CIC 2601).'
+                },
+                {
+                    id: 66,
+                    type: 'multiple-choice',
+                    question: 'O que a oração é para a vida do coração novo?',
+                    options: ['Um obstáculo', 'A vida', 'Uma distração', 'Um fardo'],
+                    correctAnswer: 'A vida',
+                    explanation: 'A oração é a vida do coração novo (CIC 2697).'
+                },
+                {
+                    id: 67,
+                    type: 'multiple-choice',
+                    question: 'O que os Padres espirituais insistem que a oração seja, como "lembrança de Deus"?',
+                    options: ['Um evento raro', 'Um despertador frequente da "memória do coração"', 'Uma atividade esporádica', 'Uma tarefa a ser evitada'],
+                    correctAnswer: 'Um despertador frequente da "memória do coração"',
+                    explanation: 'Os Padres espirituais insistem na oração como «lembrança de Deus», frequente despertador da «memória do coração» (CIC 2697).'
+                },
+                {
+                    id: 68,
+                    type: 'multiple-choice',
+                    question: 'Quais são os três principais tipos de expressão da oração cristã que a Tradição Cristã reteve?',
+                    options: ['Oração de súplica, oração de intercessão, oração de ação de graças', 'Oração vocal, meditação e oração contemplativa', 'Oração individual, oração em grupo, oração comunitária', 'Oração espontânea, oração formal, oração silenciosa'],
+                    correctAnswer: 'Oração vocal, meditação e oração contemplativa',
+                    explanation: 'A Tradição Cristã reteve três principais expressões da oração: vocal, meditativa e contemplativa (CIC 2699).'
+                },
+                {
+                    id: 69,
+                    type: 'multiple-choice',
+                    question: 'O que é a oração vocal?',
+                    options: ['Oração sem palavras', 'Oração expressa por palavras', 'Oração em silêncio', 'Oração com gestos'],
+                    correctAnswer: 'Oração expressa por palavras',
+                    explanation: 'A oração vocal associa o corpo à oração interior do coração (CIC 2700).'
+                },
+                {
+                    id: 70,
+                    type: 'multiple-choice',
+                    question: 'O que é a meditação na oração cristã?',
+                    options: ['Repetição de palavras', 'Uma busca reflexiva', 'Uma conversa com os amigos', 'Um estado de sono'],
+                    correctAnswer: 'Uma busca reflexiva',
+                    explanation: 'A meditação é uma busca reflexiva que faz progredir a alma no conhecimento de Deus e na união com Ele (CIC 2705).'
+                },
+                {
+                    id: 71,
+                    type: 'multiple-choice',
+                    question: 'O que é a oração contemplativa?',
+                    options: ['Uma oração com muitas palavras', 'Uma oração que exige muito esforço físico', 'Um olhar de fé fixo em Jesus', 'Uma oração de lamentação'],
+                    correctAnswer: 'Um olhar de fé fixo em Jesus',
+                    explanation: 'A oração contemplativa é a oração em que se fixa o olhar em Jesus, em que se escuta a Sua Palavra e se medita sobre os Seus mistérios (CIC 2709).'
+                },
+                {
+                    id: 72,
+                    type: 'multiple-choice',
+                    question: 'Qual é a oração por excelência da Igreja?',
+                    options: ['A Ave Maria', 'O Terço', 'O Pai Nosso', 'O Credo'],
+                    correctAnswer: 'O Pai Nosso',
+                    explanation: 'O Pai Nosso é a oração dominical, a oração por excelência da Igreja (CIC 2761).'
+                },
+                {
+                    id: 73,
+                    type: 'multiple-choice',
+                    question: 'O que significa a primeira petição do Pai Nosso: "Santificado seja o vosso Nome"?',
+                    options: ['Que o nome de Deus seja sempre pronunciado', 'Que o nome de Deus seja glorificado por nossa vida', 'Que o nome de Deus seja esquecido', 'Que o nome de Deus seja usado em vão'],
+                    correctAnswer: 'Que o nome de Deus seja glorificado por nossa vida',
+                    explanation: '"Santificado seja o vosso Nome" significa que o Nome de Deus seja reconhecido como santo por nossa vida e por nossa adoração (CIC 2807).'
+                },
+                {
+                    id: 74,
+                    type: 'multiple-choice',
+                    question: 'O que pedimos na petição "Venha a nós o vosso Reino"?',
+                    options: ['Um reino terrestre', 'A vinda do Reino de Deus em nós e no mundo', 'Poder e domínio', 'Riqueza e prosperidade'],
+                    correctAnswer: 'A vinda do Reino de Deus em nós e no mundo',
+                    explanation: '"Venha a nós o vosso Reino" é uma oração pela vinda do Reino de Deus em nós e no mundo, através da justiça, da paz e da santidade (CIC 2816).'
+                },
+                {
+                    id: 75,
+                    type: 'multiple-choice',
+                    question: 'O que significa "Seja feita a vossa vontade assim na terra como no céu"?',
+                    options: ['Que Deus faça tudo sozinho', 'Que aceitemos passivamente o destino', 'Que nos unamos à vontade de Deus', 'Que ignoremos a vontade de Deus'],
+                    correctAnswer: 'Que nos unamos à vontade de Deus',
+                    explanation: '"Seja feita a vossa vontade assim na terra como no céu" significa que nos unamos à vontade de Deus e a cumpramos em nossa vida (CIC 2822).'
+                },
+                {
+                    id: 76,
+                    type: 'multiple-choice',
+                    question: 'O que pedimos em "O pão nosso de cada dia nos dai hoje"?',
+                    options: ['Apenas o alimento material', 'O alimento espiritual e material necessário para a vida', 'Riqueza ilimitada', 'Apenas o pão da Eucaristia'],
+                    correctAnswer: 'O alimento espiritual e material necessário para a vida',
+                    explanation: '"O pão nosso de cada dia nos dai hoje" pede o alimento necessário para a vida, tanto material quanto espiritual, incluindo a Eucaristia (CIC 2837).'
+                },
+                {
+                    id: 77,
+                    type: 'multiple-choice',
+                    question: 'O que significa "Perdoai-nos as nossas ofensas assim como nós perdoamos a quem nos tem ofendido"?',
+                    options: ['Que o perdão é automático', 'Que só seremos perdoados se perdoarmos', 'Que não precisamos perdoar', 'Que o perdão é opcional'],
+                    correctAnswer: 'Que só seremos perdoados se perdoarmos',
+                    explanation: 'Esta petição nos ensina que só seremos perdoados por Deus se também perdoarmos aqueles que nos ofenderam (CIC 2842).'
+                },
+                {
+                    id: 78,
+                    type: 'multiple-choice',
+                    question: 'O que pedimos em "Não nos deixeis cair em tentação"?',
+                    options: ['Que nunca sejamos tentados', 'Que Deus nos livre do mal e nos dê força para resistir', 'Que a tentação seja removida', 'Que possamos ceder à tentação'],
+                    correctAnswer: 'Que Deus nos livre do mal e nos dê a força para resistir às tentações (CIC 2846).'
+                },
+                {
+                    id: 79,
+                    type: 'multiple-choice',
+                    question: 'O que significa "Mas livrai-nos do mal"?',
+                    options: ['Livrai-nos de problemas financeiros', 'Livrai-nos do pecado e do Maligno', 'Livrai-nos de doenças', 'Livrai-nos de adversidades'],
+                    correctAnswer: 'Livrai-nos do pecado e do Maligno',
+                    explanation: '"Mas livrai-nos do mal" pede a Deus que nos livre do pecado e do Maligno (o demônio), que é o autor de todo o mal (CIC 2850).'
+                },
+                {
+                    id: 80,
+                    type: 'multiple-choice',
+                    question: 'Qual é a atitude necessária para receber o dom da oração?',
+                    options: ['Soberba', 'Autossuficiência', 'Humildade', 'Desconfiança'],
+                    correctAnswer: 'Humildade',
+                    explanation: 'A humildade é a disposição necessária para receber gratuitamente o dom da oração (CIC 2559).'
+                },
+            ],
+        };
 
-// Dados das perguntas do Catecismo, organizadas por categoria
-const questionsDataByCategory = {
-  "A Profissão da Fé": [
-    {
-      id: 1,
-      type: 'multiple-choice',
-      question: 'Qual é a resposta adequada do homem ao convite de Deus pela Sua revelação?',
-      options: ['A dúvida', 'A indiferença', 'A fé', 'A negação'],
-      correctAnswer: 'A fé',
-      explanation: 'Pela sua revelação, Deus convida os homens à comunhão com Ele, e a resposta adequada a este convite é a fé (CIC 142).'
-    },
-    {
-      id: 2,
-      type: 'multiple-choice',
-      question: 'O que significa "obediência da fé" segundo a Sagrada Escritura?',
-      options: ['Seguir cegamente', 'Submeter-se livremente à palavra escutada', 'Questionar toda a verdade', 'Ignorar os ensinamentos'],
-      correctAnswer: 'Submeter-se livremente à palavra escutada',
-      explanation: 'Obedecer na fé é submeter-se livremente à palavra escutada, por a sua verdade ser garantida por Deus (CIC 144).'
-    },
-    {
-      id: 3,
-      type: 'multiple-choice',
-      question: 'Quem é o modelo de "obediência da fé" no Antigo Testamento?',
-      options: ['Moisés', 'Davi', 'Abraão', 'Noé'],
-      correctAnswer: 'Abraão',
-      explanation: 'Desta obediência, o modelo que a Sagrada Escritura nos propõe é Abraão (CIC 144).'
-    },
-    {
-      id: 4,
-      type: 'multiple-choice',
-      question: 'Quem é a realização mais perfeita da "obediência da fé"?',
-      options: ['Maria Madalena', 'Santa Teresa', 'A Virgem Maria', 'Santa Faustina'],
-      correctAnswer: 'A Virgem Maria',
-      explanation: 'A sua realização mais perfeita é a da Virgem Maria (CIC 144).'
-    },
-    {
-      id: 5,
-      type: 'multiple-choice',
-      question: 'A fé é um dom de Deus. O que o homem necessita para crer?',
-      options: ['Apenas sua própria inteligência', 'Auxílios interiores do Espírito Santo', 'Riqueza material', 'Poder político'],
-      correctAnswer: 'Auxílios interiores do Espírito Santo',
-      explanation: 'A fé é um dom sobrenatural de Deus. Para crer, o homem tem necessidade dos auxílios interiores do Espírito Santo (CIC 179).'
-    },
-    {
-      id: 6,
-      type: 'multiple-choice',
-      question: 'O que significa a palavra grega "symbolon" no contexto dos "símbolos da fé"?',
-      options: ['Uma canção', 'Uma metade de objeto partido', 'Um livro', 'Uma oração'],
-      correctAnswer: 'Uma metade de objeto partido',
-      explanation: 'A palavra grega «symbolon» significava a metade dum objecto partido (CIC 188).'
-    },
-    {
-      id: 7,
-      type: 'multiple-choice',
-      question: 'Qual é o objetivo principal dos "símbolos da fé" ou "Credos"?',
-      options: ['Criar divisões', 'Resumir as principais verdades da fé', 'Confundir os fiéis', 'Esconder a verdade'],
-      correctAnswer: 'Resumir as principais verdades da fé',
-      explanation: 'O «símbolo da fé» é o sumário das principais verdades da fé (CIC 188).'
-    },
-    {
-      id: 8,
-      type: 'multiple-choice',
-      question: 'Em nome de quem o Batismo é conferido, e como as verdades da fé se articulam?',
-      options: ['Em nome da Igreja', 'Em nome dos santos', 'Em nome do Pai, do Filho e do Espírito Santo', 'Em nome dos apóstolos'],
-      correctAnswer: 'Em nome do Pai, do Filho e do Espírito Santo',
-      explanation: 'O Batismo é conferido «em nome do Pai e do Filho e do Espírito Santo» (Mt 28, 19), e as verdades da fé se articulam segundo a sua referência às três pessoas da Santíssima Trindade (CIC 189).'
-    },
-    {
-      id: 9,
-      type: 'multiple-choice',
-      question: 'Qual é a primeira "profissão de fé" que se faz?',
-      options: ['Na Crisma', 'Na Primeira Comunhão', 'Por ocasião do Batismo', 'Na Unção dos Enfermos'],
-      correctAnswer: 'Por ocasião do Batismo',
-      explanation: 'A primeira «profissão de fé» faz-se por ocasião do Batismo (CIC 189).'
-    },
-    {
-      id: 10,
-      type: 'multiple-choice',
-      question: 'O que o desejo de Deus, inscrito no coração do homem, o leva a procurar?',
-      options: ['Riqueza e fama', 'Verdade e felicidade', 'Poder e controle', 'Prazeres mundanos'],
-      correctAnswer: 'Verdade e felicidade',
-      explanation: 'O desejo de Deus é um sentimento inscrito no coração do homem, porque o homem foi criado por Deus e para Deus. Só em Deus é que o homem encontra a verdade e a felicidade que procura (CIC 27).'
-    },
-    {
-      id: 11,
-      type: 'multiple-choice',
-      question: 'Como o homem pode conhecer Deus com certeza, apenas pela razão natural?',
-      options: ['Através de sonhos', 'Através de adivinhações', 'A partir da criação e da pessoa humana', 'Através de rituais mágicos'],
-      correctAnswer: 'A partir da criação e da pessoa humana',
-      explanation: 'A partir da criação, isto é, do mundo e da pessoa humana, o homem pode, só pela razão, conhecer com certeza a Deus (CIC 31-36).'
-    },
-    {
-      id: 12,
-      type: 'multiple-choice',
-      question: 'O que a Igreja ensina sobre a capacidade da razão humana para conhecer Deus?',
-      options: ['Que é impossível', 'Que é limitada e incerta', 'Que é capaz de conhecer Deus com certeza', 'Que é desnecessária'],
-      correctAnswer: 'Que é capaz de conhecer Deus com certeza',
-      explanation: 'A Igreja ensina que o Deus único e verdadeiro, nosso Criador e Senhor, pode ser conhecido com certeza pelas suas obras, graças à luz natural da razão humana (CIC 47).'
-    },
-    {
-      id: 13,
-      type: 'multiple-choice',
-      question: 'Além da razão natural, qual é a outra ordem de conhecimento que o homem não pode atingir por suas próprias forças?',
-      options: ['A filosofia', 'A ciência', 'A Revelação divina', 'A intuição'],
-      correctAnswer: 'A Revelação divina',
-      explanation: 'Existe outra ordem de conhecimento, que o homem de modo nenhum pode atingir por suas próprias forças: a da Revelação divina (CIC 50).'
-    },
-    {
-      id: 14,
-      type: 'multiple-choice',
-      question: 'O que os dogmas representam no caminho da fé?',
-      options: ['Obstáculos', 'Dúvidas', 'Luzes que iluminam e tornam seguro', 'Tradições sem sentido'],
-      correctAnswer: 'Luzes que iluminam e tornam seguro',
-      explanation: 'Os dogmas são luzes no caminho da nossa fé: iluminam-no e tornam-no seguro (CIC 89).'
-    },
-    {
-      id: 15,
-      type: 'multiple-choice',
-      question: 'O que a fé nos garante, mesmo que por enquanto "caminhamos pela fé e não vemos claramente"?',
-      options: ['Riquezas terrenas', 'As maravilhas que haveremos de gozar um dia', 'Poder sobre os outros', 'Vida sem desafios'],
-      correctAnswer: 'As maravilhas que haveremos de gozar um dia',
-      explanation: '«Enquanto, desde já, contemplamos os benefícios da fé, como reflexo num espelho, é como se possuíssemos já as maravilhas que a nossa fé nos garante havermos de gozar um dia» (CIC 164).'
-    },
-    {
-      id: 16,
-      type: 'multiple-choice',
-      question: 'Qual é a principal característica da fé, segundo o Catecismo?',
-      options: ['É um sentimento', 'É uma escolha racional', 'É uma graça', 'É uma obrigação'],
-      correctAnswer: 'É uma graça',
-      explanation: 'A fé é um dom sobrenatural de Deus (CIC 179).'
-    },
-    {
-      id: 17,
-      type: 'multiple-choice',
-      question: 'O que a fé exige do homem em relação à sua inteligência e vontade?',
-      options: ['Indiferença', 'Todo o esforço e retidão', 'Preguiça', 'Desconfiança'],
-      correctAnswer: 'Todo o esforço e retidão',
-      explanation: 'A fé exige do homem todo o esforço de sua inteligência e a retidão de sua vontade (adaptado de fontes que explicam a relação entre fé e razão).'
-    },
-    {
-      id: 18,
-      type: 'multiple-choice',
-      question: 'Por que a fé é necessária para a salvação?',
-      options: ['Para cumprir um ritual', 'Porque é o único caminho para a vida eterna', 'Para agradar os outros', 'Para obter benefícios materiais'],
-      correctAnswer: 'Porque é o único caminho para a vida eterna',
-      explanation: 'A fé é o início da vida eterna em nós (adaptado do CIC, que fala da fé como início da vida eterna).'
-    },
-    {
-      id: 19,
-      type: 'multiple-choice',
-      question: 'O que a Igreja confessa incessantemente?',
-      options: ['A existência de muitos deuses', 'A sua própria glória', 'A fé num só Deus, Pai, Filho e Espírito Santo', 'O poder dos homens'],
-      correctAnswer: 'A fé num só Deus, Pai, Filho e Espírito Santo',
-      explanation: 'A Igreja não cessa de confessar a sua fé num só Deus, Pai, Filho e Espírito Santo (CIC 170).'
-    },
-    {
-      id: 20,
-      type: 'multiple-choice',
-      question: 'Qual é a relação entre a fé e a inteligência, segundo o Catecismo?',
-      options: ['São opostas', 'A fé anula a inteligência', 'A fé e a inteligência se complementam', 'A inteligência é superior à fé'],
-      correctAnswer: 'A fé e a inteligência se complementam',
-      explanation: 'A fé não se opõe à razão humana; pelo contrário, a fé e a inteligência se complementam e se enriquecem mutuamente (adaptado do CIC, que aborda a relação entre fé e razão).'
-    },
-  ],
-  "A Celebração do Mistério Cristão": [
-    {
-      id: 21,
-      type: 'multiple-choice',
-      question: 'Qual é o mistério que a Igreja confessa no Símbolo da Fé e celebra principalmente na liturgia?',
-      options: ['O mistério da criação', 'O mistério pascal de Cristo', 'O mistério da natureza', 'O mistério do tempo'],
-      correctAnswer: 'O mistério pascal de Cristo',
-      explanation: 'Na liturgia, a Igreja celebra principalmente o mistério pascal, pelo qual Cristo realizou a obra da nossa salvação (CIC 1067).'
-    },
-    {
-      id: 22,
-      type: 'multiple-choice',
-      question: 'O que a liturgia cristã faz com os acontecimentos que nos salvaram?',
-      options: ['Apenas os recorda', 'Os ignora', 'Os atualiza e torna presentes', 'Os substitui'],
-      correctAnswer: 'Os atualiza e torna presentes',
-      explanation: 'A liturgia cristã não somente recorda os acontecimentos que nos salvaram, como também os atualiza, toma-os presentes (CIC 1104).'
-    },
-    {
-      id: 23,
-      type: 'multiple-choice',
-      question: 'Qual é o número de sacramentos na Igreja Católica?',
-      options: ['Cinco', 'Seis', 'Sete', 'Oito'],
-      correctAnswer: 'Sete',
-      explanation: 'Há na Igreja sete sacramentos: o Batismo, a Confirmação ou Crisma, a Eucaristia, a Penitência, a Unção dos Enfermos, a Ordem, o Matrimônio (CIC 1113).'
-    },
-    {
-      id: 24,
-      type: 'multiple-choice',
-      question: 'Quem é o "Cristo total" (Christus totus) que celebra a liturgia?',
-      options: ['Apenas o sacerdote', 'Apenas os fiéis', 'Cristo Cabeça e seus membros', 'Apenas os anjos'],
-      correctAnswer: 'Cristo Cabeça e seus membros',
-      explanation: 'A liturgia é «acção» do «Cristo total» (Christus totus), que inclui Cristo Cabeça e seus membros (CIC 1136).'
-    },
-    {
-      id: 25,
-      type: 'multiple-choice',
-      question: 'Qual é o significado da palavra "epiclese" nas celebrações sacramentais?',
-      options: ['Uma bênção final', 'Uma intercessão para a efusão do Espírito Santo', 'Uma leitura das Escrituras', 'Um canto de louvor'],
-      correctAnswer: 'Uma intercessão para a efusão do Espírito Santo',
-      explanation: 'A epiclese (“invocação sobre”) é a intercessão na qual o sacerdote suplica ao Pai que envie o Espírito Santo (CIC 1105).'
-    },
-    {
-      id: 26,
-      type: 'multiple-choice',
-      question: 'Qual sacramento é o "sacramento admirável de toda a Igreja", nascido do lado de Cristo adormecido na cruz?',
-      options: ['Batismo', 'Confirmação', 'Eucaristia', 'Matrimônio'],
-      correctAnswer: 'Eucaristia',
-      explanation: 'Efectivamente, foi do lado de Cristo adormecido na cruz que nasceu "o sacramento admirável de toda a Igreja" (referindo-se à Eucaristia, que é o centro da vida litúrgica).'
-    },
-    {
-      id: 27,
-      type: 'multiple-choice',
-      question: 'O que o Espírito Santo faz na liturgia para o mistério de Cristo?',
-      options: ['Oculta-o', 'Repete-o', 'Atualiza-o', 'Nega-o'],
-      correctAnswer: 'Atualiza-o',
-      explanation: 'Em cada celebração sacramental sobrevêm a efusão do Espírito Santo, que atualiza o único mistério de Cristo (CIC 1104).'
-    },
-    {
-      id: 28,
-      type: 'multiple-choice',
-      question: 'Qual é a palavra que ritma a oração da Igreja quando celebra o mistério de Cristo?',
-      options: ['Ontem', 'Amanhã', 'Hoje', 'Sempre'],
-      correctAnswer: 'Hoje',
-      explanation: 'Quando a Igreja celebra o mistério de Cristo, há uma palavra que ritma a sua oração: Hoje! (CIC 1165).'
-    },
-    {
-      id: 29,
-      type: 'multiple-choice',
-      question: 'O que a "economia sacramental" significa?',
-      options: ['A administração financeira da Igreja', 'A comunicação dos frutos do Mistério Pascal de Cristo', 'A organização de eventos', 'A distribuição de bens materiais'],
-      correctAnswer: 'A comunicação dos frutos do Mistério Pascal de Cristo',
-      explanation: 'A economia sacramental consiste na dispensação ou comunicação dos frutos de seu Mistério Pascal (adaptado de fontes que explicam a economia sacramental).'
-    },
-    {
-      id: 30,
-      type: 'multiple-choice',
-      question: 'Qual é o sacramento que nos incorpora a Cristo e nos faz participar da vida da Santíssima Trindade?',
-      options: ['Confirmação', 'Eucaristia', 'Batismo', 'Penitência'],
-      correctAnswer: 'Batismo',
-      explanation: 'Pela graça do Batismo «em nome do Pai e do Filho e do Espírito Santo», somos chamados a partilhar a vida da Trindade (CIC 1265).'
-    },
-    {
-      id: 31,
-      type: 'multiple-choice',
-      question: 'Qual o sacramento que aperfeiçoa a graça batismal e nos dá o Espírito Santo para confessar a fé publicamente?',
-      options: ['Eucaristia', 'Batismo', 'Confirmação', 'Matrimônio'],
-      correctAnswer: 'Confirmação',
-      explanation: 'O sacramento da Confirmação aperfeiçoa a graça batismal e confere o Espírito Santo para confessar a fé de Cristo publicamente (CIC 1305).'
-    },
-    {
-      id: 32,
-      type: 'multiple-choice',
-      question: 'O que a Eucaristia é para a Igreja?',
-      options: ['Apenas um símbolo', 'O ápice e a fonte de toda a vida cristã', 'Uma refeição comum', 'Uma tradição sem valor'],
-      correctAnswer: 'O ápice e a fonte de toda a vida cristã',
-      explanation: 'A Eucaristia é "a fonte e o ápice de toda a vida cristã" (CIC 1324).'
-    },
-    {
-      id: 33,
-      type: 'multiple-choice',
-      question: 'Qual é o efeito principal do sacramento da Penitência e Reconciliação?',
-      options: ['Aumento da riqueza', 'Perdão dos pecados e reconciliação com Deus e a Igreja', 'Poder sobre os outros', 'Saúde física'],
-      correctAnswer: 'Perdão dos pecados e reconciliação com Deus e a Igreja',
-      explanation: 'O sacramento da Penitência e Reconciliação concede o perdão dos pecados cometidos depois do Batismo e a reconciliação com Deus e a Igreja (CIC 1422).'
-    },
-    {
-      id: 34,
-      type: 'multiple-choice',
-      question: 'Para quem é administrado o sacramento da Unção dos Enfermos?',
-      options: ['Apenas para os moribundos', 'Para os doentes em perigo de morte ou que sofrem gravemente', 'Para os que buscam milagres', 'Apenas para sacerdotes'],
-      correctAnswer: 'Para os doentes em perigo de morte ou que sofrem gravemente',
-      explanation: 'A Unção dos Enfermos é um sacramento destinado a confortar os doentes em perigo de morte ou que sofrem gravemente (CIC 1514).'
-    },
-    {
-      id: 35,
-      type: 'multiple-choice',
-      question: 'Qual é o efeito do sacramento da Ordem?',
-      options: ['Concede poder temporal', 'Confere o ministério sacerdotal', 'Garante a salvação individual', 'Permite o casamento'],
-      correctAnswer: 'Confere o ministério sacerdotal',
-      explanation: 'O sacramento da Ordem confere o ministério sacerdotal, capacitando o ordenado a agir na pessoa de Cristo Cabeça (CIC 1536).'
-    },
-    {
-      id: 36,
-      type: 'multiple-choice',
-      question: 'Qual é a finalidade do sacramento do Matrimônio?',
-      options: ['Apenas a satisfação pessoal', 'O bem dos cônjuges e a procriação e educação dos filhos', 'A busca de poder', 'A separação das famílias'],
-      correctAnswer: 'O bem dos cônjuges e a procriação e educação dos filhos',
-      explanation: 'O Matrimônio é ordenado ao bem dos cônjuges, bem como à procriação e educação dos filhos (CIC 1601).'
-    },
-    {
-      id: 37,
-      type: 'multiple-choice',
-      question: 'O que o Ano Litúrgico celebra?',
-      options: ['A história de um país', 'A obra de salvação de Cristo ao longo do ano', 'Eventos sociais', 'Festas pagãs'],
-      correctAnswer: 'A obra de salvação de Cristo ao longo do ano',
-      explanation: 'A santa mãe Igreja considera seu dever celebrar com uma comemoração sagrada, em determinados dias do ano, a obra de salvação do seu divino Esposo (CIC 1163).'
-    },
-    {
-      id: 38,
-      type: 'multiple-choice',
-      question: 'Qual é o dia da semana em que a Igreja celebra a memória da ressurreição do Senhor?',
-      options: ['Sábado', 'Segunda-feira', 'Sexta-feira', 'Domingo'],
-      correctAnswer: 'Domingo',
-      explanation: 'Em cada semana, no dia a que chamou Domingo, celebra a memória da ressurreição do Senhor (CIC 1163).'
-    },
-    {
-      id: 39,
-      type: 'multiple-choice',
-      question: 'O que é a catequese litúrgica, segundo o Catecismo?',
-      options: ['Um estudo histórico', 'Uma iniciação ao mistério de Cristo', 'Uma aula de música', 'Uma discussão filosófica'],
-      correctAnswer: 'Uma iniciação ao mistério de Cristo',
-      explanation: 'A catequese da liturgia implica, primeiramente, a compreensão da economia sacramental e visa iniciar as pessoas no mistério de Cristo (CIC 1135, 1075).'
-    },
-    {
-      id: 40,
-      type: 'multiple-choice',
-      question: 'Qual é a função do Espírito Santo na liturgia em relação ao mistério pascal de Cristo?',
-      options: ['Apenas testemunhar', 'Torná-lo presente', 'Anulá-lo', 'Escondê-lo'],
-      correctAnswer: 'Torná-lo presente',
-      explanation: 'Em cada celebração, sobrevêm a efusão do Espírito Santo que atualiza o único mistério pascal de Cristo (CIC 1104).'
-    },
-  ],
-  "A Vida em Cristo": [
-    {
-      id: 41,
-      type: 'multiple-choice',
-      question: 'Qual é a dignidade que o cristão é chamado a reconhecer e viver, uma vez constituído participante da natureza divina?',
-      options: ['Apenas sua inteligência', 'Sua dignidade humana e divina', 'Sua capacidade de dominar o mundo', 'Sua independência de Deus'],
-      correctAnswer: 'Sua dignidade humana e divina',
-      explanation: '"Reconhece, ó cristão, a tua dignidade. Uma vez constituído participante da natureza divina..." (CIC 1691).'
-    },
-    {
-      id: 42,
-      type: 'multiple-choice',
-      question: 'Como os cristãos são chamados a levar uma vida digna do Evangelho de Cristo?',
-      options: ['Ignorando os sacramentos', 'Pelos sacramentos e pela oração', 'Apenas por seus próprios esforços', 'Através de rituais vazios'],
-      correctAnswer: 'Pelos sacramentos e pela oração',
-      explanation: 'Pelos sacramentos e pela oração, os cristãos recebem a graça de Cristo e os dons do seu Espírito, que os tornam capazes de levar uma vida digna do Evangelho (CIC 1692).'
-    },
-    {
-      id: 43,
-      type: 'multiple-choice',
-      question: 'O que Cristo Jesus sempre fez, servindo de exemplo para seus discípulos?',
-      options: ['Sua própria vontade', 'Aquilo que era do agrado do Pai', 'A vontade dos homens', 'Seus próprios interesses'],
-      correctAnswer: 'Aquilo que era do agrado do Pai',
-      explanation: 'Cristo Jesus fez sempre aquilo que era do agrado do Pai (CIC 1693).'
-    },
-    {
-      id: 44,
-      type: 'multiple-choice',
-      question: 'O que a adoção filial em Cristo transforma no crente?',
-      options: ['Sua aparência física', 'Sua capacidade de seguir o exemplo de Cristo e agir com retidão', 'Sua riqueza material', 'Seu status social'],
-      correctAnswer: 'Sua capacidade de seguir o exemplo de Cristo e agir com retidão',
-      explanation: 'Quem crê em Cristo torna-se filho de Deus. Esta adoção filial transforma-o, dando-lhe a possibilidade de seguir o exemplo de Cristo. Torna-o capaz de agir com retidão e de praticar o bem (CIC 1709).'
-    },
-    {
-      id: 45,
-      type: 'multiple-choice',
-      question: 'O que acontece com a vida moral, amadurecida na graça?',
-      options: ['Termina na morte', 'Consuma-se na glória do céu', 'Torna-se irrelevante', 'Leva à tristeza'],
-      correctAnswer: 'Consuma-se na glória do céu',
-      explanation: 'A vida moral, crescida e amadurecida na graça, deve consumar-se na glória do céu (CIC 1715).'
-    },
-    {
-      id: 46,
-      type: 'multiple-choice',
-      question: 'Qual é o ponto de partida para o homem que busca a Deus e descobre caminhos para o Seu conhecimento?',
-      options: ['Apenas a Bíblia', 'O mundo material e a pessoa humana', 'As tradições antigas', 'A sabedoria dos filósofos'],
-      correctAnswer: 'O mundo material e a pessoa humana',
-      explanation: 'As "vias" para conhecer a Deus têm como ponto de partida o mundo material e a pessoa humana (CIC 31-36).'
-    },
-    {
-      id: 47,
-      type: 'multiple-choice',
-      question: 'O que o pecado original fez com a natureza humana?',
-      options: ['A aperfeiçoou', 'A tornou imune ao erro', 'A feriu e a inclinou para o mal', 'A deixou inalterada'],
-      correctAnswer: 'A feriu e a inclinou para o mal',
-      explanation: 'O homem, ferido na sua natureza pelo pecado original, está sujeito ao erro e inclinado para o mal no exercício da sua liberdade (CIC 1714).'
-    },
-    {
-      id: 48,
-      type: 'multiple-choice',
-      question: 'Qual é a virtude pela qual cremos firmemente em todas as verdades que Deus revelou?',
-      options: ['Esperança', 'Caridade', 'Prudência', 'Fé'],
-      correctAnswer: 'Fé',
-      explanation: 'A Fé é a virtude pela qual cremos firmemente todas as verdades que Deus revelou (adaptado do CIC, sobre as virtudes teologais).'
-    },
-    {
-      id: 49,
-      type: 'multiple-choice',
-      question: 'Qual é a virtude pela qual confiamos firmemente que Deus nos dará a felicidade eterna e os meios para obtê-la?',
-      options: ['Justiça', 'Temperança', 'Esperança', 'Caridade'],
-      correctAnswer: 'Esperança',
-      explanation: 'A Esperança é a virtude pela qual confiamos firmemente que Deus, que é todo-poderoso e fiel às Suas promessas, nos dará em Sua misericórdia a felicidade eterna e os meios para obtê-la (adaptado do CIC, sobre as virtudes teologais).'
-    },
-    {
-      id: 50,
-      type: 'multiple-choice',
-      question: 'Qual é a virtude pela qual amamos a Deus sobre todas as coisas e ao próximo como a nós mesmos por amor a Deus?',
-      options: ['Fortaleza', 'Prudência', 'Caridade', 'Temperança'],
-      correctAnswer: 'Caridade',
-      explanation: 'A Caridade é a virtude pela qual amamos a Deus sobre todas as coisas por Ele mesmo, e ao nosso próximo como a nós mesmos por amor a Deus (adaptado do CIC, sobre as virtudes teologais).'
-    },
-    {
-      id: 51,
-      type: 'multiple-choice',
-      question: 'O que as Bem-aventuranças anunciam?',
-      options: ['Riqueza material', 'Bênçãos e recompensas para os discípulos de Cristo', 'Sofrimento sem sentido', 'Apenas regras a seguir'],
-      correctAnswer: 'Bênçãos e recompensas para os discípulos de Cristo',
-      explanation: 'As Bem-aventuranças anunciam as bênçãos e as recompensas que serão dadas aos discípulos (adaptado de fontes que explicam as Bem-aventuranças no CIC).'
-    },
-    {
-      id: 52,
-      type: 'multiple-choice',
-      question: 'O que o livre-arbítrio do ser humano nos capacita a fazer?',
-      options: ['Apenas o mal', 'Apenas o bem', 'Escolher entre o bem e o mal', 'Ignorar as consequências'],
-      correctAnswer: 'Escolher entre o bem e o mal',
-      explanation: 'A vontade é uma condição da criatura, somos seres de vontade porque somos capazes de escolher entre o bem e o mal (adaptado de fontes que explicam a liberdade humana no CIC).'
-    },
-    {
-      id: 53,
-      type: 'multiple-choice',
-      question: 'Qual é a principal ameaça à liberdade humana, que pode nos levar ao pecado?',
-      options: ['A riqueza', 'O mau uso da liberdade', 'A ignorância', 'A falta de fé'],
-      correctAnswer: 'O mau uso da liberdade',
-      explanation: 'O mau uso da liberdade pode nos levar ao pecado (adaptado de fontes que explicam a liberdade e o pecado no CIC).'
-    },
-    {
-      id: 54,
-      type: 'multiple-choice',
-      question: 'O que é a consciência moral?',
-      options: ['Uma opinião pessoal', 'Um juízo da razão que nos leva a reconhecer a qualidade moral de um ato', 'Um sentimento', 'Uma emoção'],
-      correctAnswer: 'Um juízo da razão que nos leva a reconhecer a qualidade moral de um ato',
-      explanation: 'A consciência moral é um juízo da razão pelo qual a pessoa humana reconhece a qualidade moral de um ato concreto que vai praticar, está praticando ou já praticou (CIC 1778).'
-    },
-    {
-      id: 55,
-      type: 'multiple-choice',
-      question: 'O que a formação da consciência exige?',
-      options: ['Apenas o estudo de livros', 'Uma escuta atenta da Palavra de Deus e da doutrina da Igreja', 'Apenas a experiência pessoal', 'Apenas a opinião dos amigos'],
-      correctAnswer: 'Uma escuta atenta da Palavra de Deus e da doutrina da Igreja',
-      explanation: 'A formação da consciência é uma tarefa para toda a vida. Exige uma escuta atenta da Palavra de Deus e da doutrina da Igreja (CIC 1785).'
-    },
-    {
-      id: 56,
-      type: 'multiple-choice',
-      question: 'O que é o pecado mortal?',
-      options: ['Uma pequena imperfeição', 'Um ato que destrói a caridade no coração do homem', 'Um erro sem importância', 'Uma transgressão acidental'],
-      correctAnswer: 'Um ato que destrói a caridade no coração do homem',
-      explanation: 'O pecado mortal destrói a caridade no coração do homem por uma infração grave da Lei de Deus (CIC 1855).'
-    },
-    {
-      id: 57,
-      type: 'multiple-choice',
-      question: 'O que é o pecado venial?',
-      options: ['Um pecado que destrói a caridade', 'Um pecado que enfraquece a caridade', 'Um pecado que não tem consequências', 'Um pecado que não precisa de perdão'],
-      correctAnswer: 'Um pecado que enfraquece a caridade',
-      explanation: 'O pecado venial enfraquece a caridade; manifesta uma afeição desordenada pelos bens criados; impede o progresso da alma no exercício das virtudes e na prática do bem moral (CIC 1862).'
-    },
-    {
-      id: 58,
-      type: 'multiple-choice',
-      question: 'Quais são os dois mandamentos de Jesus que resumem toda a Lei e os Profetas?',
-      options: ['Não matar e não roubar', 'Amar a Deus e ao próximo', 'Honrar pai e mãe e não cobiçar', 'Não mentir e não pecar'],
-      correctAnswer: 'Amar a Deus e ao próximo',
-      explanation: '"Amarás o Senhor, teu Deus, de todo o teu coração, de toda a tua alma e de todo o teu entendimento. Este é o maior e o primeiro mandamento. O segundo, semelhante a este, é: Amarás o teu próximo como a ti mesmo. Destes dois mandamentos dependem toda a Lei e os Profetas" (Mateus 22:37-40).'
-    },
-    {
-      id: 59,
-      type: 'multiple-choice',
-      question: 'O que significa "santificação" na vida cristã?',
-      options: ['Tornar-se perfeito por esforço próprio', 'Um processo de purificação e conformidade com Cristo', 'Acumular bens materiais', 'Isolar-se do mundo'],
-      correctAnswer: 'Um processo de purificação e conformidade com Cristo',
-      explanation: 'A santificação é o processo pelo qual, pela graça do Espírito Santo, somos purificados do pecado e conformados à imagem de Cristo (adaptado do CIC, sobre a santidade).'
-    },
-    {
-      id: 60,
-      type: 'multiple-choice',
-      question: 'Qual é a recompensa final para aqueles que vivem uma vida em Cristo?',
-      options: ['Fama terrena', 'Vida eterna na glória do céu', 'Riqueza material', 'Poder sobre os outros'],
-      correctAnswer: 'Vida eterna na glória do céu',
-      explanation: 'A vida moral, crescida e amadurecida na graça, deve consumar-se na glória do céu (CIC 1715).'
-    },
-  ],
-  "A Oração Cristã": [
-    {
-      id: 61,
-      type: 'multiple-choice',
-      question: 'O que é a oração, segundo Santa Teresinha do Menino Jesus?',
-      options: ['Uma obrigação pesada', 'Um impulso do coração e um simples olhar lançado ao céu', 'Uma forma de manipular a Deus', 'Um ritual sem sentido'],
-      correctAnswer: 'Um impulso do coração e um simples olhar lançado ao céu',
-      explanation: 'Para mim, a oração é o impulso do coração, é um simples olhar lançado para o céu, é um grito de gratidão e de amor, tanto no meio da tribulação como no meio da alegria (CIC 2558).'
-    },
-    {
-      id: 62,
-      type: 'multiple-choice',
-      question: 'Qual é o fundamento da oração?',
-      options: ['A riqueza', 'A inteligência', 'A humildade', 'O poder'],
-      correctAnswer: 'A humildade',
-      explanation: 'A humildade é o fundamento da oração (CIC 2559).'
-    },
-    {
-      id: 63,
-      type: 'multiple-choice',
-      question: 'De onde brota a oração do homem, segundo as Escrituras?',
-      options: ['Da mente', 'Do corpo', 'Do coração', 'Da boca'],
-      correctAnswer: 'Do coração',
-      explanation: 'Para designar o lugar de onde brota a oração, as Escrituras falam às vezes da alma ou do espírito ou, com mais frequência, do coração (CIC 2562).'
-    },
-    {
-      id: 64,
-      type: 'multiple-choice',
-      question: 'O que a oração cristã é em relação a Deus e ao homem em Cristo?',
-      options: ['Uma imposição', 'Uma relação de aliança', 'Uma competição', 'Uma negociação'],
-      correctAnswer: 'Uma relação de aliança',
-      explanation: 'A oração cristã é uma relação de aliança entre Deus e o homem em Cristo (CIC 2564).'
-    },
-    {
-      id: 65,
-      type: 'multiple-choice',
-      question: 'Quem ensinou os discípulos a orar, sendo o "mestre da oração"?',
-      options: ['João Batista', 'São Pedro', 'Jesus', 'Moisés'],
-      correctAnswer: 'Jesus',
-      explanation: 'Não é, porventura, ao contemplar primeiro o seu Mestre em oração, que o discípulo de Cristo sente o desejo de orar? Pode então aprendê-la com o mestre da oração (CIC 2601).'
-    },
-    {
-      id: 66,
-      type: 'multiple-choice',
-      question: 'O que a oração é para a vida do coração novo?',
-      options: ['Um obstáculo', 'A vida', 'Uma distração', 'Um fardo'],
-      correctAnswer: 'A vida',
-      explanation: 'A oração é a vida do coração novo (CIC 2697).'
-    },
-    {
-      id: 67,
-      type: 'multiple-choice',
-      question: 'O que os Padres espirituais insistem que a oração seja, como "lembrança de Deus"?',
-      options: ['Um evento raro', 'Um despertador frequente da "memória do coração"', 'Uma atividade esporádica', 'Uma tarefa a ser evitada'],
-      correctAnswer: 'Um despertador frequente da "memória do coração"',
-      explanation: 'Os Padres espirituais insistem na oração como «lembrança de Deus», frequente despertador da «memória do coração» (CIC 2697).'
-    },
-    {
-      id: 68,
-      type: 'multiple-choice',
-      question: 'Quais são os três principais tipos de expressão da oração cristã que a Tradição Cristã reteve?',
-      options: ['Oração de súplica, oração de intercessão, oração de ação de graças', 'Oração vocal, meditação e oração contemplativa', 'Oração individual, oração em grupo, oração comunitária', 'Oração espontânea, oração formal, oração silenciosa'],
-      correctAnswer: 'Oração vocal, meditação e oração contemplativa',
-      explanation: 'A Tradição Cristã reteve três principais expressões da oração: vocal, meditativa e contemplativa (CIC 2699).'
-    },
-    {
-      id: 69,
-      type: 'multiple-choice',
-      question: 'O que é a oração vocal?',
-      options: ['Oração sem palavras', 'Oração expressa por palavras', 'Oração em silêncio', 'Oração com gestos'],
-      correctAnswer: 'Oração expressa por palavras',
-      explanation: 'A oração vocal associa o corpo à oração interior do coração (CIC 2700).'
-    },
-    {
-      id: 70,
-      type: 'multiple-choice',
-      question: 'O que é a meditação na oração cristã?',
-      options: ['Repetição de palavras', 'Uma busca reflexiva', 'Uma conversa com os amigos', 'Um estado de sono'],
-      correctAnswer: 'Uma busca reflexiva',
-      explanation: 'A meditação é uma busca reflexiva que faz progredir a alma no conhecimento de Deus e na união com Ele (CIC 2705).'
-    },
-    {
-      id: 71,
-      type: 'multiple-choice',
-      question: 'O que é a oração contemplativa?',
-      options: ['Uma oração com muitas palavras', 'Uma oração que exige muito esforço físico', 'Um olhar de fé fixo em Jesus', 'Uma oração de lamentação'],
-      correctAnswer: 'Um olhar de fé fixo em Jesus',
-      explanation: 'A oração contemplativa é a oração em que se fixa o olhar em Jesus, em que se escuta a Sua Palavra e se medita sobre os Seus mistérios (CIC 2709).'
-    },
-    {
-      id: 72,
-      type: 'multiple-choice',
-      question: 'Qual é a oração por excelência da Igreja?',
-      options: ['A Ave Maria', 'O Terço', 'O Pai Nosso', 'O Credo'],
-      correctAnswer: 'O Pai Nosso',
-      explanation: 'O Pai Nosso é a oração dominical, a oração por excelência da Igreja (CIC 2761).'
-    },
-    {
-      id: 73,
-      type: 'multiple-choice',
-      question: 'O que significa a primeira petição do Pai Nosso: "Santificado seja o vosso Nome"?',
-      options: ['Que o nome de Deus seja sempre pronunciado', 'Que o nome de Deus seja glorificado por nossa vida', 'Que o nome de Deus seja esquecido', 'Que o nome de Deus seja usado em vão'],
-      correctAnswer: 'Que o nome de Deus seja glorificado por nossa vida',
-      explanation: '"Santificado seja o vosso Nome" significa que o Nome de Deus seja reconhecido como santo por nossa vida e por nossa adoração (CIC 2807).'
-    },
-    {
-      id: 74,
-      type: 'multiple-choice',
-      question: 'O que pedimos na petição "Venha a nós o vosso Reino"?',
-      options: ['Um reino terrestre', 'A vinda do Reino de Deus em nós e no mundo', 'Poder e domínio', 'Riqueza e prosperidade'],
-      correctAnswer: 'A vinda do Reino de Deus em nós e no mundo',
-      explanation: '"Venha a nós o vosso Reino" é uma oração pela vinda do Reino de Deus em nós e no mundo, através da justiça, da paz e da santidade (CIC 2816).'
-    },
-    {
-      id: 75,
-      type: 'multiple-choice',
-      question: 'O que significa "Seja feita a vossa vontade assim na terra como no céu"?',
-      options: ['Que Deus faça tudo sozinho', 'Que aceitemos passivamente o destino', 'Que nos unamos à vontade de Deus', 'Que ignoremos a vontade de Deus'],
-      correctAnswer: 'Que nos unamos à vontade de Deus',
-      explanation: '"Seja feita a vossa vontade assim na terra como no céu" significa que nos unamos à vontade de Deus e a cumpramos em nossa vida (CIC 2822).'
-    },
-    {
-      id: 76,
-      type: 'multiple-choice',
-      question: 'O que pedimos em "O pão nosso de cada dia nos dai hoje"?',
-      options: ['Apenas o alimento material', 'O alimento espiritual e material necessário para a vida', 'Riqueza ilimitada', 'Apenas o pão da Eucaristia'],
-      correctAnswer: 'O alimento espiritual e material necessário para a vida',
-      explanation: '"O pão nosso de cada dia nos dai hoje" pede o alimento necessário para a vida, tanto material quanto espiritual, incluindo a Eucaristia (CIC 2837).'
-    },
-    {
-      id: 77,
-      type: 'multiple-choice',
-      question: 'O que significa "Perdoai-nos as nossas ofensas assim como nós perdoamos a quem nos tem ofendido"?',
-      options: ['Que o perdão é automático', 'Que só seremos perdoados se perdoarmos', 'Que não precisamos perdoar', 'Que o perdão é opcional'],
-      correctAnswer: 'Que só seremos perdoados se perdoarmos',
-      explanation: 'Esta petição nos ensina que só seremos perdoados por Deus se também perdoarmos aqueles que nos ofenderam (CIC 2842).'
-    },
-    {
-      id: 78,
-      type: 'multiple-choice',
-      question: 'O que pedimos em "Não nos deixeis cair em tentação"?',
-      options: ['Que nunca sejamos tentados', 'Que Deus nos livre do mal e nos dê força para resistir', 'Que a tentação seja removida', 'Que possamos ceder à tentação'],
-      correctAnswer: 'Que Deus nos livre do mal e nos dê a força para resistir às tentações (CIC 2846).'
-    },
-    {
-      id: 79,
-      type: 'multiple-choice',
-      question: 'O que significa "Mas livrai-nos do mal"?',
-      options: ['Livrai-nos de problemas financeiros', 'Livrai-nos do pecado e do Maligno', 'Livrai-nos de doenças', 'Livrai-nos de adversidades'],
-      correctAnswer: 'Livrai-nos do pecado e do Maligno',
-      explanation: '"Mas livrai-nos do mal" pede a Deus que nos livre do pecado e do Maligno (o demônio), que é o autor de todo o mal (CIC 2850).'
-    },
-    {
-      id: 80,
-      type: 'multiple-choice',
-      question: 'Qual é a atitude necessária para receber o dom da oração?',
-      options: ['Soberba', 'Autossuficiência', 'Humildade', 'Desconfiança'],
-      correctAnswer: 'Humildade',
-      explanation: 'A humildade é a disposição necessária para receber gratuitamente o dom da oração (CIC 2559).'
-    },
-  ],
-};
+        function App() {
+            const { useState, useEffect } = React;
 
-function App() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState('');
-  const [feedback, setFeedback] = useState(null); // 'correct', 'incorrect', null, 'finished'
-  const [score, setScore] = useState(0); // Score for the current category quiz
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [questions, setQuestions] = useState([]);
-  const [llmExplanation, setLlmExplanation] = useState(null); // Estado para a explicação do LLM
-  const [isLoadingLlmExplanation, setIsLoadingLlmExplanation] = useState(false); // Estado para o carregamento do LLM
+            const [selectedCategory, setSelectedCategory] = useState(null);
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [userAnswer, setUserAnswer] = useState('');
+            const [feedback, setFeedback] = useState(null); // 'correct', 'incorrect', null, 'finished'
+            const [score, setScore] = useState(0); // Score for the current category quiz
+            const [showExplanation, setShowExplanation] = useState(false);
+            const [questions, setQuestions] = useState([]);
+            const [llmExplanation, setLlmExplanation] = useState(null); // Estado para a explicação do LLM
+            const [isLoadingLlmExplanation, setIsLoadingLlmExplanation] = useState(false); // Estado para o carregamento do LLM
 
-  // State to store scores for each category
-  const [categoryScores, setCategoryScores] = useState(() => {
-    const initialScores = {};
-    Object.keys(questionsDataByCategory).forEach(category => {
-      initialScores[category] = 0;
-    });
-    return initialScores;
-  });
+            // State to store scores for each category
+            const [categoryScores, setCategoryScores] = useState(() => {
+                const initialScores = {};
+                Object.keys(questionsDataByCategory).forEach(category => {
+                    initialScores[category] = 0;
+                });
+                return initialScores;
+            });
 
-  // Atualiza as perguntas quando a categoria é selecionada
-  useEffect(() => {
-    if (selectedCategory) {
-      // Embaralha as perguntas ao selecionar a categoria
-      const shuffledQuestions = shuffleArray([...questionsDataByCategory[selectedCategory]]);
-      setQuestions(shuffledQuestions);
-      setCurrentQuestionIndex(0);
-      setScore(0); // Reset current quiz score
-      setFeedback(null);
-      setUserAnswer('');
-      setShowExplanation(false);
-      setLlmExplanation(null); // Limpa a explicação do LLM ao mudar de categoria
-    }
-  }, [selectedCategory]);
+            // Atualiza as perguntas quando a categoria é selecionada
+            useEffect(() => {
+                if (selectedCategory) {
+                    // Embaralha as perguntas ao selecionar a categoria
+                    const shuffledQuestions = shuffleArray([...questionsDataByCategory[selectedCategory]]);
+                    setQuestions(shuffledQuestions);
+                    setCurrentQuestionIndex(0);
+                    setScore(0); // Reset current quiz score
+                    setFeedback(null);
+                    setUserAnswer('');
+                    setShowExplanation(false);
+                    setLlmExplanation(null); // Limpa a explicação do LLM ao mudar de categoria
+                }
+            }, [selectedCategory]);
 
-  // currentQuestion deve ser acessado apenas após a categoria ser selecionada e as questões carregadas
-  const currentQuestion = questions.length > 0 ? questions[currentQuestionIndex] : null;
+            // currentQuestion deve ser acessado apenas após a categoria ser selecionada e as questões carregadas
+            const currentQuestion = questions.length > 0 ? questions[currentQuestionIndex] : null;
 
-  // Limpa o feedback e a resposta do usuário ao mudar de pergunta
-  useEffect(() => {
-    setFeedback(null);
-    setUserAnswer('');
-    setShowExplanation(false);
-    setLlmExplanation(null); // Limpa a explicação do LLM ao avançar para a próxima pergunta
-  }, [currentQuestionIndex]);
+            // Limpa o feedback e a resposta do usuário ao mudar de pergunta
+            useEffect(() => {
+                setFeedback(null);
+                setUserAnswer('');
+                setShowExplanation(false);
+                setLlmExplanation(null); // Limpa a explicação do LLM ao avançar para a próxima pergunta
+            }, [currentQuestionIndex]);
 
-  const handleAnswerChange = (e) => {
-    setUserAnswer(e.target.value);
-  };
+            const handleAnswerChange = (e) => {
+                setUserAnswer(e.target.value);
+            };
 
-  const handleMultipleChoiceChange = (option) => {
-    setUserAnswer(option);
-  };
+            const handleMultipleChoiceChange = (option) => {
+                setUserAnswer(option);
+            };
 
-  const handleSubmitAnswer = () => {
-    let isCorrect = false;
-    // Verifica se currentQuestion existe antes de tentar acessar suas propriedades
-    if (currentQuestion) {
-      if (currentQuestion.type === 'multiple-choice') {
-        isCorrect = userAnswer === currentQuestion.correctAnswer;
-      }
-    }
+            const handleSubmitAnswer = () => {
+                let isCorrect = false;
+                // Verifica se currentQuestion existe antes de tentar acessar suas propriedades
+                if (currentQuestion) {
+                    if (currentQuestion.type === 'multiple-choice') {
+                        isCorrect = userAnswer === currentQuestion.correctAnswer;
+                    }
+                }
 
-    if (isCorrect) {
-      setFeedback('correct');
-      setScore(score + 1);
-    } else {
-      setFeedback('incorrect');
-    }
-    setShowExplanation(true); // Always show explanation after submission
-  };
+                if (isCorrect) {
+                    setFeedback('correct');
+                    setScore(score + 1);
+                } else {
+                    setFeedback('incorrect');
+                }
+                setShowExplanation(true); // Always show explanation after submission
+            };
 
-  const getLlmExplanation = async () => {
-    if (!currentQuestion) return;
+            const getLlmExplanation = async () => {
+                if (!currentQuestion) return;
 
-    setIsLoadingLlmExplanation(true);
-    setLlmExplanation(null); // Clear previous explanation
+                setIsLoadingLlmExplanation(true);
+                setLlmExplanation(null); // Clear previous explanation
 
-    const prompt = `Com base na seguinte pergunta e sua breve explicação do Catecismo da Igreja Católica, forneça uma explicação mais aprofundada e detalhada sobre o tema, como se estivesse aprofundando o conhecimento para um estudante. A explicação deve ser clara, concisa e baseada nos ensinamentos católicos.
-    Pergunta: ${currentQuestion.question}
-    Explicação breve: ${currentQuestion.explanation}`;
+                const prompt = `Com base na seguinte pergunta e sua breve explicação do Catecismo da Igreja Católica, forneça uma explicação mais aprofundada e detalhada sobre o tema, como se estivesse aprofundando o conhecimento para um estudante. A explicação deve ser clara, concisa e baseada nos ensinamentos católicos.
+                Pergunta: ${currentQuestion.question}
+                Explicação breve: ${currentQuestion.explanation}`;
 
-    try {
-      let chatHistory = [];
-      chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-      const payload = { contents: chatHistory };
-      const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await response.json();
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
 
-      if (result.candidates && result.candidates.length > 0 &&
-          result.candidates[0].content && result.candidates[0].content.parts &&
-          result.candidates[0].content.parts.length > 0) {
-        const text = result.candidates[0].content.parts[0].text;
-        setLlmExplanation(text);
-      } else {
-        setLlmExplanation("Não foi possível obter uma explicação aprofundada. Tente novamente.");
-      }
-    } catch (error) {
-      console.error("Erro ao chamar a API Gemini:", error);
-      setLlmExplanation("Erro ao obter a explicação. Verifique a sua conexão ou tente novamente mais tarde.");
-    } finally {
-      setIsLoadingLlmExplanation(false);
-    }
-  };
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        setLlmExplanation(text);
+                    } else {
+                        setLlmExplanation("Não foi possível obter uma explicação aprofundada. Tente novamente.");
+                    }
+                } catch (error) {
+                    console.error("Erro ao chamar a API Gemini:", error);
+                    setLlmExplanation("Erro ao obter a explicação. Verifique a sua conexão ou tente novamente mais tarde.");
+                } finally {
+                    setIsLoadingLlmExplanation(false);
+                }
+            };
 
-  const handleNextQuestion = () => {
-    // Before moving to the next question, if the current answer was correct, update the category score
-    // This handles the case where the user answers the last question correctly and then clicks "Próxima Pergunta"
-    // The score state for the current quiz (`score`) is already updated by `handleSubmitAnswer`.
-    // We update `categoryScores` only when the quiz for a category is finished.
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      // All questions answered for the current category
-      setFeedback('finished');
-      // Update the score for the finished category. The 'score' state already holds the correct total for the category.
-      setCategoryScores(prevScores => ({
-        ...prevScores,
-        [selectedCategory]: score
-      }));
-    }
-  };
+            const handleNextQuestion = () => {
+                if (currentQuestionIndex < questions.length - 1) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                } else {
+                    setFeedback('finished');
+                    setCategoryScores(prevScores => ({
+                        ...prevScores,
+                        [selectedCategory]: score
+                    }));
+                }
+            };
 
-  const handleRestartQuiz = () => {
-    setSelectedCategory(null); // Go back to category selection
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setFeedback(null);
-    setUserAnswer('');
-    setShowExplanation(false);
-    setQuestions([]);
-    setLlmExplanation(null); // Limpa a explicação do LLM ao reiniciar o quiz
-    // Do NOT reset categoryScores here, as the user wants cumulative scores
-  };
+            const handleRestartQuiz = () => {
+                setSelectedCategory(null); // Go back to category selection
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setFeedback(null);
+                setUserAnswer('');
+                setShowExplanation(false);
+                setQuestions([]);
+                setLlmExplanation(null); // Limpa a explicação do LLM ao reiniciar o quiz
+            };
 
-  // Calculate total score across all categories
-  const totalOverallScore = Object.values(categoryScores).reduce((sum, current) => sum + current, 0);
+            // Calculate total score across all categories
+            const totalOverallScore = Object.values(categoryScores).reduce((sum, current) => sum + current, 0);
 
-  if (!selectedCategory) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-blue-800 p-4 font-sans relative"> {/* Royal Blue Background, added flex-col and relative for positioning */}
-        {/* Sponsor Names - positioned absolutely at the top */}
-        <div className="absolute top-4 w-full flex justify-between items-center px-4">
-          <p className="text-lg font-bold text-white text-left drop-shadow-md">Grupo de Estudos Católico (GEC)</p>
-          <p className="text-lg font-bold text-white text-right drop-shadow-md">Grupo de jovens Purificati</p>
-        </div>
+            if (!selectedCategory) {
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-800 p-4 font-sans relative">
+                        <div className="absolute top-4 w-full flex justify-between items-center px-4">
+                            <p className="text-lg font-bold text-white text-left drop-shadow-md">Grupo de Estudos Católico (GEC)</p>
+                            <p className="text-lg font-bold text-white text-right drop-shadow-md">Grupo de jovens Purificati</p>
+                        </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center mt-20"> {/* Added mt-20 to push content down */}
-          <h1 className="text-5xl font-extrabold text-blue-900 mb-6 drop-shadow-lg">CateQuiz!</h1> {/* Changed to Royal Blue Text */}
-          <h2 className="text-3xl font-bold text-blue-800 mb-6">Escolha uma Categoria</h2> {/* Royal Blue Title */}
-          <div className="space-y-4">
-            {Object.keys(questionsDataByCategory).map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className="w-full bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md flex justify-between items-center"
-              >
-                <span>{category}</span>
-                <span className="text-sm bg-yellow-400 text-blue-900 px-2 py-1 rounded-full"> {/* Gold background, Royal Blue text */}
-                  {categoryScores[category]} / {questionsDataByCategory[category].length}
-                </span>
-              </button>
-            ))}
-          </div>
-          {/* Display only overall score on category selection screen */}
-          <div className="mt-8 pt-4 border-t border-gray-200">
-            <p className="text-xl font-bold text-blue-800 mt-4"> {/* Royal Blue Text */}
-              Pontuação Total: <span className="font-extrabold text-blue-900">{totalOverallScore}</span> pontos {/* Changed to Royal Blue Score */}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+                        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center mt-20">
+                            <h1 className="text-5xl font-extrabold text-blue-900 mb-6 drop-shadow-lg">CateQuiz!</h1>
+                            <h2 className="text-3xl font-bold text-blue-800 mb-6">Escolha uma Categoria</h2>
+                            <div className="space-y-4">
+                                {Object.keys(questionsDataByCategory).map((category) => (
+                                    <button
+                                        key={category}
+                                        onClick={() => setSelectedCategory(category)}
+                                        className="w-full bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md flex justify-between items-center"
+                                    >
+                                        <span>{category}</span>
+                                        <span className="text-sm bg-yellow-400 text-blue-900 px-2 py-1 rounded-full">
+                                            {categoryScores[category]} / {questionsDataByCategory[category].length}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="mt-8 pt-4 border-t border-gray-200">
+                                <p className="text-xl font-bold text-blue-800 mt-4">
+                                    Pontuação Total: <span className="font-extrabold text-blue-900">{totalOverallScore}</span> pontos
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
 
-  if (feedback === 'finished') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-800 p-4 font-sans"> {/* Royal Blue Background */}
-        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
-          <h2 className="text-3xl font-bold text-blue-800 mb-6">Quiz Concluído!</h2> {/* Royal Blue Title */}
-          <p className="text-xl text-gray-700 mb-8">Você acertou {score} de {questions.length} perguntas na categoria "{selectedCategory}".</p>
-          <button
-            onClick={handleRestartQuiz}
-            className="w-full bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
-          >
-            Voltar às Categorias
-          </button>
-        </div>
-      </div>
-    );
-  }
+            if (feedback === 'finished') {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-blue-800 p-4 font-sans">
+                        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
+                            <h2 className="text-3xl font-bold text-blue-800 mb-6">Quiz Concluído!</h2>
+                            <p className="text-xl text-gray-700 mb-8">Você acertou {score} de {questions.length} perguntas na categoria "{selectedCategory}".</p>
+                            <button
+                                onClick={handleRestartQuiz}
+                                className="w-full bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
+                            >
+                                Voltar às Categorias
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
 
-  // Renderiza o quiz apenas se currentQuestion estiver definido
-  if (!currentQuestion) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-800 p-4 font-sans"> {/* Royal Blue Background */}
-        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
-          <p className="text-xl text-blue-700">Carregando perguntas...</p> {/* Royal Blue Text */}
-        </div>
-      </div>
-    );
-  }
+            if (!currentQuestion) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-blue-800 p-4 font-sans">
+                        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md text-center">
+                            <p className="text-xl text-blue-700">Carregando perguntas...</p>
+                        </div>
+                    </div>
+                );
+            }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-800 p-4 font-sans"> {/* Royal Blue Background */}
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-extrabold text-blue-800 mb-2">Catecismo Interativo</h1> {/* Royal Blue Title */}
-          <p className="text-lg text-gray-600">
-            Categoria: <span className="font-semibold text-blue-800">{selectedCategory}</span> {/* Royal Blue Category Name */}
-          </p>
-          {/* Display current score */}
-          <p className="text-xl font-bold text-blue-800 mt-2 mb-2"> {/* Royal Blue Score Text */}
-            Pontuação: {score}
-          </p>
-          <p className="text-lg text-gray-600">
-            Pergunta {currentQuestionIndex + 1} de {questions.length}
-          </p>
-        </div>
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-blue-800 p-4 font-sans">
+                    <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+                        <div className="text-center mb-6">
+                            <h1 className="text-4xl font-extrabold text-blue-800 mb-2">Catecismo Interativo</h1>
+                            <p className="text-lg text-gray-600">
+                                Categoria: <span className="font-semibold text-blue-800">{selectedCategory}</span>
+                            </p>
+                            <p className="text-xl font-bold text-blue-800 mt-2 mb-2">
+                                Pontuação: {score}
+                            </p>
+                            <p className="text-lg text-gray-600">
+                                Pergunta {currentQuestionIndex + 1} de {questions.length}
+                            </p>
+                        </div>
 
-        <div className="bg-blue-50 p-6 rounded-lg mb-6 shadow-inner"> {/* Light Blue Background */}
-          <p className="text-xl font-medium text-blue-900 leading-relaxed"> {/* Darker Royal Blue Text */}
-            {currentQuestion.question}
-          </p>
-        </div>
+                        <div className="bg-blue-50 p-6 rounded-lg mb-6 shadow-inner">
+                            <p className="text-xl font-medium text-blue-900 leading-relaxed">
+                                {currentQuestion.question}
+                            </p>
+                        </div>
 
-        <div className="mb-6">
-          <div className="space-y-3">
-            {currentQuestion.options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleMultipleChoiceChange(option)}
-                className={`
-                  w-full text-left px-5 py-3 rounded-lg border-2
-                  ${userAnswer === option ? 'bg-blue-100 border-blue-800' : 'bg-white border-blue-300 hover:bg-blue-50'} {/* White/Light Blue options, Royal Blue borders */}
-                  ${feedback === 'correct' && userAnswer === option ? 'bg-green-100 border-green-500' : ''}
-                  ${feedback === 'incorrect' && userAnswer === option ? 'bg-red-100 border-red-500' : ''}
-                  transition duration-200 ease-in-out text-blue-900 text-lg font-medium {/* Darker Royal Blue Text */}
-                  ${feedback !== null ? 'opacity-70 cursor-not-allowed' : ''}
-                `}
-                disabled={feedback !== null}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        </div>
+                        <div className="mb-6">
+                            <div className="space-y-3">
+                                {currentQuestion.options.map((option, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleMultipleChoiceChange(option)}
+                                        className={`
+                                            w-full text-left px-5 py-3 rounded-lg border-2
+                                            ${userAnswer === option ? 'bg-blue-100 border-blue-800' : 'bg-white border-blue-300 hover:bg-blue-50'}
+                                            ${feedback === 'correct' && userAnswer === option ? 'bg-green-100 border-green-500' : ''}
+                                            ${feedback === 'incorrect' && userAnswer === option ? 'bg-red-100 border-red-500' : ''}
+                                            transition duration-200 ease-in-out text-blue-900 text-lg font-medium
+                                            ${feedback !== null ? 'opacity-70 cursor-not-allowed' : ''}
+                                        `}
+                                        disabled={feedback !== null}
+                                    >
+                                        {option}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
-        {feedback && (
-          <div className={`p-4 rounded-lg mb-6 shadow-md ${feedback === 'correct' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`}>
-            <p className="font-semibold text-lg">
-              {feedback === 'correct' ? 'Correto! 🎉' : 'Incorreto. 😔'}
-            </p>
-            {showExplanation && currentQuestion.explanation && (
-              <p className="mt-2 text-md italic">
-                {currentQuestion.explanation}
-              </p>
-            )}
-            {/* Botão para obter explicação aprofundada com LLM */}
-            <button
-              onClick={getLlmExplanation}
-              className="mt-4 w-full bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoadingLlmExplanation}
-            >
-              {isLoadingLlmExplanation ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Gerando explicação...
-                </span>
-              ) : (
-                '✨ Obter Explicação Aprofundada'
-              )}
-            </button>
+                        {feedback && (
+                            <div className={`p-4 rounded-lg mb-6 shadow-md ${feedback === 'correct' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`}>
+                                <p className="font-semibold text-lg">
+                                    {feedback === 'correct' ? 'Correto! 🎉' : 'Incorreto. 😔'}
+                                </p>
+                                {showExplanation && currentQuestion.explanation && (
+                                    <p className="mt-2 text-md italic">
+                                        {currentQuestion.explanation}
+                                    </p>
+                                )}
+                                {/* Botão para obter explicação aprofundada com LLM */}
+                                <button
+                                    onClick={getLlmExplanation}
+                                    className="mt-4 w-full bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={isLoadingLlmExplanation}
+                                >
+                                    {isLoadingLlmExplanation ? (
+                                        <span className="flex items-center">
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Gerando explicação...
+                                        </span>
+                                    ) : (
+                                        '✨ Obter Explicação Aprofundada'
+                                    )}
+                                </button>
 
-            {/* Exibição da explicação do LLM */}
-            {llmExplanation && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 text-blue-900 text-left">
-                <h4 className="font-bold mb-2">Explicação Aprofundada:</h4>
-                <p className="text-sm leading-relaxed">{llmExplanation}</p>
-              </div>
-            )}
-          </div>
-        )}
+                                {/* Exibição da explicação do LLM */}
+                                {llmExplanation && (
+                                    <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 text-blue-900 text-left">
+                                        <h4 className="font-bold mb-2">Explicação Aprofundada:</h4>
+                                        <p className="text-sm leading-relaxed">{llmExplanation}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
-        <div className="flex justify-between space-x-4">
-          {feedback === null ? (
-            <button
-              onClick={handleSubmitAnswer}
-              className="flex-1 bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={userAnswer.trim() === ''}
-            >
-              Verificar Resposta
-            </button>
-          ) : (
-            <button
-              onClick={handleNextQuestion}
-              className="flex-1 bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
-            >
-              Próxima Pergunta
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+                        <div className="flex justify-between space-x-4">
+                            {feedback === null ? (
+                                <button
+                                    onClick={handleSubmitAnswer}
+                                    className="flex-1 bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={userAnswer.trim() === ''}
+                                >
+                                    Verificar Resposta
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleNextQuestion}
+                                    className="flex-1 bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
+                                >
+                                    Próxima Pergunta
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-export default App;
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
 
