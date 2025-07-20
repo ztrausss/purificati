@@ -1,0 +1,792 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+// Componente para desenhar uma única flor SVG
+// Aceita cor das pétalas, escala e deslocamento para posicionamento
+const FlowerDrawing = ({ petalColor, scale = 1, offsetX = 0, offsetY = 0, onClick }) => (
+  <svg
+    width={200 * scale}
+    height={200 * scale}
+    viewBox="0 0 200 200"
+    className="cursor-pointer"
+    style={{
+      transform: `translate(${offsetX}px, ${offsetY}px)`,
+      transition: 'fill 0.3s ease-in-out, transform 0.2s ease-in-out', // Transição suave para cor e escala
+    }}
+    onClick={onClick}
+  >
+    {/* Caule */}
+    <path d="M100 180 L100 100" stroke="#6B8E23" strokeWidth="8" strokeLinecap="round" />
+    {/* Folhas */}
+    <path d="M100 140 Q80 130 70 150 Q80 160 100 140" fill="#8BC34A" />
+    <path d="M100 140 Q120 130 130 150 Q120 160 100 140" fill="#8BC34A" />
+    {/* Pétalas - cor controlada pela prop */}
+    <circle cx="100" cy="80" r="25" fill={petalColor} />
+    <circle cx="120" cy="90" r="25" fill={petalColor} />
+    <circle cx="80" cy="90" r="25" fill={petalColor} />
+    <circle cx="90" cy="60" r="25" fill={petalColor} />
+    <circle cx="110" cy="60" r="25" fill={petalColor} />
+    {/* Centro da flor */}
+    <circle cx="100" cy="80" r="15" fill="#FFD700" />
+  </svg>
+);
+
+// Componente da paleta de cores
+const ColorPalette = ({ onSelectColor, onClose }) => {
+  const colors = [
+    { name: 'Azul', hex: '#0000FF' },
+    { name: 'Roxo', hex: '#800080' },
+    { name: 'Rosa', hex: '#FFC0CB' },
+    { name: 'Vermelho', hex: '#FF0000' },
+    { name: 'Amarelo', hex: '#FFFF00' },
+    { name: 'Branco', hex: '#FFFFFF' },
+  ];
+
+  return (
+    <div
+      className="absolute z-30 bg-white p-4 rounded-lg shadow-xl flex flex-wrap gap-2 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" // Centralizado na tela
+    >
+      {colors.map((color) => (
+        <button
+          key={color.hex}
+          className="w-8 h-8 rounded-full border-2 border-gray-300 hover:scale-110 transition-transform"
+          style={{ backgroundColor: color.hex }}
+          onClick={() => onSelectColor(color.hex)}
+          aria-label={`Selecionar cor ${color.name}`}
+        ></button>
+      ))}
+      <button
+        onClick={onClose}
+        className="absolute top-1 right-1 text-gray-500 hover:text-gray-700 text-xl font-bold"
+        aria-label="Fechar paleta de cores"
+      >
+        &times;
+      </button>
+    </div>
+  );
+};
+
+// Componente para um coração piscante
+const BlinkingHeart = ({ x, y, delay, duration }) => (
+  <div
+    className="absolute text-pink-500 text-4xl animate-blink"
+    style={{
+      left: `${x}%`,
+      top: `${y}%`,
+      animationDelay: `${delay}s`,
+      animationDuration: `${duration}s`,
+      zIndex: 15, // Z-index para aparecer sobre a imagem, mas abaixo dos controles
+    }}
+  >
+    &#x2764; {/* Símbolo de coração Unicode */}
+  </div>
+);
+
+// Componentes SVG para os porquinhos fofos
+const PiggyHappy = () => (
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    {/* Body */}
+    <ellipse cx="100" cy="120" rx="60" ry="40" fill="#FFB6C1" /> {/* Light Pink */}
+    {/* Head */}
+    <circle cx="100" cy="70" r="45" fill="#FFB6C1" />
+    {/* Snout */}
+    <ellipse cx="100" cy="80" rx="20" ry="15" fill="#FF69B4" /> {/* Hot Pink */}
+    <circle cx="92" cy="78" r="3" fill="#FFFFFF" />
+    <circle cx="108" cy="78" r="3" fill="#FFFFFF" />
+    {/* Eyes */}
+    <circle cx="80" cy="60" r="5" fill="#000000" />
+    <circle cx="120" cy="60" r="5" fill="#000000" />
+    {/* Smile */}
+    <path d="M80 95 Q100 105 120 95" stroke="#000000" strokeWidth="2" fill="none" />
+    {/* Ears */}
+    <path d="M70 40 Q80 20 90 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    <path d="M130 40 Q120 20 110 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    {/* Legs */}
+    <rect x="70" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+    <rect x="120" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+  </svg>
+);
+
+const PiggySad = () => (
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    {/* Body */}
+    <ellipse cx="100" cy="120" rx="60" ry="40" fill="#FFB6C1" />
+    {/* Head */}
+    <circle cx="100" cy="70" r="45" fill="#FFB6C1" />
+    {/* Snout */}
+    <ellipse cx="100" cy="80" rx="20" ry="15" fill="#FF69B4" />
+    <circle cx="92" cy="78" r="3" fill="#FFFFFF" />
+    <circle cx="108" cy="78" r="3" fill="#FFFFFF" />
+    {/* Eyes (droopy) */}
+    <path d="M75 58 C78 65 82 65 85 58" stroke="#000000" strokeWidth="2" fill="none" />
+    <path d="M115 58 C118 65 122 65 125 58" stroke="#000000" strokeWidth="2" fill="none" />
+    {/* Mouth (downturned) */}
+    <path d="M80 95 Q100 85 120 95" stroke="#000000" strokeWidth="2" fill="none" />
+    {/* Tears */}
+    <circle cx="85" cy="70" r="3" fill="#ADD8E6" /> {/* Light Blue */}
+    <circle cx="115" cy="70" r="3" fill="#ADD8E6" />
+    {/* Ears */}
+    <path d="M70 40 Q80 20 90 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    <path d="M130 40 Q120 20 110 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    {/* Legs */}
+    <rect x="70" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+    <rect x="120" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+  </svg>
+);
+
+const PiggyAngry = () => (
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    {/* Body */}
+    <ellipse cx="100" cy="120" rx="60" ry="40" fill="#FFB6C1" />
+    {/* Head */}
+    <circle cx="100" cy="70" r="45" fill="#FFB6C1" />
+    {/* Snout */}
+    <ellipse cx="100" cy="80" rx="20" ry="15" fill="#FF69B4" />
+    <circle cx="92" cy="78" r="3" fill="#FFFFFF" />
+    <circle cx="108" cy="78" r="3" fill="#FFFFFF" />
+    {/* Eyes (angry eyebrows) */}
+    <line x1="75" y1="55" x2="85" y2="65" stroke="#000000" strokeWidth="3" />
+    <line x1="115" y1="65" x2="125" y2="55" stroke="#000000" strokeWidth="3" />
+    <circle cx="80" cy="60" r="5" fill="#000000" />
+    <circle cx="120" cy="60" r="5" fill="#000000" />
+    {/* Mouth (frown) */}
+    <path d="M80 95 Q100 80 120 95" stroke="#000000" strokeWidth="2" fill="none" />
+    {/* Ears */}
+    <path d="M70 40 Q80 20 90 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    <path d="M130 40 Q120 20 110 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    {/* Legs */}
+    <rect x="70" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+    <rect x="120" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+  </svg>
+);
+
+const PiggySerious = () => (
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    {/* Body */}
+    <ellipse cx="100" cy="120" rx="60" ry="40" fill="#FFB6C1" />
+    {/* Head */}
+    <circle cx="100" cy="70" r="45" fill="#FFB6C1" />
+    {/* Snout */}
+    <ellipse cx="100" cy="80" rx="20" ry="15" fill="#FF69B4" />
+    <circle cx="92" cy="78" r="3" fill="#FFFFFF" />
+    <circle cx="108" cy="78" r="3" fill="#FFFFFF" />
+    {/* Eyes */}
+    <circle cx="80" cy="60" r="5" fill="#000000" />
+    <circle cx="120" cy="60" r="5" fill="#000000" />
+    {/* Mouth (straight line) */}
+    <line x1="85" y1="95" x2="115" y2="95" stroke="#000000" strokeWidth="2" />
+    {/* Ears */}
+    <path d="M70 40 Q80 20 90 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    <path d="M130 40 Q120 20 110 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    {/* Legs */}
+    <rect x="70" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+    <rect x="120" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+  </svg>
+);
+
+const PiggyGlasses = () => (
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    {/* Body */}
+    <ellipse cx="100" cy="120" rx="60" ry="40" fill="#FFB6C1" />
+    {/* Head */}
+    <circle cx="100" cy="70" r="45" fill="#FFB6C1" />
+    {/* Snout */}
+    <ellipse cx="100" cy="80" rx="20" ry="15" fill="#FF69B4" />
+    <circle cx="92" cy="78" r="3" fill="#FFFFFF" />
+    <circle cx="108" cy="78" r="3" fill="#FFFFFF" />
+    {/* Eyes */}
+    <circle cx="80" cy="60" r="5" fill="#000000" />
+    <circle cx="120" cy="60" r="5" fill="#000000" />
+    {/* Glasses */}
+    <rect x="70" y="55" width="60" height="15" rx="7.5" fill="none" stroke="#000000" strokeWidth="2" />
+    <circle cx="70" cy="62.5" r="7.5" fill="none" stroke="#000000" strokeWidth="2" />
+    <circle cx="130" cy="62.5" r="7.5" fill="none" stroke="#000000" strokeWidth="2" />
+    {/* Ears */}
+    <path d="M70 40 Q80 20 90 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    <path d="M130 40 Q120 20 110 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    {/* Legs */}
+    <rect x="70" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+    <rect x="120" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+  </svg>
+);
+
+const PiggyKiss = () => (
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    {/* Body */}
+    <ellipse cx="100" cy="120" rx="60" ry="40" fill="#FFB6C1" />
+    {/* Head */}
+    <circle cx="100" cy="70" r="45" fill="#FFB6C1" />
+    {/* Snout */}
+    <ellipse cx="100" cy="80" rx="20" ry="15" fill="#FF69B4" />
+    <circle cx="92" cy="78" r="3" fill="#FFFFFF" />
+    <circle cx="108" cy="78" r="3" fill="#FFFFFF" />
+    {/* Eyes */}
+    <circle cx="80" cy="60" r="5" fill="#000000" />
+    <circle cx="120" cy="60" r="5" fill="#000000" />
+    {/* Kissy Mouth */}
+    <path d="M90 95 C95 105 105 105 110 95" stroke="#000000" strokeWidth="2" fill="none" />
+    {/* Small Heart next to mouth */}
+    <path d="M125 90 L130 85 L135 90 C137 92 137 95 133 97 C129 99 125 97 125 90 Z" fill="#FF0000" />
+    {/* Ears */}
+    <path d="M70 40 Q80 20 90 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    <path d="M130 40 Q120 20 110 40 Z" fill="#FFB6C1" stroke="#FF69B4" strokeWidth="2" />
+    {/* Legs */}
+    <rect x="70" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+    <rect x="120" y="150" width="10" height="20" rx="5" fill="#FFB6C1" />
+  </svg>
+);
+
+
+// Define o conteúdo para cada seção FORA do componente App
+const sections = [
+  {
+    type: 'text',
+    title: 'Um Carinho Especial para Você!',
+    message: 'Querida Mafe, este é um pequeno homenagem para celebrar a pessoa incrível que você é. Cada pedacinho deste app foi feito com muito amor e carinho, pensando em você!',
+    bgColor: 'bg-pink-100', // Fundo rosa claro
+    textColor: 'text-pink-800' // Texto rosa mais escuro
+  },
+  {
+    type: 'image',
+    title: 'Nos conhecíamos só de vista',
+    imageUrl: 'https://i.imgur.com/fqnqHkL.png',
+    message: 'Às vezes, vc me dava bom dia pela janela, mas era só isso.',
+    bgColor: 'bg-green-100', // Fundo verde claro
+    textColor: 'text-green-800' // Texto verde mais escuro
+  },
+  {
+    type: 'flower-customizer', // Tipo de seção para personalização de flores
+    title: 'Flores para Você!',
+    messagePart1: 'Que a sua vida seja sempre florida e cheia de cores! Como sei que você gosta de colorir, coloquei uma função para que você consiga mudar a cor de cada flor.', // First part of the message
+    messagePart2: 'Clique nas flores para mudar a cor das pétalas:', // Second part, to be black and on a new line
+    bgColor: 'bg-pink-100',
+    textColor: 'text-pink-800'
+  },
+  {
+    type: 'image',
+    title: 'Posteriormente, viemos a nos conhecer melhor e você rapidamente virou a melhor vizinha <3',
+    imageUrl: 'https://i.imgur.com/BxDppMv.png',
+    message: 'E assim, a vida nos uniu de um jeito especial, transformando nossa forma de ser vizinhos :D!.',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800'
+  },
+  {
+    type: 'text',
+    title: 'Sua Lealdade e Dedicação me inspiram',
+    message: 'Você é uma inspiração para mim, sua maneira de ser leal, parceira e a forma como você pratica isto são muito belas!. Admiro muito sua determinação!',
+    bgColor: 'bg-pink-100',
+    textColor: 'text-pink-800'
+  },
+  {
+    type: 'image',
+    title: 'Enfrentamos inimigos, rimos e nos divertimos bastante.',
+    imageUrl: 'https://i.imgur.com/lTWUWYV.png',
+    message: 'Nosso barquinho não deu muito certo :/! kksksks.',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800'
+  },
+  {
+    type: 'image',
+    title: 'Passado algum tempo, você teve alguns probleminhas de saúde...',
+    imageUrl: 'https://i.imgur.com/lriq4Mb.png',
+    message: 'Tentei ao máximo ajudar, mas não fui muito útil. Só consegui fazer companhia mesmo. Me desculpe!.',
+    bgColor: 'bg-pink-100',
+    textColor: 'text-pink-800'
+  },
+  {
+    type: 'image',
+    title: 'O tempo foi passando e nos tornamos a melhor dupla do Fortnite ;D!',
+    imageUrl: 'https://i.imgur.com/h9t2o12.jpeg',
+    message: 'Nossas vitórias no Fortnite, assim como as casas construidas foram mto legais, mas mais importante que isto, é sempre a parceria e passarmos o tempo juntos!',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800'
+  },
+  {
+    type: 'text',
+    title: 'Aventuras e Companheirismo',
+    message: 'Cada aventura ou jogatina, por menor que seja, se torna sempre única quando contigo. Sua companhia torna tudo mais especial :)!',
+    bgColor: 'bg-pink-100',
+    textColor: 'text-pink-800'
+  },
+  {
+    type: 'image',
+    title: 'Mais a frente, algo me deixou muito triste...',
+    imageUrl: 'https://i.imgur.com/uLgusSs.png',
+    message: 'Você percebeu o que estava acontecendo...',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800'
+  },
+  {
+    type: 'text',
+    title: 'Nossa Amizade: Um Vínculo Inquebrável',
+    message: 'Nossa amizade é um tesouro que o tempo só fortalece. Sou grato por cada momento e por ter você na minha vida.',
+    bgColor: 'bg-pink-100',
+    textColor: 'text-pink-800'
+  },
+  {
+    type: 'image',
+    title: 'Você foi ao meu socorro e me apoiou.',
+    imageUrl: 'https://i.imgur.com/rUKzlqw.png',
+    message: 'Sua presença e apoio foram um porto seguro quando mais precisei. Sou eternamente grato por sua dedicação e carinho.',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800'
+  },
+  {
+    type: 'final-message', // New type for the final message section
+    title: 'Espero que este pequeno presente traga um sorriso ao seu rosto!', // Main title of the section
+    imageUrl: 'https://i.imgur.com/B51BG2d.png', // Image for this section
+    messagePart1: '.', // First part of the message
+    messagePart2: 'Saiba que você é muito especial para mim!!!', // Second part, on a new line
+    signature: 'Com carinho, Guilherme', // The signature text
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800'
+  },
+  {
+    type: 'pig-generator-emotions', // Changed type to pig drawing generator with emotions
+    title: '🐷 Porquinho do Dia!',
+    message: 'Escolha um humor e veja um porquinho fofo aparecer:',
+    bgColor: 'bg-pink-100',
+    textColor: 'text-pink-800'
+  },
+];
+
+// Mapeamento de emoções para componentes SVG de porquinhos
+const piggyEmotions = {
+  'feliz': <PiggyHappy key="happy" />,
+  'triste': <PiggySad key="sad" />,
+  'bravo': <PiggyAngry key="angry" />,
+  'serio': <PiggySerious key="serious" />,
+  'oculos': <PiggyGlasses key="glasses" />,
+  'beijo': <PiggyKiss key="kiss" />,
+};
+
+// Main App component
+const App = () => {
+  // Estado para controlar a seção ativa
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  // Ref para o contêiner principal para controle de rolagem/transformações
+  const appContainerRef = useRef(null);
+  // Estado para gerenciar transições suaves
+  const [isAnimating, setIsAnimating] = useState(false);
+  // Estado para a mensagem selecionada aleatoriamente
+  const [selectedMessage, setSelectedMessage] = useState('');
+
+  // Estado para as cores das flores individuais
+  const [flowerColors, setFlowerColors] = useState([
+    { id: 1, color: '#FFC0CB' }, // Rosa
+    { id: 2, color: '#0000FF' }, // Azul
+    { id: 3, color: '#FFFF00' }, // Amarelo
+    { id: 4, color: '#800080' }, // Roxo
+    { id: 5, color: '#FF0000' }, // Vermelho
+  ]);
+  // Estado para controlar qual flor tem a paleta de cores aberta
+  const [selectedFlowerIdForColorPicker, setSelectedFlowerIdForColorPicker] = useState(null);
+  // Estado para a posição da paleta de cores (não mais usado diretamente na ColorPalette, mas mantido para referência)
+  const [colorPalettePosition, setColorPalettePosition] = useState({ x: 0, y: 0 });
+
+  // Estado para os corações piscantes
+  const [hearts, setHearts] = useState([]);
+
+  // Estado para o porquinho fofo atual (agora baseado na emoção)
+  const [currentEmotionalPiggy, setCurrentEmotionalPiggy] = useState(null);
+
+  // Array de 50 mensagens de amizade predefinidas
+  const friendshipMessages = [
+    "Nossa amizade é um presente precioso que guardo com muito carinho.",
+    "Ter você na minha vida faz tudo ser mais leve e divertido.",
+    "Sua amizade é um porto seguro, um lugar onde sempre encontro paz.",
+    "Agradeço por cada risada, cada conselho e cada momento ao seu lado.",
+    "Você é a prova de que anjos existem e andam por aí, disfarçados de amigos.",
+    "Com você, cada dia é uma nova aventura e uma nova alegria.",
+    "Sua presença ilumina meus dias e aquece meu coração.",
+    "Amigos como você são raros e devem ser celebrados todos os dias.",
+    "Obrigado por ser essa pessoa incrível e por fazer parte da minha história.",
+    "Que a nossa amizade continue crescendo e florescendo a cada dia.",
+    "Nosso laço é forte e verdadeiro, capaz de superar qualquer distância.",
+    "Sua lealdade e carinho são qualidades que admiro profundamente em você.",
+    "É um privilégio ter você como amigo, confidente e parceiro de todas as horas.",
+    "Você me inspira a ser uma pessoa melhor, a cada novo dia.",
+    "As melhores lembranças são as que construímos juntos.",
+    "Que a felicidade te encontre em cada esquina e te abrace com carinho.",
+    "Sua amizade é um tesouro que guardo no mais profundo do meu ser.",
+    "Mesmo longe, sinto sua energia e seu carinho me envolvendo.",
+    "Conte comigo para tudo, em qualquer momento e em qualquer situação.",
+    "Nossa conexão é única, especial e para sempre.",
+    "Você é o irmão que a vida me deu, um presente inestimável.",
+    "Que a vida te reserve as mais belas surpresas e as maiores alegrias.",
+    "Sua alegria é contagiante e seu sorriso ilumina qualquer ambiente.",
+    "A verdadeira amizade não se mede pelo tempo, mas pela intensidade.",
+    "Obrigado por ser meu ombro amigo, meu conselheiro e meu cúmplice.",
+    "Que todos os seus sonhos se realizem e que eu possa estar lá para celebrar.",
+    "Sua presença é um bálsamo para a alma, um abraço que conforta.",
+    "Você é a estrela que guia meus passos nos momentos de escuridão.",
+    "A vida é muito mais bonita e divertida com você por perto.",
+    "Que a nossa amizade seja eterna, forte e inabalável.",
+    "Sua essência é pura luz, e ter você por perto é um privilégio.",
+    "Em cada fase da vida, sua amizade é um suporte incondicional.",
+    "Agradeço por sua paciência, sua compreensão e seu amor incondicional.",
+    "Você é uma joia rara, um diamante lapidado pela vida.",
+    "Que a nossa amizade seja um farol, iluminando nossos caminhos.",
+    "Sua bondade e generosidade são inspiradores.",
+    "Não há palavras para descrever o quanto sua amizade significa para mim.",
+    "Você é a melodia que embala meus dias e a poesia que acalma minha alma.",
+    "Que a vida te presenteie com tudo de mais lindo e verdadeiro.",
+    "Ter você como amigo é ter a certeza de que nunca estarei sozinho.",
+    "Sua amizade é um abraço apertado que sinto mesmo à distância.",
+    "Você é a cor que faltava na minha paleta de cores da vida.",
+    "Que a nossa amizade seja um jardim, sempre florido e cheio de vida.",
+    "Sua sabedoria e seu bom humor são contagiantes.",
+    "Agradeço por cada ensinamento, cada aprendizado e cada experiência vivida com você.",
+    "Você é a força que me impulsiona a ir além, a ser melhor.",
+    "Nossa amizade é um elo inquebrável, construído com amor e respeito.",
+    "Que a felicidade seja sua companheira em todas as jornadas.",
+    "Sua amizade é um presente divino, uma benção em minha vida.",
+    "Para o melhor amigo do mundo: você é incrível!"
+  ];
+
+  // Função para navegar para a próxima seção
+  const goToNextSection = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentSectionIndex((prevIndex) => (prevIndex + 1) % sections.length);
+  };
+
+  // Função para navegar para a seção anterior
+  const goToPreviousSection = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentSectionIndex((prevIndex) => (prevIndex - 1 + sections.length) % sections.length);
+  };
+
+  // Efeito para lidar com navegação por teclado (ArrowUp e ArrowDown)
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'ArrowDown') {
+        goToNextSection();
+      } else if (event.key === 'ArrowUp') {
+        goToPreviousSection();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isAnimating]);
+
+  // Efeito para lidar com gestos de deslizar para navegação móvel
+  useEffect(() => {
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      touchEndY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = () => {
+      if (touchStartY - touchEndY > 50) { // Deslizou para cima
+        goToNextSection();
+      } else if (touchEndY - touchStartY > 50) { // Deslizou para baixo
+        goToPreviousSection();
+      }
+      touchStartY = 0;
+      touchEndY = 0;
+    };
+
+    const container = appContainerRef.current;
+    if (container) {
+      container.addEventListener('touchstart', handleTouchStart);
+      container.addEventListener('touchmove', handleTouchMove);
+      container.addEventListener('touchend', handleTouchEnd);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('touchstart', handleTouchStart);
+        container.removeEventListener('touchmove', handleTouchMove);
+        container.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, [isAnimating]);
+
+  // Efeito para redefinir o estado da animação após a conclusão da transição
+  useEffect(() => {
+    const container = appContainerRef.current;
+    const handleTransitionEnd = () => {
+      setIsAnimating(false);
+    };
+
+    if (container) {
+      const sectionWrapper = container.querySelector('.section-wrapper');
+      if (sectionWrapper) {
+        sectionWrapper.addEventListener('transitionend', handleTransitionEnd);
+      }
+    }
+
+    return () => {
+      if (container) {
+        const sectionWrapper = container.querySelector('.section-wrapper');
+        if (sectionWrapper) {
+          sectionWrapper.removeEventListener('transitionend', handleTransitionEnd);
+        }
+      }
+    };
+  }, [currentSectionIndex]);
+
+  // Efeito para gerar e remover corações piscantes
+  useEffect(() => {
+    // Encontra o índice da seção de saúde pelo título
+    const targetSectionIndex = sections.findIndex(s => s.title === 'Passado algum tempo, você teve alguns probleminhas de saúde...');
+    let intervalId;
+
+    // Verifica se a seção atual é a seção de saúde
+    if (currentSectionIndex === targetSectionIndex) {
+      console.log('Ativando geração de corações para a seção:', sections[currentSectionIndex].title); // Log de depuração
+      intervalId = setInterval(() => {
+        const newHeart = {
+          id: Date.now() + Math.random(), // ID único para o coração
+          x: Math.random() * 90, // Posição X aleatória (0-90%)
+          y: Math.random() * 90, // Posição Y aleatória (0-90%)
+          delay: Math.random() * 1, // Atraso aleatório para a animação (0-1s)
+          duration: 3 + Math.random() * 2, // Duração aleatória para o ciclo de piscar (3-5s)
+        };
+        setHearts(prevHearts => [...prevHearts, newHeart]); // Adiciona o novo coração ao estado
+        console.log('Coração adicionado:', newHeart); // Log de depuração
+
+        // Remove o coração após sua duração para evitar acúmulo
+        setTimeout(() => {
+          setHearts(prevHearts => prevHearts.filter(heart => heart.id !== newHeart.id));
+          console.log('Coração removido:', newHeart.id); // Log de depuração
+        }, newHeart.duration * 1000); // Converte a duração para milissegundos
+      }, 500); // Adiciona um novo coração a cada 0.5 segundos
+    } else {
+      console.log('Não está na seção alvo para corações. Índice atual:', currentSectionIndex); // Log de depuração
+    }
+
+    // Função de limpeza: limpa o intervalo e os corações ao sair da seção ou desmontar o componente
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId); // Limpa o intervalo de geração de corações
+        console.log('Intervalo de coração limpo.'); // Log de depuração
+      }
+      setHearts([]); // Limpa todos os corações do estado
+    };
+  }, [currentSectionIndex]); // Dependência apenas de currentSectionIndex, pois 'sections' é constante agora
+
+  // Função para selecionar aleatoriamente uma mensagem de amizade (mantida para outras seções, se houver)
+  const selectRandomFriendshipMessage = () => {
+    const randomIndex = Math.floor(Math.random() * friendshipMessages.length);
+    setSelectedMessage(friendshipMessages[randomIndex]);
+  };
+
+  // Função para lidar com o clique na flor e abrir a paleta de cores
+  const handleFlowerClick = (id, event) => {
+    console.log('Flower clicked:', id, 'ClientX:', event.clientX, 'ClientY:', event.clientY); // Linha de depuração
+    setSelectedFlowerIdForColorPicker(id);
+    const rect = event.currentTarget.getBoundingClientRect();
+    setColorPalettePosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    });
+  };
+
+  // Função para selecionar uma nova cor para a flor
+  const handleColorSelect = (newColor) => {
+    setFlowerColors((prevColors) =>
+      prevColors.map((flower) =>
+        flower.id === selectedFlowerIdForColorPicker ? { ...flower, color: newColor } : flower
+      )
+    );
+    setSelectedFlowerIdForColorPicker(null); // Fecha a paleta
+  };
+
+  // Função para gerar porquinho por emoção
+  const generatePiggyByEmotion = (emotion) => {
+    setCurrentEmotionalPiggy(piggyEmotions[emotion]);
+  };
+
+  return (
+    // Contêiner principal para o aplicativo, cobrindo toda a viewport
+    <div
+      ref={appContainerRef}
+      className="relative w-screen h-screen overflow-hidden font-inter"
+      style={{ fontFamily: 'Inter, sans-serif' }}
+    >
+      {/* Estilos CSS para a animação de piscar do coração */}
+      <style>
+        {`
+          @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+          }
+          .animate-blink {
+            animation-name: blink;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+          }
+        `}
+      </style>
+
+      {/* Contêiner para todas as seções, que serão transformadas para mostrar a seção atual */}
+      <div
+        className="section-wrapper w-full h-full transition-transform duration-700 ease-in-out"
+        style={{ transform: `translateY(-${currentSectionIndex * 100}vh)` }}
+      >
+        {sections.map((section, index) => (
+          // Cada seção ocupa a altura e largura total da viewport
+          <div
+            key={index}
+            className={`w-full h-screen flex flex-col items-center justify-center p-8 text-center rounded-lg shadow-lg ${section.bgColor} ${section.textColor} relative`}
+          >
+            {/* Título proeminente "Mafe <3" - Agora dentro da primeira seção */}
+            {index === 0 && (
+              <h1 className="text-6xl md:text-7xl font-extrabold text-pink-600 drop-shadow-lg animate-pulse mb-8">
+                Mafe {'<3'}
+              </h1>
+            )}
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 rounded-md p-2">
+              {section.title}
+            </h2>
+            {section.type === 'text' && (
+              <p className="text-xl md:text-2xl max-w-2xl leading-relaxed rounded-md p-3">
+                {section.message}
+              </p>
+            )}
+            {section.type === 'image' && (
+              <>
+                <img
+                  src={section.imageUrl}
+                  alt={section.title}
+                  className="max-w-full max-h-96 object-contain rounded-xl shadow-xl mb-6 border-4 border-white"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://placehold.co/600x400/CCCCCC/333333?text=Imagem+Não+Disponível';
+                  }}
+                />
+                <p className="text-xl md:text-2xl max-w-2xl leading-relaxed rounded-md p-3">
+                  {section.message}
+                </p>
+                {/* Renderizar corações se for a seção de saúde */}
+                {section.title === 'Passado algum tempo, você teve alguns probleminhas de saúde...' && (
+                  hearts.map(heart => (
+                    <BlinkingHeart
+                      key={heart.id}
+                      x={heart.x}
+                      y={heart.y}
+                      delay={heart.delay}
+                      duration={heart.duration}
+                    />
+                  ))
+                )}
+              </>
+            )}
+            {section.type === 'flower-customizer' && (
+              <>
+                <p className="text-xl md:text-2xl max-w-2xl leading-relaxed rounded-md p-3">
+                  {section.messagePart1}
+                </p>
+                <p className="text-xl md:text-2xl max-w-2xl leading-relaxed rounded-md p-3 mb-6 text-black"> {/* Separated and colored black */}
+                  {section.messagePart2}
+                </p>
+                {/* Contêiner para múltiplas flores alinhadas horizontalmente */}
+                <div className="flex justify-center items-end h-1/2 w-full relative z-10">
+                  {flowerColors.map((flower) => (
+                    <FlowerDrawing
+                      key={flower.id}
+                      petalColor={flower.color}
+                      scale={1}
+                      onClick={(e) => handleFlowerClick(flower.id, e)}
+                    />
+                  ))}
+                  {selectedFlowerIdForColorPicker && (
+                    <ColorPalette
+                      onSelectColor={handleColorSelect}
+                      onClose={() => setSelectedFlowerIdForColorPicker(null)}
+                      // A prop 'position' não é mais passada, pois a paleta está centralizada
+                    />
+                  )}
+                </div>
+                {/* Simulação de grama */}
+                <div className="absolute bottom-0 left-0 w-full h-1/4 bg-green-700 rounded-t-full z-0"
+                     style={{ clipPath: 'ellipse(50% 100% at 50% 100%)' }}>
+                </div>
+              </>
+            )}
+            {section.type === 'final-message' && (
+              <>
+                <img
+                  src={section.imageUrl}
+                  alt={section.title}
+                  className="max-w-full max-h-96 object-contain rounded-xl shadow-xl mb-6 border-4 border-white"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://placehold.co/600x400/CCCCCC/333333?text=Imagem+Não+Disponível';
+                  }}
+                />
+                <p className="text-xl md:text-2xl max-w-2xl leading-relaxed rounded-md p-3">
+                  {section.messagePart1}
+                </p>
+                <p className="text-xl md:text-2xl max-w-2xl leading-relaxed rounded-md p-3 text-black"> {/* Separated and colored black */}
+                  {section.messagePart2}
+                </p>
+                <p className="italic font-semibold text-2xl md:text-3xl mt-4 text-pink-700"> {/* Signature styling */}
+                  {section.signature}
+                </p>
+              </>
+            )}
+            {section.type === 'pig-generator-emotions' && ( // Updated rendering for pig drawing section
+              <>
+                <p className="text-xl md:text-2xl max-w-2xl leading-relaxed rounded-md p-3 mb-6">
+                  {section.message}
+                </p>
+                <div className="flex flex-wrap justify-center gap-4 mb-8">
+                  <button onClick={() => generatePiggyByEmotion('feliz')} className="p-3 bg-green-300 text-white rounded-full shadow-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Feliz">😊</button>
+                  <button onClick={() => generatePiggyByEmotion('triste')} className="p-3 bg-blue-300 text-white rounded-full shadow-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Triste">😔</button>
+                  <button onClick={() => generatePiggyByEmotion('bravo')} className="p-3 bg-red-300 text-white rounded-full shadow-lg hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Bravo">😡</button>
+                  <button onClick={() => generatePiggyByEmotion('serio')} className="p-3 bg-gray-300 text-white rounded-full shadow-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Sério">😐</button>
+                  <button onClick={() => generatePiggyByEmotion('oculos')} className="p-3 bg-yellow-300 text-white rounded-full shadow-lg hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho com Óculos">🤓</button>
+                  <button onClick={() => generatePiggyByEmotion('beijo')} className="p-3 bg-pink-300 text-white rounded-full shadow-lg hover:bg-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Mandando Beijo">😘</button>
+                </div>
+                {currentEmotionalPiggy && (
+                  <div className="mt-8">
+                    {currentEmotionalPiggy}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Setas de navegação (opcional, pois teclado/deslizar são primários) */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+        <button
+          onClick={goToPreviousSection}
+          className="p-3 bg-pink-300 text-white rounded-full shadow-lg hover:bg-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-75 transition duration-300 ease-in-out"
+          aria-label="Seção Anterior"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
+        <button
+          onClick={goToNextSection}
+          className="p-3 bg-green-300 text-white rounded-full shadow-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out"
+          aria-label="Próxima Seção"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* CDN do Tailwind CSS */}
+      <script src="https://cdn.tailwindcss.com"></script>
+    </div>
+  );
+};
+
+export default App;
