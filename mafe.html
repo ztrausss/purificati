@@ -517,14 +517,14 @@
 
             const handleTouchStart = (e) => {
               touchStartY = e.touches[0].clientY;
+              e.preventDefault(); // Adicionado: Previne o comportamento padrão do navegador no início do toque
             };
 
             const handleTouchMove = (e) => {
               // Previne o comportamento padrão de rolagem do navegador apenas quando um movimento vertical significativo é detectado.
               // Isso evita que um arrasto na tela role a página em vez de ser interpretado pelo app.
-              if (Math.abs(e.touches[0].clientY - touchStartY) > 10) { // Um pequeno threshold para diferenciar de um clique acidental
-                  e.preventDefault();
-              }
+              // A chamada e.preventDefault() aqui é redundante se já for chamada em touchstart, mas não causa problema.
+              // A lógica principal de prevenção de rolagem está em touchstart.
               touchEndY = e.touches[0].clientY;
             };
 
@@ -541,7 +541,8 @@
 
             const container = appContainerRef.current;
             if (container) {
-              container.addEventListener('touchstart', handleTouchStart, { passive: false }); // passive: false para permitir preventDefault
+              // Adicionado { passive: false } para permitir que preventDefault funcione
+              container.addEventListener('touchstart', handleTouchStart, { passive: false });
               container.addEventListener('touchmove', handleTouchMove, { passive: false });
               container.addEventListener('touchend', handleTouchEnd);
             }
@@ -657,6 +658,7 @@
               ref={appContainerRef}
               className="relative w-screen h-screen overflow-hidden font-inter"
               style={{ fontFamily: 'Inter, sans-serif' }}
+              onClick={(e) => { /* Não faz nada, o swipe e botões controlam a navegação */ }} // Mantido para clareza, mas o preventDefault em touchstart já ajuda muito
             >
               {/* Contêiner para todas as seções, que serão transformadas para mostrar a seção atual */}
               <div
@@ -771,12 +773,12 @@
                           {section.message}
                         </p>
                         <div className="flex flex-wrap justify-center gap-4 mb-8">
-                          <button onClick={() => generatePiggyByEmotion('feliz')} className="p-3 bg-green-300 text-white rounded-full shadow-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Feliz">😊</button>
-                          <button onClick={() => generatePiggyByEmotion('triste')} className="p-3 bg-blue-300 text-white rounded-full shadow-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Triste">😔</button>
-                          <button onClick={() => generatePiggyByEmotion('bravo')} className="p-3 bg-red-300 text-white rounded-full shadow-lg hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Bravo">😡</button>
-                          <button onClick={() => generatePiggyByEmotion('serio')} className="p-3 bg-gray-300 text-white rounded-full shadow-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Sério">😐</button>
-                          <button onClick={() => generatePiggyByEmotion('oculos')} className="p-3 bg-yellow-300 text-white rounded-full shadow-lg hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho com Óculos">🤓</button>
-                          <button onClick={() => generatePiggyByEmotion('beijo')} className="p-3 bg-pink-300 text-white rounded-full shadow-lg hover:bg-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Mandando Beijo">😘</button>
+                          <button onClick={(e) => { e.stopPropagation(); generatePiggyByEmotion('feliz'); }} className="p-3 bg-green-300 text-white rounded-full shadow-lg hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Feliz">😊</button>
+                          <button onClick={(e) => { e.stopPropagation(); generatePiggyByEmotion('triste'); }} className="p-3 bg-blue-300 text-white rounded-full shadow-lg hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Triste">😔</button>
+                          <button onClick={(e) => { e.stopPropagation(); generatePiggyByEmotion('bravo'); }} className="p-3 bg-red-300 text-white rounded-full shadow-lg hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Bravo">😡</button>
+                          <button onClick={(e) => { e.stopPropagation(); generatePiggyByEmotion('serio'); }} className="p-3 bg-gray-300 text-white rounded-full shadow-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Sério">😐</button>
+                          <button onClick={(e) => { e.stopPropagation(); generatePiggyByEmotion('oculos'); }} className="p-3 bg-yellow-300 text-white rounded-full shadow-lg hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho com Óculos">🤓</button>
+                          <button onClick={(e) => { e.stopPropagation(); generatePiggyByEmotion('beijo'); }} className="p-3 bg-pink-300 text-white rounded-full shadow-lg hover:bg-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-75 transition duration-300 ease-in-out text-3xl" aria-label="Porquinho Mandando Beijo">😘</button>
                         </div>
                         {currentEmotionalPiggy && (
                           <div className="mt-8">
