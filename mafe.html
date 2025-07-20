@@ -666,7 +666,11 @@
               ref={appContainerRef}
               className="relative w-screen h-screen overflow-hidden font-inter"
               style={{ fontFamily: 'Inter, sans-serif' }}
-              // Removido o onClick direto para evitar conflito com touch events
+              onClick={(e) => {
+                  // Previne qualquer clique direto no container principal de avançar a seção
+                  e.preventDefault();
+                  e.stopPropagation();
+              }}
             >
               {/* Contêiner para todas as seções, que serão transformadas para mostrar a seção atual */}
               <div
