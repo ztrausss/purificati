@@ -682,7 +682,7 @@
                         Mafe {'<3'}
                       </h1>
                     )}
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6 rounded-md p-2">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 rounded-md p-2"> {/* Font size adjusted for responsiveness */}
                       {section.title}
                     </h2>
                     {section.type === 'text' && (
@@ -695,7 +695,7 @@
                         <img
                           src={section.imageUrl}
                           alt={section.title}
-                          className="max-w-full max-h-[50vh] object-contain rounded-xl shadow-xl mb-6 border-4 border-white" {/* Alterado max-h-96 para max-h-[50vh] */}
+                          className="max-w-full max-h-[40vh] object-contain rounded-xl shadow-xl mb-6 border-4 border-white" /* max-h adjusted to 40vh */
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = 'https://placehold.co/600x400/CCCCCC/333333?text=Imagem+Não+Disponível';
@@ -755,7 +755,7 @@
                         <img
                           src={section.imageUrl}
                           alt={section.title}
-                          className="max-w-full max-h-[50vh] object-contain rounded-xl shadow-xl mb-6 border-4 border-white" {/* Alterado max-h-96 para max-h-[50vh] */}
+                          className="max-w-full max-h-[40vh] object-contain rounded-xl shadow-xl mb-6 border-4 border-white" /* max-h adjusted to 40vh */
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = 'https://placehold.co/600x400/CCCCCC/333333?text=Imagem+Não+Disponível';
