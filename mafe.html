@@ -513,43 +513,40 @@
           // Efeito para lidar com gestos de deslizar para navegação móvel
           useEffect(() => {
             let touchStartY = 0;
-            let touchEndY = 0;
-            let touchMoved = false; // Adicionado: Flag para detectar se houve movimento significativo
+            let touchMoved = false; // Flag para detectar se houve movimento significativo
 
             const handleTouchStart = (e) => {
               touchStartY = e.touches[0].clientY;
               touchMoved = false; // Reinicia a flag
-              // Previne o comportamento padrão do navegador no início do toque para evitar rolagem e clicks fantasmas
-              e.preventDefault();
+              // Não chame e.preventDefault() aqui para permitir que o evento de clique ocorra
             };
 
             const handleTouchMove = (e) => {
-              // Previne o comportamento padrão de rolagem do navegador durante o movimento de toque
-              e.preventDefault();
-              touchEndY = e.touches[0].clientY;
-              if (Math.abs(touchEndY - touchStartY) > 10) { // Define um pequeno threshold para considerar movimento
+              const currentTouchY = e.touches[0].clientY;
+              if (Math.abs(currentTouchY - touchStartY) > 10) { // Define um pequeno threshold para considerar movimento
                 touchMoved = true;
+                e.preventDefault(); // Previne a rolagem do navegador APENAS se um movimento significativo for detectado
               }
             };
 
-            const handleTouchEnd = () => {
+            const handleTouchEnd = (e) => { // Adicione 'e' como parâmetro aqui
               // Somente avança a seção se um deslize significativo foi detectado
               if (touchMoved) {
-                if (touchStartY - touchEndY > 50) { // Deslizou para cima
+                const touchDeltaY = touchStartY - e.changedTouches[0].clientY; // Use changedTouches for touchend
+                if (touchDeltaY > 50) { // Deslizou para cima
                   goToNextSection();
-                } else if (touchEndY - touchStartY > 50) { // Deslizou para baixo
+                } else if (touchDeltaY < -50) { // Deslizou para baixo (delta negativo)
                   goToPreviousSection();
                 }
               }
               // Reinicia as variáveis de toque
               touchStartY = 0;
-              touchEndY = 0;
               touchMoved = false;
             };
 
             const container = appContainerRef.current;
             if (container) {
-              // Adicionado { passive: false } para permitir que preventDefault funcione
+              // passive: false é necessário para permitir preventDefault em touchmove
               container.addEventListener('touchstart', handleTouchStart, { passive: false });
               container.addEventListener('touchmove', handleTouchMove, { passive: false });
               container.addEventListener('touchend', handleTouchEnd);
@@ -666,11 +663,7 @@
               ref={appContainerRef}
               className="relative w-screen h-screen overflow-hidden font-inter"
               style={{ fontFamily: 'Inter, sans-serif' }}
-              onClick={(e) => {
-                  // Previne qualquer clique direto no container principal de avançar a seção
-                  e.preventDefault();
-                  e.stopPropagation();
-              }}
+              // Removido o onClick direto para evitar conflito com touch events
             >
               {/* Contêiner para todas as seções, que serão transformadas para mostrar a seção atual */}
               <div
