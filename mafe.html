@@ -47,7 +47,7 @@
               transform: `translate(${offsetX}px, ${offsetY}px)`,
               transition: 'fill 0.3s ease-in-out, transform 0.2s ease-in-out', // Transição suave para cor e escala
             }}
-            onClick={onClick}
+            onClick={(e) => { e.stopPropagation(); onClick(e); }} // Adicionado e.stopPropagation()
           >
             {/* Caule */}
             <path d="M100 180 L100 100" stroke="#6B8E23" strokeWidth="8" strokeLinecap="round" />
@@ -85,12 +85,12 @@
                   key={color.hex}
                   className="w-8 h-8 rounded-full border-2 border-gray-300 hover:scale-110 transition-transform"
                   style={{ backgroundColor: color.hex }}
-                  onClick={() => onSelectColor(color.hex)}
+                  onClick={(e) => { e.stopPropagation(); onSelectColor(color.hex); }} // Adicionado e.stopPropagation()
                   aria-label={`Selecionar cor ${color.name}`}
                 ></button>
               ))}
               <button
-                onClick={onClose}
+                onClick={(e) => { e.stopPropagation(); onClose(); }} // Adicionado e.stopPropagation()
                 className="absolute top-1 right-1 text-gray-500 hover:text-gray-700 text-xl font-bold"
                 aria-label="Fechar paleta de cores"
               >
@@ -520,10 +520,16 @@
             };
 
             const handleTouchMove = (e) => {
+              // Previne o comportamento padrão de rolagem do navegador apenas quando um movimento vertical significativo é detectado.
+              // Isso evita que um arrasto na tela role a página em vez de ser interpretado pelo app.
+              if (Math.abs(e.touches[0].clientY - touchStartY) > 10) { // Um pequeno threshold para diferenciar de um clique acidental
+                  e.preventDefault();
+              }
               touchEndY = e.touches[0].clientY;
             };
 
             const handleTouchEnd = () => {
+              // Somente avança a seção se houver um deslize significativo (mais de 50 pixels)
               if (touchStartY - touchEndY > 50) { // Deslizou para cima
                 goToNextSection();
               } else if (touchEndY - touchStartY > 50) { // Deslizou para baixo
@@ -535,8 +541,8 @@
 
             const container = appContainerRef.current;
             if (container) {
-              container.addEventListener('touchstart', handleTouchStart);
-              container.addEventListener('touchmove', handleTouchMove);
+              container.addEventListener('touchstart', handleTouchStart, { passive: false }); // passive: false para permitir preventDefault
+              container.addEventListener('touchmove', handleTouchMove, { passive: false });
               container.addEventListener('touchend', handleTouchEnd);
             }
 
