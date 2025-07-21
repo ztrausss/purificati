@@ -369,7 +369,7 @@
             type: 'final-message', // New type for the final message section
             title: 'Espero que este pequeno presente traga um sorriso ao seu rosto!', // Main title of the section
             imageUrl: 'https://i.imgur.com/B51BG2d.png', // Image for this section
-            messagePart1: '.', // First part of the message
+            // messagePart1: '.', // Removed
             messagePart2: 'Saiba que você é muito especial para mim!!!', // Second part, on a new line
             signature: 'Com carinho, Guilherme', // The signature text
             bgColor: 'bg-green-100',
@@ -755,17 +755,14 @@
                         <img
                           src={section.imageUrl}
                           alt={section.title}
-                          className="max-w-full max-h-[40vh] object-contain rounded-xl shadow-xl mb-6 border-4 border-white" /* max-h adjusted to 40vh */
+                          className="max-w-full max-h-[35vh] object-contain rounded-xl shadow-xl mb-2 border-4 border-white" /* max-h adjusted to 35vh, mb-6 to mb-2 */
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = 'https://placehold.co/600x400/CCCCCC/333333?text=Imagem+Não+Disponível';
                           }}
                         />
-                        <p className="text-lg md:text-xl max-w-2xl leading-relaxed rounded-md p-3"> {/* Font size adjusted for responsiveness */}
-                          {section.messagePart1}
-                        </p>
-                        <p className="text-lg md:text-xl max-w-2xl leading-relaxed rounded-md p-3 text-black"> {/* Separated and colored black, font size adjusted */}
-                          {section.messagePart2}
+                        <p className="text-lg md:text-xl max-w-2xl leading-relaxed rounded-md p-3 mt-0"> {/* Font size adjusted for responsiveness, mt-0 added */}
+                          {section.messagePart2} {/* messagePart1 removed */}
                         </p>
                         <p className="italic font-semibold text-2xl md:text-3xl mt-4 text-pink-700"> {/* Signature styling */}
                           {section.signature}
