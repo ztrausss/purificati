@@ -76,7 +76,6 @@
     <!-- Modal de Seleção de Data -->
     <div id="datePickerModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center p-4">
         <div class="bg-gray-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl">
-            <!-- Corrigido o erro de digitação de `classs` para `class` -->
             <h3 class="text-xl font-bold text-white mb-4 text-center">Escolha uma data</h3>
             <div id="dateList" class="grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-80">
                 <!-- As datas serão preenchidas aqui -->
@@ -88,7 +87,7 @@
     </div>
 
     <script>
-        // Dados da liturgia, com os textos do evangelho e a reflexão sendo gerados dinamicamente.
+        // Dados da liturgia. A reflexão e o texto do evangelho são gerados dinamicamente.
         const liturgiaData = [
             { date: "15 de Agosto", primary: "Solenidade da Assunção de Nossa Senhora", evangelho: "Lucas 1,39-56", tema: "A humildade e a fé de Maria, que nos elevam ao céu." },
             { date: "16 de Agosto", primary: "Sábado da 19ª Semana do Tempo Comum", evangelho: "Mateus 19,13-15", tema: "A inocência e a pureza das crianças, que nos ensinam a entrar no Reino dos Céus." },
@@ -155,7 +154,8 @@
                 "julho": 6, "agosto": 7, "setembro": 8, "outubro": 9, "novembro": 10, "dezembro": 11
             };
 
-            // Função para buscar o texto do Evangelho e a reflexão usando a API do Gemini
+            // Função para buscar o texto do Evangelho e a reflexão usando a API do Gemini diretamente.
+            // AVISO: Esta abordagem expõe a chave da API e não é segura para um ambiente de produção.
             async function fetchGospelText(gospelReference, tema) {
                 // Conteúdo de carregamento
                 liturgyContentEl.innerHTML = `
@@ -185,7 +185,9 @@
                         }
                     };
 
-                    const apiKey = ""; // A chave da API será fornecida pelo ambiente
+                    // A chave da API é fornecida automaticamente neste ambiente.
+                    // Para um site real, esta chave estaria exposta, o que não é seguro.
+                    const apiKey = ""; 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                     
                     const response = await fetch(apiUrl, {
@@ -202,7 +204,15 @@
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
-                        const jsonString = result.candidates[0].content.parts[0].text;
+                        
+                        let jsonString = result.candidates[0].content.parts[0].text;
+                        
+                        // Extração robusta do JSON, removendo formatação extra.
+                        const match = jsonString.match(/```json\s*(\{.*\})\s*```/s);
+                        if (match && match[1]) {
+                            jsonString = match[1];
+                        }
+                        
                         const data = JSON.parse(jsonString);
                         return data;
                     } else {
@@ -219,13 +229,9 @@
 
             // Função para carregar e exibir o conteúdo na tela principal
             async function loadContentForDate(data) {
-                // Atualiza a data no cabeçalho
                 currentDateEl.innerText = data.date;
-                
-                // Busca o texto do evangelho e a reflexão usando a API
                 const content = await fetchGospelText(data.evangelho, data.tema);
 
-                // Injeta o conteúdo na div principal
                 liturgyContentEl.innerHTML = `
                     <div class="space-y-6">
                         <div>
@@ -248,18 +254,14 @@
                 const today = new Date();
                 const todayDay = today.getDate();
                 const todayMonth = today.getMonth(); // 0-11
-                const currentYear = today.getFullYear();
                 
                 const foundItem = liturgiaData.find(item => {
                     const parts = item.date.split(" de ");
                     const day = parseInt(parts[0], 10);
                     const month = monthMap[parts[1].toLowerCase()];
-                    // A 'Quaresma de São Miguel Arcanjo' é de 15 de agosto a 29 de setembro.
-                    // Aqui, comparamos apenas o dia e o mês, ignorando o ano.
                     return day === todayDay && month === todayMonth;
                 });
 
-                // Retorna o item encontrado ou o primeiro item da lista como padrão
                 return foundItem || liturgiaData[0];
             }
             
