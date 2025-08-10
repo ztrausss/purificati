@@ -154,8 +154,7 @@
                 "julho": 6, "agosto": 7, "setembro": 8, "outubro": 9, "novembro": 10, "dezembro": 11
             };
 
-            // Função para buscar o texto do Evangelho e a reflexão usando a API do Gemini diretamente.
-            // AVISO: Esta abordagem expõe a chave da API e não é segura para um ambiente de produção.
+            // Função para buscar o texto do Evangelho e a reflexão usando a API do Gemini
             async function fetchGospelText(gospelReference, tema) {
                 // Conteúdo de carregamento
                 liturgyContentEl.innerHTML = `
@@ -169,24 +168,13 @@
                 `;
                 
                 try {
-                    const prompt = `Gere o texto completo do Evangelho de ${gospelReference} e uma reflexão de aproximadamente 100 palavras sobre como o tema '${tema}' se relaciona com o texto. Formate a resposta como um objeto JSON com as propriedades "gospelText" e "reflectionText".`;
+                    // Novo prompt sem pedir JSON, o que torna a resposta da IA mais confiável
+                    const prompt = `Gere o texto completo do Evangelho de ${gospelReference}, seguido por uma quebra de linha com a palavra "REFLEXAO" (em letras maiúsculas), e depois uma reflexão de aproximadamente 100 palavras sobre como o tema '${tema}' se relaciona com o texto.`;
                     const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                     const payload = {
-                        contents: chatHistory,
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "OBJECT",
-                                properties: {
-                                    "gospelText": { "type": "STRING" },
-                                    "reflectionText": { "type": "STRING" }
-                                }
-                            }
-                        }
+                        contents: chatHistory
                     };
 
-                    // A chave da API é fornecida automaticamente neste ambiente.
-                    // Para um site real, esta chave estaria exposta, o que não é seguro.
                     const apiKey = ""; 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                     
@@ -201,20 +189,19 @@
                     }
                     
                     const result = await response.json();
+                    
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         
-                        let jsonString = result.candidates[0].content.parts[0].text;
+                        const fullText = result.candidates[0].content.parts[0].text;
+                        // A nova lógica de divisão de texto
+                        const parts = fullText.split("REFLEXAO");
                         
-                        // Extração robusta do JSON, removendo formatação extra.
-                        const match = jsonString.match(/```json\s*(\{.*\})\s*```/s);
-                        if (match && match[1]) {
-                            jsonString = match[1];
-                        }
+                        const gospelText = parts[0].trim();
+                        const reflectionText = parts[1] ? parts[1].trim() : `Tema para a oração: ${tema}`;
                         
-                        const data = JSON.parse(jsonString);
-                        return data;
+                        return { gospelText, reflectionText };
                     } else {
                         throw new Error("Resposta da API em formato inesperado.");
                     }
