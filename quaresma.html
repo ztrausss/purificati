@@ -24,13 +24,6 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 min-h-screen flex items-center justify-center">
@@ -87,54 +80,331 @@
     </div>
 
     <script>
-        // Dados da liturgia. A reflexão e o texto do evangelho são gerados dinamicamente.
+        // Dados da liturgia com os textos e reflexões inseridos manualmente.
+        // A API foi removida para tornar a aplicação mais rápida e independente.
         const liturgiaData = [
-            { date: "15 de Agosto", primary: "Solenidade da Assunção de Nossa Senhora", evangelho: "Lucas 1,39-56", tema: "A humildade e a fé de Maria, que nos elevam ao céu." },
-            { date: "16 de Agosto", primary: "Sábado da 19ª Semana do Tempo Comum", evangelho: "Mateus 19,13-15", tema: "A inocência e a pureza das crianças, que nos ensinam a entrar no Reino dos Céus." },
-            { date: "17 de Agosto", primary: "20º Domingo do Tempo Comum", evangelho: "Lucas 12,49-53", tema: "A radicalidade do Evangelho e a opção por seguir Jesus acima de tudo." },
-            { date: "18 de Agosto", primary: "20ª Semana do Tempo Comum", evangelho: "Mateus 19,16-22", tema: "O desapego das riquezas para seguir o chamado de Jesus." },
-            { date: "19 de Agosto", primary: "20ª Semana do Tempo Comum", evangelho: "Mateus 19,23-30", tema: "A confiança em Deus, pois o que é impossível para o homem é possível para Ele." },
-            { date: "20 de Agosto", primary: "São Bernardo, abade e Doutor da Igreja", evangelho: "Mateus 20,1-16", tema: "A generosidade e a misericórdia de Deus, que não se pautam pela nossa lógica." },
-            { date: "21 de Agosto", primary: "São Pio X, papa", evangelho: "Mateus 22,1-14", tema: "A prontidão em acolher o convite de Deus para o banquete da salvação." },
-            { date: "22 de Agosto", primary: "Nossa Senhora Rainha", evangelho: "Mateus 22,34-40", tema: "O amor como o mandamento principal, que resume toda a lei e os profetas." },
-            { date: "23 de Agosto", primary: "Sábado da 20ª Semana do Tempo Comum", evangelho: "Mateus 23,1-12", tema: "A importância da humildade e da coerência entre a nossa fé e as nossas atitudes." },
-            { date: "24 de Agosto", primary: "21º Domingo do Tempo Comum", evangelho: "Lucas 13,22-30", tema: "O esforço para entrar pela porta estreita do Reino de Deus e a surpresa com os últimos que se tornarão os primeiros." },
-            { date: "25 de Agosto", primary: "21ª Semana do Tempo Comum", evangelho: "Lucas 4,16-30", tema: "A missão de Jesus de anunciar a boa nova e o convite para sermos profetas." },
-            { date: "26 de Agosto", primary: "21ª Semana do Tempo Comum", evangelho: "Lucas 4,31-37", tema: "A autoridade de Jesus sobre o mal e a certeza de que Ele nos liberta." },
-            { date: "27 de Agosto", primary: "Santa Mônica", evangelho: "Lucas 4,38-44", tema: "O exemplo de Santa Mônica, que perseverou na oração e viu a graça de Deus se manifestar." },
-            { date: "28 de Agosto", primary: "Santo Agostinho, bispo e Doutor da Igreja", evangelho: "Lucas 5,1-11", tema: "A conversão e o chamado a ser 'pescador de homens'." },
-            { date: "29 de Agosto", primary: "Martírio de São João Batista", evangelho: "Marcos 6,17-29", tema: "A coragem de defender a verdade e a justiça, mesmo que isso custe a própria vida." },
-            { date: "30 de Agosto", primary: "Sábado da 21ª Semana do Tempo Comum", evangelho: "Lucas 5,33-39", tema: "A alegria da nova aliança com Cristo, que não se prende às tradições vazias." },
-            { date: "31 de Agosto", primary: "22º Domingo do Tempo Comum", evangelho: "Lucas 14,1.7-14", tema: "A humildade como caminho para a exaltação e a generosidade com os mais necessitados." },
-            { date: "1 de Setembro", primary: "22ª Semana do Tempo Comum", evangelho: "Lucas 6,6-11", tema: "A liberdade de fazer o bem, mesmo em face de críticas e oposições." },
-            { date: "2 de Setembro", primary: "22ª Semana do Tempo Comum", evangelho: "Lucas 6,12-19", tema: "A importância da oração para discernir a vontade de Deus." },
-            { date: "3 de Setembro", primary: "São Gregório Magno, papa e Doutor da Igreja", evangelho: "Lucas 6,20-26", tema: "As bem-aventuranças, que nos mostram o caminho para a verdadeira felicidade." },
-            { date: "4 de Setembro", primary: "22ª Semana do Tempo Comum", evangelho: "Lucas 6,27-38", tema: "O mandamento do amor aos inimigos, que nos chama a amar como Deus nos ama." },
-            { date: "5 de Setembro", primary: "22ª Semana do Tempo Comum", evangelho: "Lucas 6,39-42", tema: "A importância da autoavaliação antes de julgar os outros." },
-            { date: "6 de Setembro", primary: "Sábado da 22ª Semana do Tempo Comum", evangelho: "Lucas 6,43-49", tema: "A importância de construir a nossa vida sobre a Palavra de Deus." },
-            { date: "7 de Setembro", primary: "23º Domingo do Tempo Comum", evangelho: "Lucas 14,25-33", tema: "O seguimento de Jesus exige renúncia e uma escolha radical." },
-            { date: "8 de Setembro", primary: "Natividade de Nossa Senhora", evangelho: "Mateus 1,1-16.18-23", tema: "A alegria do nascimento de Maria, que anuncia a vinda do Salvador." },
-            { date: "9 de Setembro", primary: "São Pedro Claver, presbítero", evangelho: "Lucas 8,19-21", tema: "A família de Deus, formada por aqueles que ouvem e praticam a Sua Palavra." },
-            { date: "10 de Setembro", primary: "23ª Semana do Tempo Comum", evangelho: "Lucas 6,20-26", tema: "A sabedoria de Deus sobre a vida e a castidade, em oposição à sabedoria do mundo." },
-            { date: "11 de Setembro", primary: "23ª Semana do Tempo Comum", evangelho: "Lucas 7,36-50", tema: "O amor e a misericórdia de Jesus, que perdoam e transformam a vida." },
-            { date: "12 de Setembro", primary: "Santíssimo Nome de Maria", evangelho: "Lucas 8,1-3", tema: "O serviço a Jesus e o anúncio do Reino, como fizeram as mulheres que o acompanhavam." },
-            { date: "13 de Setembro", primary: "São João Crisóstomo, bispo e Doutor da Igreja", evangelho: "Lucas 8,4-15", tema: "As condições do coração para receber e dar frutos da Palavra de Deus." },
-            { date: "14 de Setembro (domingo): Festa da Exaltação da Santa Cruz", evangelho: "João 3,13-17", tema: "A Cruz como sinal de salvação, sacrifício e amor incondicional de Deus." },
-            { date: "15 de Setembro", primary: "Nossa Senhora das Dores", evangelho: "João 19,25-27", tema: "A compaixão de Maria, que nos ensina a permanecer firmes na dor." },
-            { date: "16 de Setembro", primary: "Santos Cornélio, papa, e Cipriano, bispo, mártires", evangelho: "Lucas 7,11-17", tema: "O poder de Jesus sobre a vida e a morte, trazendo esperança." },
-            { date: "17 de Setembro", primary: "24ª Semana do Tempo Comum", evangelho: "Lucas 7,31-35", tema: "A dificuldade em aceitar a verdade, mesmo quando ela é evidente." },
-            { date: "18 de Setembro", primary: "24ª Semana do Tempo Comum", evangelho: "Lucas 7,36-50", tema: "O amor e a misericórdia de Jesus, que perdoam e transformam vidas." },
-            { date: "19 de Setembro", primary: "24ª Semana do Tempo Comum", evangelho: "Lucas 8,1-3", tema: "A ressurreição como a base de nossa fé e a certeza da vida eterna." },
-            { date: "20 de Setembro", primary: "Sábado da 24ª Semana do Tempo Comum", evangelho: "Lucas 8,4-15", tema: "O solo do nosso coração precisa estar pronto para receber a Palavra de Deus." },
-            { date: "21 de Setembro", primary: "25º Domingo do Tempo Comum", evangelho: "Lucas 16,1-13", tema: "A sabedoria na administração dos bens materiais e a fidelidade nas pequenas coisas." },
-            { date: "22 de Setembro", primary: "25ª Semana do Tempo Comum", evangelho: "Lucas 8,16-18", tema: "Não esconda a sua fé; deixe-a brilhar para que todos vejam." },
-            { date: "23 de Setembro", primary: "São Pio de Pietrelcina, presbítero", evangelho: "Lucas 8,19-21", tema: "A família de Jesus é formada por aqueles que ouvem a Palavra de Deus e a praticam." },
-            { date: "24 de Setembro", primary: "25ª Semana do Tempo Comum", evangelho: "Lucas 9,1-6", tema: "A missão de anunciar o Reino de Deus e a confiança na Divina Providência." },
-            { date: "25 de Setembro", primary: "25ª Semana do Tempo Comum", evangelho: "Lucas 9,7-9", tema: "A vaidade das coisas do mundo e a busca pelo que realmente importa." },
-            { date: "26 de Setembro", primary: "Santos Cosme e Damião, mártires", evangelho: "Lucas 9,18-22", tema: "O seguimento de Jesus, que nos chama a tomar nossa cruz e segui-lo." },
-            { date: "27 de Setembro", primary: "São Vicente de Paulo, presbítero", evangelho: "Lucas 9,43b-45", tema: "A vida de São Vicente de Paulo, que se entregou aos pobres e nos ensina a servir." },
-            { date: "28 de Setembro", primary: "26º Domingo do Tempo Comum", evangelho: "Lucas 16,19-31", tema: "A urgência da conversão e a compaixão pelos que sofrem." },
-            { date: "29 de Setembro", primary: "Santos Arcanjos Miguel, Gabriel e Rafael (Festa)", evangelho: "João 1,47-51", tema: "A ação dos anjos na nossa vida e a defesa contra o mal, com o auxílio de São Miguel." }
+            {
+                date: "15 de Agosto",
+                primary: "Solenidade da Assunção de Nossa Senhora",
+                evangelho: "Lucas 1,39-56",
+                gospelText: "Naqueles dias, Maria partiu apressadamente para a região montanhosa, dirigindo-se a uma cidade de Judá. Entrou na casa de Zacarias e saudou Isabel. Quando Isabel ouviu a saudação de Maria, a criança estremeceu no seu ventre, e Isabel ficou cheia do Espírito Santo. Com um grande grito, exclamou: 'Bendita és tu entre as mulheres e bendito é o fruto do teu ventre! Por que me é concedido que a mãe do meu Senhor venha a mim? Pois, logo que a voz da tua saudação chegou aos meus ouvidos, a criança estremeceu de alegria no meu ventre. Bem-aventurada és tu que acreditaste, pois hão de cumprir-se as coisas que te foram ditas da parte do Senhor.' Maria então disse: 'A minha alma engrandece o Senhor, e o meu espírito se alegra em Deus, meu Salvador, porque ele olhou para a humildade de sua serva. Doravante, todas as gerações me chamarão bem-aventurada, porque o Poderoso fez em mim maravilhas. O seu nome é santo, e a sua misericórdia se estende de geração em geração, sobre os que o temem. Ele manifestou o poder do seu braço, dispersou os soberbos de coração. Derrubou os poderosos de seus tronos e exaltou os humildes. Encheu de bens os famintos e despediu de mãos vazias os ricos. Acolheu a Israel, seu servo, lembrado de sua misericórdia, conforme prometeu a nossos pais, a Abraão e à sua descendência para sempre.' Maria ficou com Isabel cerca de três meses. Depois, voltou para casa.",
+                tema: "A humildade e a fé de Maria, que nos elevam ao céu."
+            },
+            {
+                date: "16 de Agosto",
+                primary: "Sábado da 19ª Semana do Tempo Comum",
+                evangelho: "Mateus 19,13-15",
+                gospelText: "Naquele tempo, trouxeram crianças a Jesus para que lhes impusesse as mãos e orasse por elas. Os discípulos, porém, as repreendiam. Jesus, no entanto, disse: 'Deixai as crianças, e não as impeçais de virem a mim, porque o Reino dos Céus é dos que se parecem com elas.' E, depois de lhes impor as mãos, partiu dali.",
+                tema: "A inocência e a pureza das crianças, que nos ensinam a entrar no Reino dos Céus."
+            },
+            {
+                date: "17 de Agosto",
+                primary: "20º Domingo do Tempo Comum",
+                evangelho: "Lucas 12,49-53",
+                gospelText: "Naquele tempo, disse Jesus aos seus discípulos: 'Vim para lançar fogo sobre a terra, e como gostaria que já estivesse aceso! Tenho de ser batizado com um batismo, e como estou angustiado até que se cumpra! Vós pensais que vim para estabelecer a paz na terra? Pelo contrário, eu vos digo, vim para trazer a divisão. Pois, de agora em diante, numa família de cinco pessoas, três ficarão divididas contra duas e duas contra três; ficarão divididos: o pai contra o filho e o filho contra o pai; a mãe contra a filha e a filha contra a mãe; a sogra contra a nora e a nora contra a sogra.'",
+                tema: "A radicalidade do Evangelho e a opção por seguir Jesus acima de tudo."
+            },
+            {
+                date: "18 de Agosto",
+                primary: "20ª Semana do Tempo Comum",
+                evangelho: "Mateus 19,16-22",
+                gospelText: "Eis que alguém se aproximou de Jesus e lhe perguntou: 'Mestre, que devo fazer de bom para ter a vida eterna?' Jesus respondeu: 'Por que me perguntas sobre o que é bom? Um só é o bom. Se queres, porém, entrar na vida, guarda os mandamentos.' O homem perguntou: 'Quais?' Jesus respondeu: 'Não matarás, não cometerás adultério, não roubarás, não levantarás falso testemunho, honra teu pai e tua mãe, e amarás o teu próximo como a ti mesmo.' O jovem disse-lhe: 'Tenho observado tudo isso. O que ainda me falta?' Jesus lhe disse: 'Se queres ser perfeito, vai, vende o que tens, dá aos pobres e terás um tesouro no céu. Depois, vem e segue-me.' Ao ouvir esta palavra, o jovem foi embora, triste, porque era muito rico.",
+                tema: "O desapego das riquezas para seguir o chamado de Jesus."
+            },
+            {
+                date: "19 de Agosto",
+                primary: "20ª Semana do Tempo Comum",
+                evangelho: "Mateus 19,23-30",
+                gospelText: "Jesus disse então aos seus discípulos: 'Em verdade vos digo, é difícil um rico entrar no Reino dos Céus. E digo ainda: é mais fácil um camelo passar pelo fundo de uma agulha, do que um rico entrar no Reino de Deus.' Os discípulos, ao ouvirem isso, ficaram muito espantados e disseram: 'Então, quem pode ser salvo?' Jesus, fixando neles o olhar, disse-lhes: 'Aos homens é impossível, mas para Deus tudo é possível.' Então Pedro lhe disse: 'Eis que nós deixamos tudo e te seguimos. O que nos será dado?' Jesus respondeu: 'Em verdade vos digo, vós que me seguistes, no mundo novo, quando o Filho do Homem se sentar no seu trono glorioso, também vos sentareis em doze tronos para julgar as doze tribos de Israel. E todo aquele que por minha causa tiver deixado casas, irmãos, irmãs, pai, mãe, filhos ou campos, receberá cem vezes mais e terá a vida eterna. Muitos dos primeiros serão os últimos, e muitos dos últimos serão os primeiros.'",
+                tema: "A confiança em Deus, pois o que é impossível para o homem é possível para Ele."
+            },
+            {
+                date: "20 de Agosto",
+                primary: "São Bernardo, abade e Doutor da Igreja",
+                evangelho: "Mateus 20,1-16",
+                gospelText: "Naquele tempo, Jesus contou esta parábola a seus discípulos: 'O Reino dos Céus é como um proprietário que saiu de madrugada a contratar trabalhadores para sua vinha. Ajustou com os trabalhadores o salário de um denário por dia e mandou-os para a vinha. Sabe-se que ele é o dono da vinha, saiu de manhã e contratou trabalhadores, depois saiu às nove, ao meio-dia, às três e às cinco da tarde e fez o mesmo. Mas quando chegou a noite, ele pagou a todos o mesmo salário.'",
+                tema: "A generosidade e a misericórdia de Deus, que não se pautam pela nossa lógica."
+            },
+            {
+                date: "21 de Agosto",
+                primary: "São Pio X, papa",
+                evangelho: "Mateus 22,1-14",
+                gospelText: "Jesus voltou a falar-lhes em parábolas: 'O Reino dos Céus é como um rei que preparou a festa de casamento do seu filho. Mandou seus servos para chamar os convidados para a festa, mas estes não quiseram ir. Mandou outros servos, mas estes maltrataram-nos e os mataram. Então o rei se irou e mandou seus exércitos para exterminar aqueles assassinos e incendiar-lhes a cidade. Depois disse aos servos: 'A festa de casamento está pronta, mas os convidados não eram dignos. Ide, pois, às encruzilhadas dos caminhos e convidai para a festa todos os que encontrardes.' Os servos saíram, reuniram todos os que encontraram, maus e bons, e a sala do banquete encheu-se de convidados. O rei, entrando para ver os convidados, viu ali um homem que não estava vestido com a roupa de festa. Perguntou-lhe: 'Amigo, como entraste aqui sem a veste nupcial?' Ele ficou em silêncio. O rei, então, disse aos servos: 'Amarrai-o de pés e mãos e lançai-o para fora, nas trevas. Ali haverá choro e ranger de dentes.' Com efeito, muitos são os chamados, mas poucos os escolhidos.'",
+                tema: "A prontidão em acolher o convite de Deus para o banquete da salvação."
+            },
+            {
+                date: "22 de Agosto",
+                primary: "Nossa Senhora Rainha",
+                evangelho: "Mateus 22,34-40",
+                gospelText: "Naquele tempo, os fariseus, sabendo que Jesus fizera calar os saduceus, reuniram-se. Um deles, um doutor da Lei, para pô-lo à prova, perguntou-lhe: 'Mestre, qual é o maior mandamento da Lei?' Jesus respondeu: 'Amarás o Senhor, teu Deus, de todo o teu coração, de toda a tua alma e de toda a tua mente. Esse é o maior e o primeiro mandamento. O segundo é semelhante a este: Amarás o teu próximo como a ti mesmo. Toda a Lei e os profetas dependem desses dois mandamentos.'",
+                tema: "O amor como o mandamento principal, que resume toda a lei e os profetas."
+            },
+            {
+                date: "23 de Agosto",
+                primary: "Sábado da 20ª Semana do Tempo Comum",
+                evangelho: "Mateus 23,1-12",
+                gospelText: "Naquele tempo, Jesus falou às multidões e a seus discípulos, dizendo: 'Os escribas e os fariseus sentaram-se na cátedra de Moisés. Portanto, fazei e observai tudo o que vos disserem, mas não imiteis as suas obras, porque eles falam e não fazem. Atam fardos pesados e difíceis de carregar e os põem nos ombros dos outros, mas eles mesmos não os querem mover, nem com um dedo. Fazem todas as suas obras para serem vistos pelos homens; por isso usam filactérios largos e grandes franjas nas vestes. Amam os primeiros lugares nos banquetes, as primeiras cadeiras nas sinagogas, as saudações nas praças e que os homens os chamem de 'Mestre'. Mas vós, não queirais ser chamados 'Mestre', porque um só é vosso Mestre, e vós sois todos irmãos. Não chameis a ninguém de 'Pai' sobre a terra, pois um só é vosso Pai, Aquele que está nos céus. Nem queirais ser chamados 'Chefes', porque um só é o vosso Chefe, o Cristo. O maior dentre vós seja vosso servo. Quem se exaltar será humilhado, e quem se humilhar será exaltado.'",
+                tema: "A importância da humildade e da coerência entre a nossa fé e as nossas atitudes."
+            },
+            {
+                date: "24 de Agosto",
+                primary: "21º Domingo do Tempo Comum",
+                evangelho: "Lucas 13,22-30",
+                gospelText: "Naquele tempo, Jesus, passando por cidades e povoados, ensinava enquanto caminhava para Jerusalém. Alguém lhe perguntou: 'Senhor, são poucos os que se salvam?' Ele lhes respondeu: 'Esforçai-vos por entrar pela porta estreita, pois eu vos digo que muitos procurarão entrar e não conseguirão. Quando o dono da casa se levantar e fechar a porta, vós, do lado de fora, começando a bater à porta, direis: 'Senhor, abre-nos!' Ele, porém, vos responderá: 'Não sei de onde sois.' Então, começareis a dizer: 'Nós comemos e bebemos contigo, e tu ensinaste em nossas praças!' Ele, porém, vos responderá: 'Não sei de onde sois. Afastai-vos de mim, todos vós que praticais a iniquidade!' Ali haverá choro e ranger de dentes, quando virdes Abraão, Isaac, Jacó e todos os profetas no Reino de Deus, e vós, ao contrário, serdes lançados para fora. Virão homens do oriente e do ocidente, do norte e do sul, e se sentarão à mesa no Reino de Deus. E há últimos que serão primeiros, e primeiros que serão últimos.'",
+                tema: "O esforço para entrar pela porta estreita do Reino de Deus e a surpresa com os últimos que se tornarão os primeiros."
+            },
+            {
+                date: "25 de Agosto",
+                primary: "21ª Semana do Tempo Comum",
+                evangelho: "Lucas 4,16-30",
+                gospelText: "Naquele tempo, Jesus veio a Nazaré, onde fora criado. Num sábado, entrou na sinagoga, como era seu costume, e levantou-se para ler. Entregaram-lhe o livro do profeta Isaías. Abrindo-o, encontrou o lugar onde estava escrito: 'O Espírito do Senhor está sobre mim, porque ele me ungiu para evangelizar os pobres; enviou-me para proclamar a libertação aos cativos e a recuperação da vista aos cegos, para restituir a liberdade aos oprimidos e proclamar um ano da graça do Senhor.' Depois, fechou o livro, devolveu-o ao auxiliar e sentou-se. Todos na sinagoga tinham os olhos fixos nele. Então começou a dizer-lhes: 'Hoje se cumpriu esta Escritura que acabais de ouvir.' Todos o aprovavam e ficavam admirados com as palavras cheias de graça que saíam da sua boca. E diziam: 'Não é este o filho de José?' Ele, porém, lhes disse: 'Sem dúvida, vós me citareis este provérbio: 'Médico, cura-te a ti mesmo.' Faze também aqui, em tua terra, tudo o que ouvimos que fizeste em Cafarnaum.' E continuou: 'Em verdade vos digo, nenhum profeta é bem aceito em sua pátria. Em verdade vos digo: havia muitas viúvas em Israel nos dias de Elias, quando o céu se fechou por três anos e seis meses e houve uma grande fome em toda a terra. A nenhuma delas, no entanto, foi Elias enviado, senão a uma viúva em Sarepta, na Sidônia. Havia também muitos leprosos em Israel no tempo do profeta Eliseu. Mas nenhum deles foi purificado, senão Naamã, o sírio.' Ao ouvirem estas palavras, todos na sinagoga ficaram furiosos. Levantaram-se, lançaram-no para fora da cidade e o levaram até o cume do monte sobre o qual a cidade estava construída, para dali o precipitarem. Mas Jesus, passando por meio deles, seguiu seu caminho.",
+                tema: "A missão de Jesus de anunciar a boa nova e o convite para sermos profetas."
+            },
+            {
+                date: "26 de Agosto",
+                primary: "21ª Semana do Tempo Comum",
+                evangelho: "Lucas 4,31-37",
+                gospelText: "Naquele tempo, Jesus desceu a Cafarnaum, cidade da Galileia. E os ensinava em dia de sábado. Eles ficavam admirados com o seu ensinamento, porque a sua palavra era cheia de autoridade. Na sinagoga, havia um homem possuído pelo espírito de um demônio impuro, que gritou em alta voz: 'Que queres de nós, Jesus de Nazaré? Vieste para nos destruir? Eu sei quem tu és: o Santo de Deus.' Jesus o repreendeu, dizendo: 'Cala-te e sai deste homem.' O demônio, lançando-o por terra no meio de todos, saiu dele, sem lhe causar dano algum. Todos ficaram espantados e perguntavam uns aos outros: 'Que palavra é esta? Ele manda nos espíritos impuros com autoridade e poder, e eles saem.' E a fama de Jesus se espalhava por todos os lugares daquela região.",
+                tema: "A autoridade de Jesus sobre o mal e a certeza de que Ele nos liberta."
+            },
+            {
+                date: "27 de Agosto",
+                primary: "Santa Mônica",
+                evangelho: "Lucas 4,38-44",
+                gospelText: "Naquele tempo, Jesus, saindo da sinagoga, entrou na casa de Simão. A sogra de Simão estava com febre alta e eles pediram que Jesus a curasse. Inclinando-se sobre ela, Jesus repreendeu a febre, e a febre a deixou. Imediatamente, ela se levantou e começou a servi-los. Depois do pôr do sol, todos os que tinham doentes com diversas enfermidades os trouxeram a Jesus. Ele, pondo as mãos sobre cada um deles, os curava. De muitos saíam demônios, que gritavam: 'Tu és o Filho de Deus.' Ele, porém, os repreendia e não os deixava falar, porque sabiam que ele era o Cristo. Ao amanhecer, Jesus saiu e foi para um lugar deserto. As multidões o procuravam e, chegando até ele, tentavam impedi-lo de sair. Ele, porém, lhes disse: 'Devo anunciar a Boa Nova do Reino de Deus também a outras cidades, pois foi para isso que eu fui enviado.' E pregava nas sinagogas da Judeia.",
+                tema: "O exemplo de Santa Mônica, que perseverou na oração e viu a graça de Deus se manifestar."
+            },
+            {
+                date: "28 de Agosto",
+                primary: "Santo Agostinho, bispo e Doutor da Igreja",
+                evangelho: "Lucas 5,1-11",
+                gospelText: "Naquele tempo, a multidão se comprimia em volta de Jesus para ouvir a palavra de Deus. Ele estava na margem do lago de Genesaré, e viu duas barcas paradas à beira do lago. Os pescadores haviam descido delas e lavavam as redes. Jesus entrou numa das barcas, a de Simão, e pediu-lhe que a afastasse um pouco da terra. Sentou-se e, da barca, ensinava as multidões. Quando acabou de falar, disse a Simão: 'Avança para as águas mais profundas, e lançai vossas redes para a pesca.' Simão respondeu: 'Mestre, nós trabalhamos a noite inteira e nada pescamos. Mas, por tua palavra, vou lançar as redes.' Fizeram-no e apanharam tamanha quantidade de peixes que as redes se rompiam. Então, fizeram sinais aos companheiros da outra barca, para que viessem ajudá-los. Eles vieram e encheram as duas barcas, a ponto de quase afundarem. Vendo isso, Simão Pedro caiu de joelhos diante de Jesus e disse: 'Senhor, afasta-te de mim, porque sou um pecador!' Na verdade, Simão e todos os que estavam com ele ficaram espantados com a pesca que tinham feito. Tiago e João, filhos de Zebedeu, que eram companheiros de Simão, também ficaram assim. Jesus, porém, disse a Simão: 'Não tenhas medo! De hoje em diante tu serás pescador de homens.' Eles, então, levaram as barcas para a margem, deixaram tudo e seguiram a Jesus.",
+                tema: "A conversão e o chamado a ser 'pescador de homens'."
+            },
+            {
+                date: "29 de Agosto",
+                primary: "Martírio de São João Batista",
+                evangelho: "Marcos 6,17-29",
+                gospelText: "Naquele tempo, Herodes tinha mandado prender João e acorrentá-lo na prisão por causa de Herodíades, mulher do seu irmão Filipe, com a qual ele se casara. Com efeito, João dizia a Herodes: 'Não te é lícito ter a mulher do teu irmão.' Por isso, Herodíades o odiava e queria matá-lo, mas não conseguia, pois Herodes tinha medo de João, sabendo que era um homem justo e santo, e o protegia. Quando o ouvia, ficava muito perplexo, mas gostava de escutá-lo. Chegou, porém, o dia oportuno. Herodes, por ocasião do seu aniversário, preparou um banquete para os grandes da corte, para os comandantes militares e para as pessoas importantes da Galileia. A filha de Herodíades entrou e dançou, agradando a Herodes e aos convidados. O rei disse à moça: 'Pede-me o que quiseres, e eu te darei.' E jurou-lhe: 'Eu te darei o que me pedires, até a metade do meu reino.' Ela, saindo, perguntou à sua mãe: 'O que devo pedir?' A mãe respondeu: 'A cabeça de João Batista.' Ela voltou depressa para o rei e fez o pedido: 'Quero que me dês agora, num prato, a cabeça de João Batista.' O rei ficou muito triste, mas por causa do juramento e dos convidados, não quis recusar. E logo mandou um guarda, com a ordem de trazer a cabeça de João. O guarda saiu, decapitou-o na prisão, trouxe a cabeça num prato e a deu à moça. Esta, por sua vez, a deu à sua mãe. Ao saberem disso, os discípulos de João vieram e levaram o seu corpo, e o enterraram.",
+                tema: "A coragem de defender a verdade e a justiça, mesmo que isso custe a própria vida."
+            },
+            {
+                date: "30 de Agosto",
+                primary: "Sábado da 21ª Semana do Tempo Comum",
+                evangelho: "Lucas 5,33-39",
+                gospelText: "Naquele tempo, os fariseus e os seus escribas disseram a Jesus: 'Os discípulos de João e os dos fariseus jejuam com frequência e fazem orações; os teus, porém, comem e bebem.' Jesus lhes respondeu: 'Podeis, por acaso, obrigar os convidados de um casamento a jejuar, enquanto o noivo está com eles? Dias virão em que o noivo lhes será tirado, e então, naqueles dias, eles jejuarão.' Jesus ainda lhes contou esta parábola: 'Ninguém tira um retalho de roupa nova para costurá-lo em roupa velha; caso contrário, rasgará a nova, e o retalho novo não combinará com a roupa velha. Ninguém põe vinho novo em odres velhos; caso contrário, o vinho novo rebentará os odres e se perderá o vinho e os odres. Pelo contrário, vinho novo deve ser colocado em odres novos. E ninguém, depois de beber o vinho velho, quer o novo, pois diz: o velho é bom.'",
+                tema: "A alegria da nova aliança com Cristo, que não se prende às tradições vazias."
+            },
+            {
+                date: "31 de Agosto",
+                primary: "22º Domingo do Tempo Comum",
+                evangelho: "Lucas 14,1.7-14",
+                gospelText: "Naquele tempo, Jesus entrou num sábado na casa de um dos chefes dos fariseus para comer. E eles o observavam. Jesus, notando como os convidados escolhiam os primeiros lugares, propôs-lhes uma parábola: 'Quando fores convidado para uma festa de casamento, não te sentes no primeiro lugar, para que não aconteça que tenha sido convidado alguém mais importante do que tu, e o dono da casa, que vos convidou a ambos, venha e te diga: 'Dá o lugar a este.' Então, terás de ir, envergonhado, ocupar o último lugar. Pelo contrário, quando fores convidado, vai sentar-te no último lugar, para que, quando vier o que te convidou, te diga: 'Amigo, sobe para um lugar superior.' Isto te será uma honra diante de todos os que estiverem contigo à mesa. Porque todo aquele que se exalta será humilhado, e o que se humilha será exaltado.' E Jesus disse também ao que o tinha convidado: 'Quando deres um almoço ou um jantar, não convides teus amigos, nem teus irmãos, nem teus parentes, nem teus vizinhos ricos. Para que não suceda que eles, por sua vez, te convidem, e isto te sirva de recompensa. Pelo contrário, quando deres um banquete, convida os pobres, os aleijados, os coxos, os cegos. Serás feliz por eles não terem como te retribuir. De fato, a tua recompensa te será dada na ressurreição dos justos.'",
+                tema: "A humildade como caminho para a exaltação e a generosidade com os mais necessitados."
+            },
+            {
+                date: "1 de Setembro",
+                primary: "22ª Semana do Tempo Comum",
+                evangelho: "Lucas 6,6-11",
+                gospelText: "Num dia de sábado, Jesus entrou na sinagoga, e começou a ensinar. E havia ali um homem cuja mão direita estava seca. Os escribas e os fariseus o observavam, para ver se ele curaria em dia de sábado, a fim de encontrarem motivo para o acusar. Jesus, porém, conhecia os seus pensamentos, e disse ao homem da mão seca: 'Levanta-te e fica em pé no meio da sinagoga.' Ele se levantou e ficou de pé. Então Jesus lhes disse: 'Eu vos pergunto: Em dia de sábado, é permitido fazer o bem ou o mal? Salvar uma vida ou perdê-la?' E, olhando-os a todos, disse ao homem: 'Estende a tua mão.' Ele o fez, e a sua mão ficou curada. Eles, porém, ficaram cheios de furor, e discutiam entre si o que poderiam fazer contra Jesus.",
+                tema: "A liberdade de fazer o bem, mesmo em face de críticas e oposições."
+            },
+            {
+                date: "2 de Setembro",
+                primary: "22ª Semana do Tempo Comum",
+                evangelho: "Lucas 6,12-19",
+                gospelText: "Naqueles dias, Jesus subiu ao monte para rezar. Passou a noite toda em oração a Deus. Ao amanhecer, chamou seus discípulos e escolheu doze dentre eles, aos quais deu o nome de Apóstolos: Simão, a quem deu o nome de Pedro, e seu irmão André; Tiago e João; Filipe e Bartolomeu; Mateus e Tomé; Tiago, filho de Alfeu, e Simão, chamado o Zelote; Judas, filho de Tiago, e Judas Iscariotes, que se tornou o traidor. Depois, Jesus desceu com eles e parou num lugar plano. Estavam ali muitos dos seus discípulos e uma grande multidão de gente de toda a Judeia, de Jerusalém e do litoral de Tiro e Sidônia. Eles tinham vindo para ouvir Jesus e serem curados das suas doenças. E os que eram atormentados por espíritos maus eram curados. Todos na multidão procuravam tocar em Jesus, porque dele saía uma força que a todos curava.",
+                tema: "A importância da oração para discernir a vontade de Deus."
+            },
+            {
+                date: "3 de Setembro",
+                primary: "São Gregório Magno, papa e Doutor da Igreja",
+                evangelho: "Lucas 6,20-26",
+                gospelText: "Naquele tempo, Jesus, erguendo os olhos para os seus discípulos, disse: 'Bem-aventurados vós, os pobres, porque vosso é o Reino de Deus. Bem-aventurados vós, que agora tendes fome, porque sereis saciados. Bem-aventurados vós, que agora chorais, porque haveis de rir. Bem-aventurados sereis quando os homens vos odiarem, vos rejeitarem e vos insultarem, e amaldiçoarem o vosso nome, por causa do Filho do Homem. Alegrai-vos nesse dia e exultai, porque é grande a vossa recompensa no céu. Pois era assim que os seus pais tratavam os profetas. Ai de vós, ricos, porque já tendes a vossa consolação. Ai de vós, que agora estais fartos, porque haveis de ter fome. Ai de vós, que agora rides, porque haveis de chorar e lamentar-vos. Ai de vós, quando todos os homens vos elogiam, pois era assim que os seus pais tratavam os falsos profetas.'",
+                tema: "As bem-aventuranças, que nos mostram o caminho para a verdadeira felicidade."
+            },
+            {
+                date: "4 de Setembro",
+                primary: "22ª Semana do Tempo Comum",
+                evangelho: "Lucas 6,27-38",
+                gospelText: "Naquele tempo, Jesus disse aos seus discípulos: 'A vós, que me ouvis, eu digo: Amai os vossos inimigos, fazei o bem aos que vos odeiam, bendizei os que vos amaldiçoam, rezai por aqueles que vos maltratam. Se alguém te bater numa face, oferece-lhe também a outra. Se alguém te tirar o manto, deixa-o levar também a túnica. Dá a todo aquele que te pedir; e se alguém tomar o que é teu, não lho reclames. O que quereis que os homens vos façam, fazei-o também a eles. Se amais somente os que vos amam, que mérito tereis? Até os pecadores amam aqueles que os amam. Se fazeis o bem somente aos que vos fazem o bem, que mérito tereis? Também os pecadores fazem o mesmo. E se emprestais somente àqueles de quem esperais receber, que mérito tereis? Também os pecadores emprestam a pecadores, para receberem o equivalente. Pelo contrário, amai os vossos inimigos, fazei o bem e emprestai sem nada esperar em troca. Assim, a vossa recompensa será grande, e sereis filhos do Altíssimo, porque ele é bondoso para com os ingratos e maus. Sede misericordiosos, como também o vosso Pai é misericordioso. Não julgueis, e não sereis julgados; não condeneis, e não sereis condenados; perdoai, e sereis perdoados. Dai, e vos será dado. Uma boa medida, recalcada, sacudida, transbordante será dada a vós. Pois a medida que usardes para os outros, será usada também para vós.'",
+                tema: "O mandamento do amor aos inimigos, que nos chama a amar como Deus nos ama."
+            },
+            {
+                date: "5 de Setembro",
+                primary: "22ª Semana do Tempo Comum",
+                evangelho: "Lucas 6,39-42",
+                gospelText: "Jesus contou-lhes ainda uma parábola: 'Pode um cego guiar outro cego? Não cairão os dois no buraco? O discípulo não está acima do mestre; mas todo o que for bem formado será como o seu mestre. Por que vês o cisco no olho do teu irmão, e não percebes a trave que está no teu próprio? Como podes dizer a teu irmão: 'Irmão, deixa-me tirar o cisco do teu olho', se tu mesmo não vês a trave que está no teu? Hipócrita! Tira primeiro a trave do teu olho, e então verás claramente para tirar o cisco do olho do teu irmão.'",
+                tema: "A importância da autoavaliação antes de julgar os outros."
+            },
+            {
+                date: "6 de Setembro",
+                primary: "Sábado da 22ª Semana do Tempo Comum",
+                evangelho: "Lucas 6,43-49",
+                gospelText: "Jesus disse: 'Não existe árvore boa que dê mau fruto, nem árvore má que dê bom fruto. Pois cada árvore é conhecida pelo seu próprio fruto. Não se colhem figos de espinheiros, nem uvas de sarças. O homem bom tira coisas boas do bom tesouro do seu coração, mas o homem mau tira coisas más do mau tesouro do seu coração. Pois a boca fala do que o coração está cheio. Por que me chamais: 'Senhor, Senhor', e não fazeis o que eu digo? Todo aquele que vem a mim, ouve as minhas palavras e as põe em prática, eu vos mostrarei a quem é semelhante. Ele é semelhante a um homem que, ao construir a sua casa, cavou bem fundo e pôs o alicerce sobre a rocha. Quando veio a enchente, a torrente se arremessou contra a casa, mas não foi capaz de a abalar, porque estava bem construída. Aquele, porém, que ouve e não põe em prática, é semelhante a um homem que construiu sua casa sobre a terra, sem alicerces. A torrente se arremessou contra a casa, e ela desabou imediatamente; e foi grande a ruína dessa casa.'",
+                tema: "A importância de construir a nossa vida sobre a Palavra de Deus."
+            },
+            {
+                date: "7 de Setembro",
+                primary: "23º Domingo do Tempo Comum",
+                evangelho: "Lucas 14,25-33",
+                gospelText: "Naquele tempo, grandes multidões seguiam a Jesus. Ele, voltando-se, disse-lhes: 'Se alguém vem a mim, e não me ama mais do que a seu pai, a sua mãe, a sua mulher, os seus filhos, os seus irmãos e irmãs, e até a sua própria vida, não pode ser meu discípulo. Quem não carrega sua cruz e não me segue, não pode ser meu discípulo. Quem de vós, querendo construir uma torre, não se senta primeiro para calcular os gastos, para ver se tem com que a terminar? Para que não aconteça que, depois de ter lançado o alicerce e não puder acabá-la, todos os que o virem comecem a zombar dele, dizendo: 'Este homem começou a construir, mas não pôde terminar.' Ou qual é o rei que, partindo para a guerra contra outro rei, não se senta primeiro para considerar se com dez mil homens pode enfrentar o que vem contra ele com vinte mil? Se não pode, enquanto o outro ainda está longe, manda-lhe uma embaixada para pedir a paz. Assim, qualquer um de vós que não renunciar a tudo o que tem, não pode ser meu discípulo.'",
+                tema: "O seguimento de Jesus exige renúncia e uma escolha radical."
+            },
+            {
+                date: "8 de Setembro",
+                primary: "Natividade de Nossa Senhora",
+                evangelho: "Mateus 1,1-16.18-23",
+                gospelText: "Genealogia de Jesus Cristo, filho de Davi, filho de Abraão: Abraão gerou Isaac; Isaac gerou Jacó; Jacó gerou Judá e seus irmãos; Judá gerou Farés e Zara, de Tamar; Farés gerou Esrom; Esrom gerou Arão; Arão gerou Aminadab; Aminadab gerou Naasson; Naasson gerou Salmão; Salmão gerou Booz, de Raab; Booz gerou Obed, de Rute; Obed gerou Jessé; Jessé gerou o rei Davi. Davi, do casamento com a mulher de Urias, gerou Salomão; Salomão gerou Roboão; Roboão gerou Abias; Abias gerou Asa; Asa gerou Josafá; Josafá gerou Jorão; Jorão gerou Ozias; Ozias gerou Joatão; Joatão gerou Acaz; Acaz gerou Ezequias; Ezequias gerou Manassés; Manassés gerou Amon; Amon gerou Josias; Josias gerou Jeconias e seus irmãos, no tempo do exílio em Babilônia. Depois do exílio em Babilônia: Jeconias gerou Salatiel; Salatiel gerou Zorobabel; Zorobabel gerou Abiud; Abiud gerou Eliaquim; Eliaquim gerou Azor; Azor gerou Sadoc; Sadoc gerou Aquim; Aquim gerou Eliud; Eliud gerou Eleazar; Eleazar gerou Matã; Matã gerou Jacó; Jacó gerou José, o esposo de Maria, da qual nasceu Jesus, chamado o Cristo. Ora, a origem de Jesus Cristo foi assim: Maria, sua mãe, estava prometida em casamento a José. Antes de passarem a morar juntos, ela ficou grávida pela ação do Espírito Santo. José, seu marido, sendo justo e não querendo difamá-la, pensou em abandoná-la secretamente. Enquanto ele pensava nisso, eis que um anjo do Senhor lhe apareceu em sonho e lhe disse: 'José, filho de Davi, não tenhas medo de receber Maria, tua esposa, porque o que nela foi gerado vem do Espírito Santo. Ela dará à luz um filho, e tu lhe darás o nome de Jesus, pois ele salvará o seu povo dos seus pecados.' Tudo isso aconteceu para que se cumprisse o que o Senhor havia dito pelo profeta: 'Eis que a virgem conceberá e dará à luz um filho, e ele será chamado pelo nome de Emanuel, que quer dizer: Deus conosco.'",
+                tema: "A alegria do nascimento de Maria, que anuncia a vinda do Salvador."
+            },
+            {
+                date: "9 de Setembro",
+                primary: "São Pedro Claver, presbítero",
+                evangelho: "Lucas 8,19-21",
+                gospelText: "Naquele tempo, a mãe e os irmãos de Jesus vieram até ele, mas não conseguiam chegar perto por causa da multidão. Foi-lhe dito: 'Tua mãe e teus irmãos estão lá fora, e querem ver-te.' Jesus, porém, respondeu-lhes: 'Minha mãe e meus irmãos são aqueles que ouvem a palavra de Deus e a põem em prática.'",
+                tema: "A família de Deus, formada por aqueles que ouvem e praticam a Sua Palavra."
+            },
+            {
+                date: "10 de Setembro",
+                primary: "23ª Semana do Tempo Comum",
+                evangelho: "Lucas 6,20-26",
+                gospelText: "Naquele tempo, Jesus, erguendo os olhos para os seus discípulos, disse: 'Bem-aventurados vós, os pobres, porque vosso é o Reino de Deus. Bem-aventurados vós, que agora tendes fome, porque sereis saciados. Bem-aventurados vós, que agora chorais, porque haveis de rir. Bem-aventurados sereis quando os homens vos odiarem, vos rejeitarem e vos insultarem, e amaldiçoarem o vosso nome, por causa do Filho do Homem. Alegrai-vos nesse dia e exultai, porque é grande a vossa recompensa no céu. Pois era assim que os seus pais tratavam os profetas. Ai de vós, ricos, porque já tendes a vossa consolação. Ai de vós, que agora estais fartos, porque haveis de ter fome. Ai de vós, que agora rides, porque haveis de chorar e lamentar-vos. Ai de vós, quando todos os homens vos elogiam, pois era assim que os seus pais tratavam os falsos profetas.'",
+                tema: "A sabedoria de Deus sobre a vida e a castidade, em oposição à sabedoria do mundo."
+            },
+            {
+                date: "11 de Setembro",
+                primary: "23ª Semana do Tempo Comum",
+                evangelho: "Lucas 7,36-50",
+                gospelText: "Um fariseu convidou Jesus para comer com ele. Jesus entrou na casa do fariseu e sentou-se à mesa. Havia na cidade uma mulher que era pecadora. Quando soube que Jesus estava à mesa na casa do fariseu, ela trouxe um vaso de alabastro cheio de perfume. Ficou por detrás de Jesus, a seus pés, chorando. Com as lágrimas, começou a lavar os pés de Jesus. E enxugava-os com os cabelos, beijava-os e os ungia com perfume. O fariseu que o tinha convidado, vendo isso, disse consigo mesmo: 'Se este homem fosse profeta, saberia quem é e que tipo de mulher é esta que o toca, pois é pecadora.' Jesus, então, lhe disse: 'Simão, tenho uma coisa a te dizer.' Simão respondeu: 'Fala, Mestre.' Jesus disse: 'Dois homens deviam a um credor. Um devia quinhentos denários, e o outro, cinquenta. Como não tinham com que pagar, o credor perdoou a dívida de ambos. Qual deles o amará mais?' Simão respondeu: 'Creio que aquele a quem perdoou mais.' Jesus lhe disse: 'Julgaste bem.' E, virando-se para a mulher, disse a Simão: 'Vês esta mulher? Entrei em tua casa, e não me deste água para os pés; ela, porém, regou meus pés com suas lágrimas e os enxugou com os seus cabelos. Não me deste o ósculo; ela, porém, desde que entrei, não cessou de beijar meus pés. Não ungiste a minha cabeça com óleo; ela, porém, ungiu meus pés com perfume. Por isso, eu te digo: os seus muitos pecados lhe são perdoados, porque ela amou muito. Mas aquele a quem pouco é perdoado, pouco ama.' E disse à mulher: 'Teus pecados te são perdoados.' Os que estavam à mesa com ele começaram a dizer consigo: 'Quem é este que até perdoa pecados?' Mas Jesus disse à mulher: 'A tua fé te salvou. Vai em paz.'",
+                tema: "O amor e a misericórdia de Jesus, que perdoam e transformam a vida."
+            },
+            {
+                date: "12 de Setembro",
+                primary: "Santíssimo Nome de Maria",
+                evangelho: "Lucas 8,1-3",
+                gospelText: "Naquele tempo, Jesus andava por cidades e povoados, pregando e anunciando a Boa Nova do Reino de Deus. Os Doze estavam com ele, e também algumas mulheres que tinham sido curadas de espíritos maus e de enfermidades: Maria, chamada Madalena, da qual tinham saído sete demônios; Joana, mulher de Cuza, procurador de Herodes; Susana; e muitas outras que os serviam com os seus bens.",
+                tema: "O serviço a Jesus e o anúncio do Reino, como fizeram as mulheres que o acompanhavam."
+            },
+            {
+                date: "13 de Setembro",
+                primary: "São João Crisóstomo, bispo e Doutor da Igreja",
+                evangelho: "Lucas 8,4-15",
+                gospelText: "Naquele tempo, uma grande multidão se ajuntou, e de todas as cidades as pessoas iam até Jesus. Então ele lhes falou por meio de uma parábola: 'O semeador saiu a semear. E, enquanto semeava, uma parte da semente caiu à beira do caminho; foi pisada, e os pássaros do céu a comeram. Outra parte caiu sobre a pedra; e, depois de brotar, secou, porque não havia umidade. Outra parte caiu no meio dos espinhos; e os espinhos, crescendo junto com ela, a sufocaram. Outra parte caiu em terra boa; brotou e deu fruto a cem por um.' Dizendo isso, Jesus exclamou em alta voz: 'Quem tem ouvidos para ouvir, ouça!' Os seus discípulos perguntaram-lhe o que significava essa parábola. Ele respondeu: 'A vós foi dado conhecer os mistérios do Reino de Deus; para os outros, porém, é por meio de parábolas, para que, vendo, não vejam, e ouvindo, não entendam. O sentido da parábola é este: A semente é a palavra de Deus. Os que estão à beira do caminho são aqueles que ouvem, mas depois vem o diabo e lhes tira a palavra do coração, para que não creiam e não se salvem. Os que estão sobre a pedra são aqueles que, ao ouvirem, acolhem a palavra com alegria; mas estes não têm raiz, creem por um tempo e na hora da provação desistem. A parte que caiu entre os espinhos são os que ouvem, mas, com as preocupações, a riqueza e os prazeres da vida, são sufocados e não chegam a amadurecer. A parte que caiu em terra boa são aqueles que, ouvindo a palavra com coração bom e honesto, a conservam e dão fruto com perseverança.'",
+                tema: "As condições do coração para receber e dar frutos da Palavra de Deus."
+            },
+            {
+                date: "14 de Setembro (domingo): Festa da Exaltação da Santa Cruz",
+                primary: "Festa da Exaltação da Santa Cruz",
+                evangelho: "João 3,13-17",
+                gospelText: "Naquele tempo, Jesus disse a Nicodemos: 'Ninguém subiu ao céu, a não ser aquele que desceu do céu, o Filho do Homem. Do mesmo modo como Moisés levantou a serpente no deserto, assim é necessário que o Filho do Homem seja levantado, para que todo aquele que nele crer tenha a vida eterna. Pois Deus amou tanto o mundo que deu o seu Filho unigênito, para que todo aquele que nele crer não pereça, mas tenha a vida eterna. De fato, Deus não enviou o seu Filho ao mundo para julgar o mundo, mas para que o mundo seja salvo por ele.'",
+                tema: "A Cruz como sinal de salvação, sacrifício e amor incondicional de Deus."
+            },
+            {
+                date: "15 de Setembro",
+                primary: "Nossa Senhora das Dores",
+                evangelho: "João 19,25-27",
+                gospelText: "Junto à cruz de Jesus estavam de pé sua mãe, a irmã de sua mãe, Maria de Cléofas, e Maria Madalena. Jesus, ao ver sua mãe e, ao lado dela, o discípulo a quem amava, disse a sua mãe: 'Mulher, eis aí o teu filho.' Depois disse ao discípulo: 'Eis aí a tua mãe.' E, a partir daquela hora, o discípulo a acolheu em sua casa.",
+                tema: "A compaixão de Maria, que nos ensina a permanecer firmes na dor."
+            },
+            {
+                date: "16 de Setembro",
+                primary: "Santos Cornélio, papa, e Cipriano, bispo, mártires",
+                evangelho: "Lucas 7,11-17",
+                gospelText: "Pouco depois, Jesus dirigiu-se a uma cidade chamada Naim. Iam com ele seus discípulos e uma grande multidão. Quando chegou perto da porta da cidade, eis que levavam um defunto para ser sepultado, filho único de sua mãe, que era viúva. Grande multidão da cidade a acompanhava. Ao vê-la, o Senhor compadeceu-se dela e lhe disse: 'Não chores!' Aproximou-se, tocou o caixão e os que o levavam pararam. Jesus, então, disse: 'Jovem, eu te ordeno: levanta-te!' O morto sentou-se e começou a falar. E Jesus o entregou à sua mãe. Todos ficaram com medo e glorificavam a Deus, dizendo: 'Um grande profeta apareceu entre nós e Deus visitou o seu povo.' A notícia deste fato espalhou-se por toda a Judeia e por toda a região circunvizinha.",
+                tema: "O poder de Jesus sobre a vida e a morte, trazendo esperança."
+            },
+            {
+                date: "17 de Setembro",
+                primary: "24ª Semana do Tempo Comum",
+                evangelho: "Lucas 7,31-35",
+                gospelText: "Naquele tempo, Jesus disse: 'Com quem, então, compararei os homens desta geração? Com quem eles se parecem? São como crianças sentadas na praça, que gritam umas para as outras: 'Nós vos tocamos flauta, e vós não dançastes; entoamos lamentações, e vós não chorastes.' Pois veio João Batista, que não come pão nem bebe vinho, e vós dizeis: 'Ele tem um demônio.' Veio o Filho do Homem, que come e bebe, e vós dizeis: 'Eis um glutão e beberrão, amigo de publicanos e pecadores.' Mas a sabedoria é justificada por todos os seus filhos.'",
+                tema: "A dificuldade em aceitar a verdade, mesmo quando ela é evidente."
+            },
+            {
+                date: "18 de Setembro",
+                primary: "24ª Semana do Tempo Comum",
+                evangelho: "Lucas 7,36-50",
+                gospelText: "Naquele tempo, um fariseu convidou Jesus para comer com ele. Jesus entrou na casa do fariseu e sentou-se à mesa. Havia na cidade uma mulher que era pecadora. Quando soube que Jesus estava à mesa na casa do fariseu, ela trouxe um vaso de alabastro cheio de perfume. Ficou por detrás de Jesus, a seus pés, chorando. Com as lágrimas, começou a lavar os pés de Jesus. E enxugava-os com os cabelos, beijava-os e os ungia com perfume. O fariseu que o tinha convidado, vendo isso, disse consigo mesmo: 'Se este homem fosse profeta, saberia quem é e que tipo de mulher é esta que o toca, pois é pecadora.' Jesus, então, lhe disse: 'Simão, tenho uma coisa a te dizer.' Simão respondeu: 'Fala, Mestre.' Jesus disse: 'Dois homens deviam a um credor. Um devia quinhentos denários, e o outro, cinquenta. Como não tinham com que pagar, o credor perdoou a dívida de ambos. Qual deles o amará mais?' Simão respondeu: 'Creio que aquele a quem perdoou mais.' Jesus lhe disse: 'Julgaste bem.' E, virando-se para a mulher, disse a Simão: 'Vês esta mulher? Entrei em tua casa, e não me deste água para os pés; ela, porém, regou meus pés com suas lágrimas e os enxugou com os seus cabelos. Não me deste o ósculo; ela, porém, desde que entrei, não cessou de beijar meus pés. Não ungiste a minha cabeça com óleo; ela, porém, ungiu meus pés com perfume. Por isso, eu te digo: os seus muitos pecados lhe são perdoados, porque ela amou muito. Mas aquele a quem pouco é perdoado, pouco ama.' E disse à mulher: 'Teus pecados te são perdoados.' Os que estavam à mesa com ele começaram a dizer consigo: 'Quem é este que até perdoa pecados?' Mas Jesus disse à mulher: 'A tua fé te salvou. Vai em paz.'",
+                tema: "O amor e a misericórdia de Jesus, que perdoam e transformam vidas."
+            },
+            {
+                date: "19 de Setembro",
+                primary: "24ª Semana do Tempo Comum",
+                evangelho: "Lucas 8,1-3",
+                gospelText: "Naquele tempo, Jesus andava por cidades e povoados, pregando e anunciando a Boa Nova do Reino de Deus. Os Doze estavam com ele, e também algumas mulheres que tinham sido curadas de espíritos maus e de enfermidades: Maria, chamada Madalena, da qual tinham saído sete demônios; Joana, mulher de Cuza, procurador de Herodes; Susana; e muitas outras que os serviam com os seus bens.",
+                tema: "A ressurreição como a base de nossa fé e a certeza da vida eterna."
+            },
+            {
+                date: "20 de Setembro",
+                primary: "Sábado da 24ª Semana do Tempo Comum",
+                evangelho: "Lucas 8,4-15",
+                gospelText: "Naquele tempo, uma grande multidão se ajuntou, e de todas as cidades as pessoas iam até Jesus. Então ele lhes falou por meio de uma parábola: 'O semeador saiu a semear. E, enquanto semeava, uma parte da semente caiu à beira do caminho; foi pisada, e os pássaros do céu a comeram. Outra parte caiu sobre a pedra; e, depois de brotar, secou, porque não havia umidade. Outra parte caiu no meio dos espinhos; e os espinhos, crescendo junto com ela, a sufocaram. Outra parte caiu em terra boa; brotou e deu fruto a cem por um.' Dizendo isso, Jesus exclamou em alta voz: 'Quem tem ouvidos para ouvir, ouça!' Os seus discípulos perguntaram-lhe o que significava essa parábola. Ele respondeu: 'A vós foi dado conhecer os mistérios do Reino de Deus; para os outros, porém, é por meio de parábolas, para que, vendo, não vejam, e ouvindo, não entendam. O sentido da parábola é este: A semente é a palavra de Deus. Os que estão à beira do caminho são aqueles que ouvem, mas depois vem o diabo e lhes tira a palavra do coração, para que não creiam e não se salvem. Os que estão sobre a pedra são aqueles que, ao ouvirem, acolhem a palavra com alegria; mas estes não têm raiz, creem por um tempo e na hora da provação desistem. A parte que caiu entre os espinhos são os que ouvem, mas, com as preocupações, a riqueza e os prazeres da vida, são sufocados e não chegam a amadurecer. A parte que caiu em terra boa são aqueles que, ouvindo a palavra com coração bom e honesto, a conservam e dão fruto com perseverança.'",
+                tema: "O solo do nosso coração precisa estar pronto para receber a Palavra de Deus."
+            },
+            {
+                date: "21 de Setembro",
+                primary: "25º Domingo do Tempo Comum",
+                evangelho: "Lucas 16,1-13",
+                gospelText: "Naquele tempo, Jesus disse aos seus discípulos: 'Havia um homem rico que tinha um administrador. Este foi acusado de esbanjar os bens do seu senhor. Ele o chamou e lhe disse: 'Que é isto que ouço a teu respeito? Presta contas da tua administração, pois não poderás mais ser meu administrador.' O administrador, então, disse consigo mesmo: 'Que farei, já que o meu senhor me tira a administração? Cavar, não tenho forças; mendigar, tenho vergonha. Já sei o que fazer, para que, quando for deposto da administração, as pessoas me recebam em suas casas.' Convocou, um por um, os devedores do seu senhor. Perguntou ao primeiro: 'Quanto deves ao meu senhor?' Ele respondeu: 'Cem barris de azeite.' O administrador lhe disse: 'Toma a tua conta, senta-te depressa e escreve cinquenta.' Depois, perguntou a outro: 'E tu, quanto deves?' Ele respondeu: 'Cem sacas de trigo.' O administrador lhe disse: 'Toma a tua conta e escreve oitenta.' E o senhor elogiou o administrador desonesto, porque agiu com esperteza. De fato, os filhos deste mundo são mais espertos em seus negócios do que os filhos da luz. Eu vos digo: Usai a riqueza iníqua para fazerdes amigos, a fim de que, quando ela vos faltar, vos recebam nas moradas eternas. Quem é fiel no pouco, é fiel também no muito; e quem é injusto no pouco, é injusto também no muito. Portanto, se não fostes fiéis na riqueza injusta, quem vos confiará a verdadeira? E se não fostes fiéis no que não era vosso, quem vos dará o que é vosso? Nenhum servo pode servir a dois senhores. Com efeito, ou odiará um e amará o outro, ou se apegará a um e desprezará o outro. Não podeis servir a Deus e ao dinheiro.'",
+                tema: "A sabedoria na administração dos bens materiais e a fidelidade nas pequenas coisas."
+            },
+            {
+                date: "22 de Setembro",
+                primary: "25ª Semana do Tempo Comum",
+                evangelho: "Lucas 8,16-18",
+                gospelText: "Naquele tempo, Jesus disse aos seus discípulos: 'Ninguém, depois de acender uma lamparina, a cobre com um vaso ou a põe debaixo da cama. Pelo contrário, põe-na sobre o candelabro, para que os que entram vejam a luz. Com efeito, nada há de oculto que não venha a ser manifestado, nem nada há de secreto que não venha a ser conhecido e revelado. Portanto, prestai atenção em como ouvis! Porque a quem tem, ser-lhe-á dado; e a quem não tem, até o que pensa ter lhe será tirado.'",
+                tema: "Não esconda a sua fé; deixe-a brilhar para que todos vejam."
+            },
+            {
+                date: "23 de Setembro",
+                primary: "São Pio de Pietrelcina, presbítero",
+                evangelho: "Lucas 8,19-21",
+                gospelText: "Naquele tempo, a mãe e os irmãos de Jesus vieram até ele, mas não conseguiam chegar perto por causa da multidão. Foi-lhe dito: 'Tua mãe e teus irmãos estão lá fora, e querem ver-te.' Jesus, porém, respondeu-lhes: 'Minha mãe e meus irmãos são aqueles que ouvem a palavra de Deus e a põem em prática.'",
+                tema: "A família de Jesus é formada por aqueles que ouvem a Palavra de Deus e a praticam."
+            },
+            {
+                date: "24 de Setembro",
+                primary: "25ª Semana do Tempo Comum",
+                evangelho: "Lucas 9,1-6",
+                gospelText: "Naquele tempo, Jesus convocou os Doze, deu-lhes poder e autoridade sobre todos os demônios e para curar as enfermidades. E enviou-os a pregar o Reino de Deus e a curar os doentes. E disse-lhes: 'Não leveis nada para o caminho, nem cajado, nem sacola, nem pão, nem dinheiro; nem tenhais duas túnicas. Em qualquer casa em que entrardes, ficai nela até que saiais dali. E se em alguma cidade não vos acolherem, ao sairdes de lá, sacudi o pó dos vossos pés em testemunho contra eles.' Eles, então, partiram e foram de aldeia em aldeia, anunciando a Boa Nova e fazendo curas em toda a parte.",
+                tema: "A missão de anunciar o Reino de Deus e a confiança na Divina Providência."
+            },
+            {
+                date: "25 de Setembro",
+                primary: "25ª Semana do Tempo Comum",
+                evangelho: "Lucas 9,7-9",
+                gospelText: "Naquele tempo, o tetrarca Herodes ouviu falar de tudo o que estava acontecendo, e ficou perplexo, porque alguns diziam que João tinha ressuscitado dos mortos. Outros diziam que Elias tinha aparecido; outros ainda, que um dos antigos profetas tinha ressuscitado. Herodes, porém, disse: 'A João, eu o decapitei. Quem é, então, este de quem ouço falar tais coisas?' E procurava vê-lo.",
+                tema: "A vaidade das coisas do mundo e a busca pelo que realmente importa."
+            },
+            {
+                date: "26 de Setembro",
+                primary: "Santos Cosme e Damião, mártires",
+                evangelho: "Lucas 9,18-22",
+                gospelText: "Naquele tempo, aconteceu que, enquanto Jesus orava a sós, os discípulos se aproximaram dele. Jesus lhes perguntou: 'Quem dizem as multidões que eu sou?' Eles responderam: 'João Batista; outros, Elias; outros ainda, um dos antigos profetas que ressuscitou.' Então ele lhes disse: 'E vós, quem dizeis que eu sou?' Pedro respondeu: 'O Cristo de Deus.' Jesus, então, advertiu-os, ordenando que a ninguém contassem tal coisa. E acrescentou: 'É necessário que o Filho do Homem sofra muitas coisas, que seja rejeitado pelos anciãos, pelos sumos sacerdotes e pelos escribas, que seja morto e que ressuscite ao terceiro dia.'",
+                tema: "O seguimento de Jesus, que nos chama a tomar nossa cruz e segui-lo."
+            },
+            {
+                date: "27 de Setembro",
+                primary: "São Vicente de Paulo, presbítero",
+                evangelho: "Lucas 9,43b-45",
+                gospelText: "Naquele tempo, todos estavam admirados com tudo o que Jesus fazia. Ele, porém, disse aos seus discípulos: 'Prestai bem atenção a estas palavras: o Filho do Homem vai ser entregue às mãos dos homens.' Eles, porém, não compreendiam esta palavra. O seu sentido estava-lhes oculto para que não o entendessem; e tinham medo de lhe perguntar a respeito daquela palavra.",
+                tema: "A vida de São Vicente de Paulo, que se entregou aos pobres e nos ensina a servir."
+            },
+            {
+                date: "28 de Setembro",
+                primary: "26º Domingo do Tempo Comum",
+                evangelho: "Lucas 16,19-31",
+                gospelText: "Naquele tempo, Jesus disse aos fariseus: 'Havia um homem rico que se vestia de púrpura e de linho finíssimo e se banqueteava todos os dias com esplendor. Havia também um mendigo, de nome Lázaro, coberto de chagas, que estava deitado à sua porta, e desejava saciar-se com as migalhas que caíam da mesa do rico. Até os cães vinham lamber suas chagas. O mendigo morreu e foi levado pelos anjos para junto de Abraão. Morreu também o rico e foi sepultado. Na mansão dos mortos, em meio a tormentos, o rico ergueu os olhos e viu Abraão de longe, com Lázaro ao seu lado. Então, gritou: 'Pai Abraão, tem piedade de mim e envia Lázaro, para que molhe a ponta do dedo na água e me refresque a língua, porque sofro muito nestas chamas.' Abraão, porém, respondeu: 'Filho, lembra-te que recebeste teus bens durante a vida, e Lázaro, por sua vez, os males. Agora, porém, ele é consolado, enquanto tu és atormentado. Além disso, entre nós e vós existe um grande abismo, de modo que os que quisessem passar daqui para junto de vós não poderiam, nem os daí para junto de nós.' O rico disse: 'Pai, eu te suplico, manda Lázaro à casa de meu pai, pois tenho cinco irmãos. Que ele os advirta, para que não venham também para este lugar de tormento.' Mas Abraão lhe disse: 'Eles têm Moisés e os Profetas; que os ouçam!' O rico insistiu: 'Não, pai Abraão, mas se alguém dentre os mortos for a eles, eles se converterão.' Abraão, porém, respondeu: 'Se não ouvem a Moisés e aos Profetas, tampouco se deixarão convencer, ainda que alguém ressuscite dos mortos.'",
+                tema: "A urgência da conversão e a compaixão pelos que sofrem."
+            },
+            {
+                date: "29 de Setembro",
+                primary: "Santos Arcanjos Miguel, Gabriel e Rafael (Festa)",
+                evangelho: "João 1,47-51",
+                gospelText: "Naquele tempo, Jesus viu Natanael que vinha ao seu encontro, e disse a seu respeito: 'Este é um verdadeiro israelita, no qual não há falsidade.' Natanael perguntou-lhe: 'De onde me conheces?' Jesus respondeu: 'Antes que Filipe te chamasse, quando estavas debaixo da figueira, eu te vi.' Natanael exclamou: 'Rabi, tu és o Filho de Deus, tu és o Rei de Israel.' Jesus lhe respondeu: 'Estás crendo porque te disse que te vi debaixo da figueira? Verás coisas maiores que estas.' E acrescentou: 'Em verdade, em verdade vos digo: vereis o céu aberto e os anjos de Deus subindo e descendo sobre o Filho do Homem.'",
+                tema: "A ação dos anjos na nossa vida e a defesa contra o mal, com o auxílio de São Miguel."
+            }
         ];
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -154,82 +424,9 @@
                 "julho": 6, "agosto": 7, "setembro": 8, "outubro": 9, "novembro": 10, "dezembro": 11
             };
 
-            // Função para buscar o texto do Evangelho e a reflexão usando a API do Gemini
-            async function fetchGospelText(gospelReference, tema) {
-                // Conteúdo de carregamento
-                liturgyContentEl.innerHTML = `
-                    <div class="flex items-center justify-center p-8 text-yellow-400">
-                        <svg class="animate-spin -ml-1 mr-3 h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>Carregando o Evangelho...</span>
-                    </div>
-                `;
-                
-                try {
-                    // Novo prompt que pede o texto de forma mais simples e fácil de processar
-                    const prompt = `Gere o texto completo do Evangelho de ${gospelReference}. Inclua o título "Reflexão" e uma reflexão de aproximadamente 100 palavras sobre como o tema '${tema}' se relaciona com o Evangelho.`;
-                    const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                    const payload = {
-                        contents: chatHistory,
-                        // Não pedimos JSON para evitar erros de formatação
-                    };
-
-                    // ----> SUA CHAVE DE API FOI INSERIDA AQUI. <----
-                    const apiKey = "AIzaSyBhJmnFa5X-91pqOdaQMnTZBMlZhsYnOzI"; 
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                    
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        console.error("Erro na API:", response.statusText);
-                        throw new Error(`Erro na API: ${response.status.text}`);
-                    }
-                    
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        
-                        const fullText = result.candidates[0].content.parts[0].text;
-                        
-                        // Lógica de divisão do texto mais confiável
-                        const parts = fullText.split("Reflexão:");
-                        const gospelText = parts[0].trim();
-                        const reflectionText = parts[1] ? parts[1].trim() : `Não foi possível gerar a reflexão. Tema: ${tema}`;
-                        
-                        console.log("Conteúdo do Evangelho processado com sucesso.");
-                        return { gospelText, reflectionText };
-                    } else {
-                        console.error("Resposta da API em formato inesperado:", result);
-                        throw new Error("Resposta da API em formato inesperado.");
-                    }
-                } catch (error) {
-                    console.error("Erro ao buscar o conteúdo da liturgia:", error);
-                    return {
-                        gospelText: "Não foi possível carregar o texto do Evangelho. Por favor, tente novamente mais tarde.",
-                        reflectionText: `Tema para a oração: ${tema}`
-                    };
-                } finally {
-                    // Remove o ícone de carregamento, independentemente do resultado
-                    // Isso evita que o ícone fique na tela em caso de falha.
-                    const loader = liturgyContentEl.querySelector('.animate-spin');
-                    if (loader) {
-                        loader.parentElement.remove();
-                    }
-                }
-            }
-
             // Função para carregar e exibir o conteúdo na tela principal
-            async function loadContentForDate(data) {
+            function loadContentForDate(data) {
                 currentDateEl.innerText = data.date;
-                const content = await fetchGospelText(data.evangelho, data.tema);
 
                 liturgyContentEl.innerHTML = `
                     <div class="space-y-6">
@@ -237,12 +434,12 @@
                             <h3 class="text-3xl font-bold text-yellow-400 mb-2">${data.primary}</h3>
                             <p class="text-xl font-medium text-gray-300 mb-4">Evangelho: ${data.evangelho}</p>
                             <div class="prose prose-invert max-w-none text-gray-400">
-                                <p class="text-lg">${content.gospelText}</p>
+                                <p class="text-lg">${data.gospelText}</p>
                             </div>
                         </div>
                         <div class="border-t border-gray-700 pt-6">
                             <h4 class="text-2xl font-bold text-white mb-2">Tema para a oração:</h4>
-                            <p class="text-lg text-gray-400">${content.reflectionText}</p>
+                            <p class="text-lg text-gray-400">${data.tema}</p>
                         </div>
                     </div>
                 `;
