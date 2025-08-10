@@ -168,11 +168,12 @@
                 `;
                 
                 try {
-                    // Novo prompt sem pedir JSON, o que torna a resposta da IA mais confiável
-                    const prompt = `Gere o texto completo do Evangelho de ${gospelReference}, seguido por uma quebra de linha com a palavra "REFLEXAO" (em letras maiúsculas), e depois uma reflexão de aproximadamente 100 palavras sobre como o tema '${tema}' se relaciona com o texto.`;
+                    // Novo prompt que pede o texto de forma mais simples e fácil de processar
+                    const prompt = `Gere o texto completo do Evangelho de ${gospelReference}. Inclua o título "Reflexão" e uma reflexão de aproximadamente 100 palavras sobre como o tema '${tema}' se relaciona com o Evangelho.`;
                     const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                     const payload = {
-                        contents: chatHistory
+                        contents: chatHistory,
+                        // Não pedimos JSON para evitar erros de formatação
                     };
 
                     const apiKey = ""; 
@@ -185,7 +186,8 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error(`Erro na API: ${response.statusText}`);
+                        console.error("Erro na API:", response.statusText);
+                        throw new Error(`Erro na API: ${response.status.text}`);
                     }
                     
                     const result = await response.json();
@@ -195,14 +197,16 @@
                         result.candidates[0].content.parts.length > 0) {
                         
                         const fullText = result.candidates[0].content.parts[0].text;
-                        // A nova lógica de divisão de texto
-                        const parts = fullText.split("REFLEXAO");
                         
+                        // Lógica de divisão do texto mais confiável
+                        const parts = fullText.split("Reflexão:");
                         const gospelText = parts[0].trim();
-                        const reflectionText = parts[1] ? parts[1].trim() : `Tema para a oração: ${tema}`;
+                        const reflectionText = parts[1] ? parts[1].trim() : `Não foi possível gerar a reflexão. Tema: ${tema}`;
                         
+                        console.log("Conteúdo do Evangelho processado com sucesso.");
                         return { gospelText, reflectionText };
                     } else {
+                        console.error("Resposta da API em formato inesperado:", result);
                         throw new Error("Resposta da API em formato inesperado.");
                     }
                 } catch (error) {
