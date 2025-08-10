@@ -176,7 +176,8 @@
                         // Não pedimos JSON para evitar erros de formatação
                     };
 
-                    const apiKey = ""; 
+                    // ----> SUA CHAVE DE API FOI INSERIDA AQUI. <----
+                    const apiKey = "AIzaSyBhJmnFa5X-91pqOdaQMnTZBMlZhsYnOzI"; 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                     
                     const response = await fetch(apiUrl, {
@@ -215,6 +216,13 @@
                         gospelText: "Não foi possível carregar o texto do Evangelho. Por favor, tente novamente mais tarde.",
                         reflectionText: `Tema para a oração: ${tema}`
                     };
+                } finally {
+                    // Remove o ícone de carregamento, independentemente do resultado
+                    // Isso evita que o ícone fique na tela em caso de falha.
+                    const loader = liturgyContentEl.querySelector('.animate-spin');
+                    if (loader) {
+                        loader.parentElement.remove();
+                    }
                 }
             }
 
