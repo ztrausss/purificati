@@ -24,12 +24,32 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary:before {
+            content: "−";
+        }
+        details summary:before {
+            content: "+";
+            margin-right: 1rem;
+            font-weight: bold;
+            color: #FACC15;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 min-h-screen flex items-center justify-center">
 
     <!-- Tela de Boas-Vindas -->
     <div id="landingScreen" class="bg-gray-800 rounded-3xl p-8 md:p-16 text-center shadow-2xl max-w-lg mx-4 transition-all duration-500 ease-in-out transform">
+        <!-- Títulos que aparecem apenas na primeira página -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-lg md:text-xl font-bold text-white">Terço dos Pequeninos</h1>
+            <h1 class="text-lg md:text-xl font-bold text-white">Grupo de jovens Purificati</h1>
+        </div>
         <div class="mb-8 animate-pulse">
             <!-- Ícone SVG de Espada e Escudo aprimorado -->
             <svg class="w-24 h-24 mx-auto text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -81,7 +101,6 @@
 
     <script>
         // Dados da liturgia com os textos e reflexões inseridos manualmente.
-        // A API foi removida para tornar a aplicação mais rápida e independente.
         const liturgiaData = [
             {
                 date: "15 de Agosto",
@@ -115,7 +134,7 @@
                 date: "19 de Agosto",
                 primary: "20ª Semana do Tempo Comum",
                 evangelho: "Mateus 19,23-30",
-                gospelText: "Jesus disse então aos seus discípulos: 'Em verdade vos digo, é difícil um rico entrar no Reino dos Céus. E digo ainda: é mais fácil um camelo passar pelo fundo de uma agulha, do que um rico entrar no Reino de Deus.' Os discípulos, ao ouvirem isso, ficaram muito espantados e disseram: 'Então, quem pode ser salvo?' Jesus, fixando neles o olhar, disse-lhes: 'Aos homens é impossível, mas para Deus tudo é possível.' Então Pedro lhe disse: 'Eis que nós deixamos tudo e te seguimos. O que nos será dado?' Jesus respondeu: 'Em verdade vos digo, vós que me seguistes, no mundo novo, quando o Filho do Homem se sentar no seu trono glorioso, também vos sentareis em doze tronos para julgar as doze tribos de Israel. E todo aquele que por minha causa tiver deixado casas, irmãos, irmãs, pai, mãe, filhos ou campos, receberá cem vezes mais e terá a vida eterna. Muitos dos primeiros serão os últimos, e muitos dos últimos serão os primeiros.'",
+                gospelText: "Jesus disse então aos seus discípulos: 'Em verdade vos digo, é difícil um rico entrar no Reino dos Céus. E digo ainda: 'é mais fácil um camelo passar pelo fundo de uma agulha, do que um rico entrar no Reino de Deus.' Os discípulos, ao ouvirem isso, ficaram muito espantados e disseram: 'Então, quem pode ser salvo?' Jesus, fixando neles o olhar, disse-lhes: 'Aos homens é impossível, mas para Deus tudo é possível.' Então Pedro lhe disse: 'Eis que nós deixamos tudo e te seguimos. O que nos será dado?' Jesus respondeu: 'Em verdade vos digo, vós que me seguistes, no mundo novo, quando o Filho do Homem se sentar no seu trono glorioso, também vos sentareis em doze tronos para julgar as doze tribos de Israel. E todo aquele que por minha causa tiver deixado casas, irmãos, irmãs, pai, mãe, filhos ou campos, receberá cem vezes mais e terá a vida eterna. Muitos dos primeiros serão os últimos, e muitos dos últimos serão os primeiros.'",
                 tema: "A confiança em Deus, pois o que é impossível para o homem é possível para Ele."
             },
             {
@@ -199,7 +218,7 @@
                 date: "31 de Agosto",
                 primary: "22º Domingo do Tempo Comum",
                 evangelho: "Lucas 14,1.7-14",
-                gospelText: "Naquele tempo, Jesus entrou num sábado na casa de um dos chefes dos fariseus para comer. E eles o observavam. Jesus, notando como os convidados escolhiam os primeiros lugares, propôs-lhes uma parábola: 'Quando fores convidado para uma festa de casamento, não te sentes no primeiro lugar, para que não aconteça que tenha sido convidado alguém mais importante do que tu, e o dono da casa, que vos convidou a ambos, venha e te diga: 'Dá o lugar a este.' Então, terás de ir, envergonhado, ocupar o último lugar. Pelo contrário, quando fores convidado, vai sentar-te no último lugar, para que, quando vier o que te convidou, te diga: 'Amigo, sobe para um lugar superior.' Isto te será uma honra diante de todos os que estiverem contigo à mesa. Porque todo aquele que se exalta será humilhado, e o que se humilha será exaltado.' E Jesus disse também ao que o tinha convidado: 'Quando deres um almoço ou um jantar, não convides teus amigos, nem teus irmãos, nem teus parentes, nem teus vizinhos ricos. Para que não suceda que eles, por sua vez, te convidem, e isto te sirva de recompensa. Pelo contrário, quando deres um banquete, convida os pobres, os aleijados, os coxos, os cegos. Serás feliz por eles não terem como te retribuir. De fato, a tua recompensa te será dada na ressurreição dos justos.'",
+                gospelText: "Naquele tempo, Jesus entrou num sábado na casa de um dos chefes dos fariseus para comer. E eles o observavam. Jesus, notando como os convidados escolhiam os primeiros lugares, propôs-lhe uma parábola: 'Quando fores convidado para uma festa de casamento, não te sentes no primeiro lugar, para que não aconteça que tenha sido convidado alguém mais importante do que tu, e o dono da casa, que vos convidou a ambos, venha e te diga: 'Dá o lugar a este.' Então, terás de ir, envergonhado, ocupar o último lugar. Pelo contrário, quando fores convidado, vai sentar-te no último lugar, para que, quando vier o que te convidou, te diga: 'Amigo, sobe para um lugar superior.' Isto te será uma honra diante de todos os que estiverem contigo à mesa. Porque todo aquele que se exalta será humilhado, e o que se humilha será exaltado.' E Jesus disse também ao que o tinha convidado: 'Quando deres um almoço ou um jantar, não convides teus amigos, nem teus irmãos, nem teus parentes, nem teus vizinhos ricos. Para que não suceda que eles, por sua vez, te convidem, e isto te sirva de recompensa. Pelo contrário, quando deres um banquete, convida os pobres, os aleijados, os coxos, os cegos. Serás feliz por eles não terem como te retribuir. De fato, a tua recompensa te será dada na ressurreição dos justos.'",
                 tema: "A humildade como caminho para a exaltação e a generosidade com os mais necessitados."
             },
             {
@@ -241,7 +260,7 @@
                 date: "6 de Setembro",
                 primary: "Sábado da 22ª Semana do Tempo Comum",
                 evangelho: "Lucas 6,43-49",
-                gospelText: "Jesus disse: 'Não existe árvore boa que dê mau fruto, nem árvore má que dê bom fruto. Pois cada árvore é conhecida pelo seu próprio fruto. Não se colhem figos de espinheiros, nem uvas de sarças. O homem bom tira coisas boas do bom tesouro do seu coração, mas o homem mau tira coisas más do mau tesouro do seu coração. Pois a boca fala do que o coração está cheio. Por que me chamais: 'Senhor, Senhor', e não fazeis o que eu digo? Todo aquele que vem a mim, ouve as minhas palavras e as põe em prática, eu vos mostrarei a quem é semelhante. Ele é semelhante a um homem que, ao construir a sua casa, cavou bem fundo e pôs o alicerce sobre a rocha. Quando veio a enchente, a torrente se arremessou contra a casa, mas não foi capaz de a abalar, porque estava bem construída. Aquele, porém, que ouve e não põe em prática, é semelhante a um homem que construiu sua casa sobre a terra, sem alicerces. A torrente se arremessou contra a casa, e ela desabou imediatamente; e foi grande a ruína dessa casa.'",
+                gospelText: "Jesus disse: 'Não existe árvore boa que dê mau fruto, nem árvore má que dê bom fruto. Pois cada árvore é conhecida pelo seu próprio fruto. Não se colhem figos de espinheiros, nem uvas de sarças. O homem bom tira coisas boas do bom tesouro do seu coração, mas o homem mau tira coisas malas do mau tesouro do seu coração. Pois a boca fala do que o coração está cheio. Por que me chamais: 'Senhor, Senhor', e não fazeis o que eu digo? Todo aquele que vem a mim, ouve as minhas palavras e as põe em prática, eu vos mostrarei a quem é semelhante. Ele é semelhante a um homem que, ao construir a sua casa, cavou bem fundo e pôs o alicerce sobre a rocha. Quando veio a enchente, a torrente se arremessou contra a casa, mas não foi capaz de a abalar, porque estava bem construída. Aquele, porém, que ouve e não põe em prática, é semelhante a um homem que construiu sua casa sobre a terra, sem alicerces. A torrente se arremessou contra a casa, e ela desabou imediatamente; e foi grande a ruína dessa casa.'",
                 tema: "A importância de construir a nossa vida sobre a Palavra de Deus."
             },
             {
@@ -276,7 +295,7 @@
                 date: "11 de Setembro",
                 primary: "23ª Semana do Tempo Comum",
                 evangelho: "Lucas 7,36-50",
-                gospelText: "Um fariseu convidou Jesus para comer com ele. Jesus entrou na casa do fariseu e sentou-se à mesa. Havia na cidade uma mulher que era pecadora. Quando soube que Jesus estava à mesa na casa do fariseu, ela trouxe um vaso de alabastro cheio de perfume. Ficou por detrás de Jesus, a seus pés, chorando. Com as lágrimas, começou a lavar os pés de Jesus. E enxugava-os com os cabelos, beijava-os e os ungia com perfume. O fariseu que o tinha convidado, vendo isso, disse consigo mesmo: 'Se este homem fosse profeta, saberia quem é e que tipo de mulher é esta que o toca, pois é pecadora.' Jesus, então, lhe disse: 'Simão, tenho uma coisa a te dizer.' Simão respondeu: 'Fala, Mestre.' Jesus disse: 'Dois homens deviam a um credor. Um devia quinhentos denários, e o outro, cinquenta. Como não tinham com que pagar, o credor perdoou a dívida de ambos. Qual deles o amará mais?' Simão respondeu: 'Creio que aquele a quem perdoou mais.' Jesus lhe disse: 'Julgaste bem.' E, virando-se para a mulher, disse a Simão: 'Vês esta mulher? Entrei em tua casa, e não me deste água para os pés; ela, porém, regou meus pés com suas lágrimas e os enxugou com os seus cabelos. Não me deste o ósculo; ela, porém, desde que entrei, não cessou de beijar meus pés. Não ungiste a minha cabeça com óleo; ela, porém, ungiu meus pés com perfume. Por isso, eu te digo: os seus muitos pecados lhe são perdoados, porque ela amou muito. Mas aquele a quem pouco é perdoado, pouco ama.' E disse à mulher: 'Teus pecados te são perdoados.' Os que estavam à mesa com ele começaram a dizer consigo: 'Quem é este que até perdoa pecados?' Mas Jesus disse à mulher: 'A tua fé te salvou. Vai em paz.'",
+                gospelText: "Um fariseu convidou Jesus para comer com ele. Jesus entrou na casa do fariseu e sentou-se à mesa. Havia na cidade uma mulher que era pecadora. Quando soube que Jesus estava à mesa na casa do fariseu, ela trouxe um vaso de alabastro cheio de perfume. Ficou por detrás de Jesus, a seus pés, chorando. Com as lágrimas, começou a lavar os pés de Jesus. E enxugava-os com os cabelos, beijava-os e os ungia com perfume. O fariseu que o tinha convidado, vendo isso, disse consigo mesmo: 'Se este homem fosse profeta, saberia quem é e que tipo de mulher é esta que o toca, pois é pecadora.' Jesus, então, lhe disse: 'Simão, tenho uma coisa a te dizer.' Simão respondeu: 'Fala, Mestre.' Jesus disse: 'Dois homens deviam a um credor. Um devia quinhentos denários, e o outro, cinquenta. Como não tinham com que pagar, o credor perdoou a dívida de ambos. Qual deles o amará mais?' Simão respondeu: 'Creio que aquele a quem perdoou mais.' Jesus lhe disse: 'Julgaste bem.' E, virando-se para a mulher, disse a Simão: 'Vês esta mulher? Entrei em tua casa, e não me deste água para os pés; ela, porém, regou meus pés com suas lágrimas e os enxugou com os seus cabelos. Não me deste o ósculo; ela, porém, desde que entrei, não cessou de beijar meus pés. Não ungiste a minha cabeça com óleo; ela, porém, ungiu meus pés com perfume. Por isso, eu te digo: os seus muitos pecados lhe são perdoados, porque ela amou muito. Mas aquele a quem pouco é perdoado, pouco ama.' E disse à mulher: 'A tua fé te salvou. Vai em paz.'",
                 tema: "O amor e a misericórdia de Jesus, que perdoam e transformam a vida."
             },
             {
@@ -325,7 +344,7 @@
                 date: "18 de Setembro",
                 primary: "24ª Semana do Tempo Comum",
                 evangelho: "Lucas 7,36-50",
-                gospelText: "Naquele tempo, um fariseu convidou Jesus para comer com ele. Jesus entrou na casa do fariseu e sentou-se à mesa. Havia na cidade uma mulher que era pecadora. Quando soube que Jesus estava à mesa na casa do fariseu, ela trouxe um vaso de alabastro cheio de perfume. Ficou por detrás de Jesus, a seus pés, chorando. Com as lágrimas, começou a lavar os pés de Jesus. E enxugava-os com os cabelos, beijava-os e os ungia com perfume. O fariseu que o tinha convidado, vendo isso, disse consigo mesmo: 'Se este homem fosse profeta, saberia quem é e que tipo de mulher é esta que o toca, pois é pecadora.' Jesus, então, lhe disse: 'Simão, tenho uma coisa a te dizer.' Simão respondeu: 'Fala, Mestre.' Jesus disse: 'Dois homens deviam a um credor. Um devia quinhentos denários, e o outro, cinquenta. Como não tinham com que pagar, o credor perdoou a dívida de ambos. Qual deles o amará mais?' Simão respondeu: 'Creio que aquele a quem perdoou mais.' Jesus lhe disse: 'Julgaste bem.' E, virando-se para a mulher, disse a Simão: 'Vês esta mulher? Entrei em tua casa, e não me deste água para os pés; ela, porém, regou meus pés com suas lágrimas e os enxugou com os seus cabelos. Não me deste o ósculo; ela, porém, desde que entrei, não cessou de beijar meus pés. Não ungiste a minha cabeça com óleo; ela, porém, ungiu meus pés com perfume. Por isso, eu te digo: os seus muitos pecados lhe são perdoados, porque ela amou muito. Mas aquele a quem pouco é perdoado, pouco ama.' E disse à mulher: 'Teus pecados te são perdoados.' Os que estavam à mesa com ele começaram a dizer consigo: 'Quem é este que até perdoa pecados?' Mas Jesus disse à mulher: 'A tua fé te salvou. Vai em paz.'",
+                gospelText: "Naquele tempo, um fariseu convidou Jesus para comer com ele. Jesus entrou na casa do fariseu e sentou-se à mesa. Havia na cidade uma mulher que era pecadora. Quando soube que Jesus estava à mesa na casa do fariseu, ela trouxe um vaso de alabastro cheio de perfume. Ficou por detrás de Jesus, a seus pés, chorando. Com as lágrimas, começou a lavar os pés de Jesus. E enxugava-os com os cabelos, beijava-os e os ungia com perfume. O fariseu que o tinha convidado, vendo isso, disse consigo mesmo: 'Se este homem fosse profeta, saberia quem é e que tipo de mulher é esta que o toca, pois é pecadora.' Jesus, então, lhe disse: 'Simão, tenho uma coisa a te dizer.' Simão respondeu: 'Fala, Mestre.' Jesus disse: 'Dois homens deviam a um credor. Um devia quinhentos denários, e o outro, cinquenta. Como não tinham com que pagar, o credor perdoou a dívida de ambos. Qual deles o amará mais?' Simão respondeu: 'Creio que aquele a quem perdoou mais.' Jesus lhe disse: 'Julgaste bem.' E, virando-se para a mulher, disse a Simão: 'Vês esta mulher? Entrei em tua casa, e não me deste água para os pés; ela, porém, regou meus pés com suas lágrimas e os enxugou com os seus cabelos. Não me deste o ósculo; ela, porém, desde que entrei, não cessou de beijar meus pés. Não ungiste a minha cabeça com óleo; ela, porém, ungiu meus pés com perfume. Por isso, eu te digo: os seus muitos pecados lhe são perdoados, porque ela amou muito. Mas aquele a quem pouco é perdoado, pouco ama.' E disse à mulher: 'A tua fé te salvou. Vai em paz.'",
                 tema: "O amor e a misericórdia de Jesus, que perdoam e transformam vidas."
             },
             {
@@ -430,7 +449,23 @@
 
                 liturgyContentEl.innerHTML = `
                     <div class="space-y-6">
-                        <div>
+                        <!-- Orações iniciais recolhíveis -->
+                        <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
+                            <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
+                                Oração inicial
+                            </summary>
+                            <p class="text-lg text-gray-300 mt-4">Inspirai, Senhor, as nossas ações e ajudai-nos a realizá-las, para que em vós comece e termine tudo aquilo que fizermos, por Cristo, Senhor nosso, amém.</p>
+                        </details>
+                        
+                        <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
+                            <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
+                                Oração ao Espírito Santo
+                            </summary>
+                            <p class="text-lg text-gray-300 mt-4">Vinde Espírito Santo, enchei os corações dos vossos fiéis e acendei neles o fogo do Vosso Amor. Enviai o Vosso Espírito e tudo será criado e renovareis a face da terra. Oremos: Ó Deus que instruíste os corações dos vossos fiéis, com a luz do Espírito Santo, fazei que apreciemos retamente todas as coisas segundo o mesmo Espírito e gozemos da sua consolação. Por Cristo Senhor Nosso. Amém</p>
+                        </details>
+
+                        <!-- Conteúdo do Evangelho do dia -->
+                        <div class="border-t border-gray-700 pt-6">
                             <h3 class="text-3xl font-bold text-yellow-400 mb-2">${data.primary}</h3>
                             <p class="text-xl font-medium text-gray-300 mb-4">Evangelho: ${data.evangelho}</p>
                             <div class="prose prose-invert max-w-none text-gray-400">
@@ -441,6 +476,17 @@
                             <h4 class="text-2xl font-bold text-white mb-2">Tema para a oração:</h4>
                             <p class="text-lg text-gray-400">${data.tema}</p>
                         </div>
+                        
+                        <!-- Oração de Consagração recolhível -->
+                        <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
+                            <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
+                                Consagração a São Miguel Arcanjo
+                            </summary>
+                            <p class="text-lg text-gray-300 mt-4">Ó Príncipe nobilíssimo dos Anjos, valoroso guerreiro do Altíssimo, zeloso defensor da glória do Senhor, terror dos espíritos rebeldes, amor e delícia de todos os Anjos justos, meu diletíssimo Arcanjo São Miguel, desejando eu fazer parte do número dos vossos devotos e servos, a vós, hoje, me consagro, me dou e ofereço, e ponho-me a mim próprio, a minha família e tudo o que me pertence debaixo da vossa poderosíssima proteção.</p>
+                            <p class="text-lg text-gray-300 mt-4">É pequena a oferta do meu serviço, sendo como sou um miserável pecador, mas vós engrandecereis o afeto do meu coração; recordai-vos que, de hoje em diante, estou debaixo do vosso sustento e deveis assistir-me em toda a minha vida e obter-me o perdão dos meus muitos e graves pecados, a graça de amar a Deus de todo coração, ao meu querido Salvador Jesus Cristo e a minha Mãe Maria Santíssima.</p>
+                            <p class="text-lg text-gray-300 mt-4">Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e com a vossa arma poderosa lançai para longe, precipitando nos abismos do inferno aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.</p>
+                            <p class="text-lg text-gray-300 mt-4">São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.</p>
+                        </details>
                     </div>
                 `;
             }
