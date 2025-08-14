@@ -218,7 +218,7 @@
                 date: "31 de Agosto",
                 primary: "22º Domingo do Tempo Comum",
                 evangelho: "Lucas 14,1.7-14",
-                gospelText: "Naquele tempo, Jesus entrou num sábado na casa de um dos chefes dos fariseus para comer. E eles o observavam. Jesus, notando como os convidados escolhiam os primeiros lugares, propôs-lhe uma parábola: 'Quando fores convidado para uma festa de casamento, não te sentes no primeiro lugar, para que não aconteça que tenha sido convidado alguém mais importante do que tu, e o dono da casa, que vos convidou a ambos, venha e te diga: 'Dá o lugar a este.' Então, terás de ir, envergonhado, ocupar o último lugar. Pelo contrário, quando fores convidado, vai sentar-te no último lugar, para que, quando vier o que te convidou, te diga: 'Amigo, sobe para um lugar superior.' Isto te será uma honra diante de todos os que estiverem contigo à mesa. Porque todo aquele que se exalta será humilhado, e o que se humilha será exaltado.' E Jesus disse também ao que o tinha convidado: 'Quando deres um almoço ou um jantar, não convides teus amigos, nem teus irmãos, nem teus parentes, nem teus vizinhos ricos. Para que não suceda que eles, por sua vez, te convidem, e isto te sirva de recompensa. Pelo contrário, quando deres um banquete, convida os pobres, os aleijados, os coxos, os cegos. Serás feliz por eles não terem como te retribuir. De fato, a tua recompensa te será dada na ressurreição dos justos.'",
+                gospelText: "Naquele tempo, Jesus entrou num sábado na casa de um dos chefes dos fariseus para comer. E eles o observavam. Jesus, notando como os convidados escolhiam os primeiros lugares, propôs-lhes uma parábola: 'Quando fores convidado para uma festa de casamento, não te sentes no primeiro lugar, para que não aconteça que tenha sido convidado alguém mais importante do que tu, e o dono da casa, que vos convidou a ambos, venha e te diga: 'Dá o lugar a este.' Então, terás de ir, envergonhado, ocupar o último lugar. Pelo contrário, quando fores convidado, vai sentar-te no último lugar, para que, quando vier o que te convidou, te diga: 'Amigo, sobe para um lugar superior.' Isto te será uma honra diante de todos os que estiverem contigo à mesa. Porque todo aquele que se exalta será humilhado, e o que se humilha será exaltado.' E Jesus disse também ao que o tinha convidado: 'Quando deres um almoço ou um jantar, não convides teus amigos, nem teus irmãos, nem teus parentes, nem teus vizinhos ricos. Para que não suceda que eles, por sua vez, te convidem, e isto te sirva de recompensa. Pelo contrário, quando deres um banquete, convida os pobres, os aleijados, os coxos, os cegos. Serás feliz por eles não terem como te retribuir. De fato, a tua recompensa te será dada na ressurreição dos justos.'",
                 tema: "A humildade como caminho para a exaltação e a generosidade com os mais necessitados."
             },
             {
@@ -240,7 +240,7 @@
                 primary: "São Gregório Magno, papa e Doutor da Igreja",
                 evangelho: "Lucas 6,20-26",
                 gospelText: "Naquele tempo, Jesus, erguendo os olhos para os seus discípulos, disse: 'Bem-aventurados vós, os pobres, porque vosso é o Reino de Deus. Bem-aventurados vós, que agora tendes fome, porque sereis saciados. Bem-aventurados vós, que agora chorais, porque haveis de rir. Bem-aventurados sereis quando os homens vos odiarem, vos rejeitarem e vos insultarem, e amaldiçoarem o vosso nome, por causa do Filho do Homem. Alegrai-vos nesse dia e exultai, porque é grande a vossa recompensa no céu. Pois era assim que os seus pais tratavam os profetas. Ai de vós, ricos, porque já tendes a vossa consolação. Ai de vós, que agora estais fartos, porque haveis de ter fome. Ai de vós, que agora rides, porque haveis de chorar e lamentar-vos. Ai de vós, quando todos os homens vos elogiam, pois era assim que os seus pais tratavam os falsos profetas.'",
-                tema: "As bem-aventuranças, que nos mostram o caminho para a verdadeira felicidade."
+                tema: "A sabedoria de Deus sobre a vida e a castidade, em oposição à sabedoria do mundo."
             },
             {
                 date: "4 de Setembro",
@@ -464,18 +464,24 @@
                             <p class="text-lg text-gray-300 mt-4">Vinde Espírito Santo, enchei os corações dos vossos fiéis e acendei neles o fogo do Vosso Amor. Enviai o Vosso Espírito e tudo será criado e renovareis a face da terra. Oremos: Ó Deus que instruíste os corações dos vossos fiéis, com a luz do Espírito Santo, fazei que apreciemos retamente todas as coisas segundo o mesmo Espírito e gozemos da sua consolação. Por Cristo Senhor Nosso. Amém</p>
                         </details>
 
-                        <!-- Conteúdo do Evangelho do dia -->
-                        <div class="border-t border-gray-700 pt-6">
-                            <h3 class="text-3xl font-bold text-yellow-400 mb-2">${data.primary}</h3>
-                            <p class="text-xl font-medium text-gray-300 mb-4">Evangelho: ${data.evangelho}</p>
-                            <div class="prose prose-invert max-w-none text-gray-400">
+                        <!-- Conteúdo do Evangelho do dia agora é uma caixa recolhível -->
+                        <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
+                            <summary class="flex items-center text-2xl font-bold text-yellow-400 cursor-pointer">
+                                Evangelho do dia: ${data.evangelho}
+                            </summary>
+                            <div class="prose prose-invert max-w-none text-gray-400 mt-4">
+                                <h3 class="text-3xl font-bold text-yellow-400 mb-2">${data.primary}</h3>
                                 <p class="text-lg">${data.gospelText}</p>
                             </div>
-                        </div>
-                        <div class="border-t border-gray-700 pt-6">
-                            <h4 class="text-2xl font-bold text-white mb-2">Tema para a oração:</h4>
-                            <p class="text-lg text-gray-400">${data.tema}</p>
-                        </div>
+                        </details>
+
+                        <!-- Tema para meditação agora é uma caixa recolhível -->
+                        <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
+                            <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
+                                Tema para meditação:
+                            </summary>
+                            <p class="text-lg text-gray-300 mt-4">${data.tema}</p>
+                        </details>
                         
                         <!-- Oração de Consagração recolhível -->
                         <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
