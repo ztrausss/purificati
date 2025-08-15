@@ -117,12 +117,13 @@
             // Variável para armazenar os dados da liturgia carregados do arquivo JSON
             let liturgiaData = [];
 
-            // Função para carregar os dados da liturgia do arquivo JSON
+            // Função para carregar os dados da liturgia do arquivo JSON usando a API do GitHub
             async function fetchLiturgyData() {
                 try {
-                    // URL corrigida para o conteúdo bruto do GitHub, com um timestamp para evitar cache
-                    const url = 'https://ztrausss.github.io/purificati/liturgia-data.json?t=' + new Date().getTime();
-                    const response = await fetch(url);
+                    const apiURL = 'https://api.github.com/repos/ztrausss/purificati/contents/liturgia-data.json';
+                    const response = await fetch(apiURL, {
+                        headers: { 'Accept': 'application/vnd.github.v3.raw' }
+                    });
                     if (!response.ok) {
                         throw new Error(`Erro ao carregar os dados: ${response.statusText}`);
                     }
@@ -131,7 +132,7 @@
                 } catch (error) {
                     console.error('Falha ao carregar os dados da liturgia:', error);
                     // Adiciona um feedback visual para o usuário
-                    liturgyContentEl.innerHTML = `<p class="text-red-500 text-center">Erro ao carregar o conteúdo. Por favor, verifique sua conexão com a internet e se o endereço do arquivo está correto.</p>`;
+                    liturgyContentEl.innerHTML = `<p class="text-red-500 text-center">Erro ao carregar o conteúdo. Por favor, verifique sua conexão com a internet e o endereço do arquivo JSON no código.</p>`;
                 }
             }
 
