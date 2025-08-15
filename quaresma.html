@@ -11,12 +11,12 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease;
         }
         .bg-pattern {
             background-image: url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 0L61.8 38.2L100 50L61.8 61.8L50 100L38.2 61.8L0 50L38.2 38.2Z" fill="%234b5563"/%3E%3C/svg%3E');
             background-size: 10px 10px;
         }
-        /* Estilo para o modal de seleção de data */
         #datePickerModal {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -41,7 +41,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen flex items-center justify-center">
+<body class="bg-gray-900 text-gray-200 min-h-screen flex items-center justify-center relative">
 
     <!-- Tela de Boas-Vindas -->
     <div id="landingScreen" class="bg-gray-800 rounded-3xl p-8 md:p-16 text-center shadow-2xl max-w-lg mx-4 transition-all duration-500 ease-in-out transform">
@@ -108,16 +108,13 @@
             const currentDateEl = document.getElementById('currentDate');
             const liturgyContentEl = document.getElementById('liturgyContent');
 
-            // Mapeamento de meses para facilitar o trabalho com objetos Date
             const monthMap = {
                 "janeiro": 0, "fevereiro": 1, "março": 2, "abril": 3, "maio": 4, "junho": 5,
                 "julho": 6, "agosto": 7, "setembro": 8, "outubro": 9, "novembro": 10, "dezembro": 11
             };
 
-            // Variável para armazenar os dados da liturgia carregados do arquivo JSON
             let liturgiaData = [];
 
-            // Função para carregar os dados da liturgia do arquivo JSON com timestamp para evitar cache
             async function fetchLiturgyData() {
                 try {
                     const url = `https://ztrausss.github.io/purificati/liturgia-data.json?t=${new Date().getTime()}`;
@@ -129,18 +126,15 @@
                     console.log('Dados da liturgia carregados com sucesso:', liturgiaData);
                 } catch (error) {
                     console.error('Falha ao carregar os dados da liturgia:', error);
-                    // Adiciona um feedback visual para o usuário
-                    liturgyContentEl.innerHTML = `<p class="text-red-500 text-center">Erro ao carregar o conteúdo. Por favor, verifique sua conexão com a internet e o endereço do arquivo JSON no código.</p>`;
+                    liturgyContentEl.innerHTML = `<p class="text-red-500 text-center">Erro ao carregar o conteúdo. Por favor, verifique sua conexão com a internet.</p>`;
                 }
             }
 
-            // Função para carregar e exibir o conteúdo na tela principal
             function loadContentForDate(data) {
                 currentDateEl.innerText = data.date;
 
                 liturgyContentEl.innerHTML = `
                     <div class="space-y-6">
-                        <!-- Orações iniciais recolhíveis -->
                         <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
                             <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
                                 Oração inicial
@@ -156,7 +150,6 @@
                             <p class="text-lg text-gray-300 mt-4">Vinde Espírito Santo, enchei os corações dos vossos fiéis e acendei neles o fogo do Vosso Amor. Enviai o Vosso Espírito e tudo será criado e renovareis a face da terra. Oremos: Ó Deus que instruíste os corações dos vossos fiéis, com a luz do Espírito Santo, fazei que apreciemos retamente todas as coisas segundo o mesmo Espírito e gozemos da sua consolação. Por Cristo Senhor Nosso. Amém</p>
                         </details>
 
-                        <!-- Conteúdo do Evangelho do dia agora é uma caixa recolhível -->
                         <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
                             <summary class="flex items-center text-2xl font-bold text-yellow-400 cursor-pointer">
                                 Evangelho do dia: ${data.evangelho}
@@ -168,7 +161,6 @@
                             </div>
                         </details>
 
-                        <!-- Tema para meditação agora é uma caixa recolhível -->
                         <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
                             <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
                                 Tema para meditação
@@ -176,7 +168,6 @@
                             <p class="text-lg text-gray-300 mt-4">${data.tema}</p>
                         </details>
                         
-                        <!-- Oração de Consagração recolhível -->
                         <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
                             <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
                                 Consagração a São Miguel Arcanjo
@@ -186,23 +177,14 @@
                             <p class="text-lg text-gray-300 mt-4">Obtende-me aqueles auxílios que me são necessários para obter a coroa da eterna glória. Defendei-me dos inimigos da alma, especialmente na hora da morte. Vinde, ó príncipe gloriosíssimo, assistir-me na última luta, e com a vossa arma poderosa lançai para longe, precipitando nos abismos do inferno aquele anjo quebrador de promessas e soberbo que um dia prostrastes no combate no Céu.</p>
                             <p class="text-lg text-gray-300 mt-4">São Miguel Arcanjo, defendei-nos no combate para que não pereçamos no supremo juízo. Amém.</p>
                         </details>
-                        
-                        <!-- Nova caixa de penitência -->
-                        <details class="bg-gray-700 rounded-xl p-4 transition-all duration-300 open:bg-gray-600">
-                            <summary class="flex items-center text-2xl font-bold text-white cursor-pointer">
-                                Penitência do dia
-                            </summary>
-                            <p class="text-lg text-gray-300 mt-4">${data.penitencia}</p>
-                        </details>
                     </div>
                 `;
             }
 
-            // Encontra o conteúdo para a data de hoje, ou o primeiro item da lista se a data não estiver no período
             function findTodayContent() {
                 const today = new Date();
                 const todayDay = today.getDate();
-                const todayMonth = today.getMonth(); // 0-11
+                const todayMonth = today.getMonth();
                 
                 const foundItem = liturgiaData.find(item => {
                     const parts = item.date.split(" de ");
@@ -214,7 +196,6 @@
                 return foundItem || liturgiaData[0];
             }
             
-            // Popula o modal de seleção de datas
             function populateDateList() {
                 dateList.innerHTML = '';
                 liturgiaData.forEach(item => {
@@ -231,12 +212,10 @@
                 });
             }
 
-            // Event listener para o botão "Continuar"
             continueBtn.addEventListener('click', async () => {
                 landingScreen.classList.add('hidden');
                 mainContentScreen.classList.remove('hidden');
                 
-                // Carrega os dados antes de exibir o conteúdo
                 await fetchLiturgyData();
 
                 const todayContent = findTodayContent();
@@ -245,15 +224,12 @@
                 }
             });
 
-            // Event listener para o botão do calendário (abre o modal)
             datePickerBtn.addEventListener('click', () => {
                 datePickerModal.classList.remove('hidden');
                 datePickerModal.classList.add('flex');
-                // Popula a lista de datas usando os dados já carregados
                 populateDateList();
             });
 
-            // Event listener para o botão "Fechar" do modal
             closeModalBtn.addEventListener('click', () => {
                 datePickerModal.classList.add('hidden');
                 datePickerModal.classList.remove('flex');
