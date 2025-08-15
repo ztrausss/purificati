@@ -121,7 +121,7 @@
             async function fetchLiturgyData() {
                 try {
                     // URL corrigida para o conteúdo bruto do GitHub, com um timestamp para evitar cache
-                    const url = 'https://raw.githubusercontent.com/ztrausss/purificati/main/liturgia-data.json?t=' + new Date().getTime();
+                    const url = 'https://ztrausss.github.io/purificati/liturgia-data.json?t=' + new Date().getTime();
                     const response = await fetch(url);
                     if (!response.ok) {
                         throw new Error(`Erro ao carregar os dados: ${response.statusText}`);
