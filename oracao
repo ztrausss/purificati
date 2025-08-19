@@ -1,0 +1,291 @@
+<!DOCTYPE ahtml>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Oração Jovem</title>
+    <!-- Inclui a biblioteca Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define a fonte Inter para todo o corpo da página */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        /* Estiliza o contêiner principal com um gradiente e sombra */
+        .container {
+            background-color: #1a1a1a;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Estiliza o botão principal com um gradiente vibrante */
+        #open-modal-btn {
+            background: linear-gradient(45deg, #FF6B6B, #F06595);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #open-modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(240, 101, 149, 0.4);
+        }
+
+        /* Estilização para o modal (o pop-up) */
+        #prayer-modal {
+            display: none; /* Inicia escondido */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: #2a2a2a;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Botão de fechar do modal */
+        #close-modal-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #a0a0a0;
+            transition: color 0.2s ease;
+        }
+        #close-modal-btn:hover {
+            color: #e0e0e0;
+        }
+
+        /* Estilização do formulário */
+        input[type="text"], textarea {
+            background-color: #3b3b3b;
+            color: #f0f0f0;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            width: 100%;
+            resize: vertical;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            background-color: #4a4a4a;
+            box-shadow: 0 0 0 2px #F06595;
+        }
+
+        /* Estiliza o botão de envio */
+        #submit-btn {
+            background-color: #F06595;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        #submit-btn:hover {
+            background-color: #FF6B6B;
+            transform: translateY(-2px);
+        }
+
+        /* Estilização para o spinner de carregamento */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #F06595;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contêiner principal da aplicação -->
+    <div class="container">
+        <!-- Título e mensagem -->
+        <h1 class="text-4xl sm:text-5xl font-bold mb-4 bg-clip-text text-transparent" style="background-image: linear-gradient(45deg, #F06595, #FF6B6B);">
+            Conecte-se em Oração
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-400 mb-8">
+            Suas intenções, sua fé, sua voz. Deixe sua oração tocar o coração do céu.
+        </p>
+        
+        <!-- Botão principal para abrir o modal -->
+        <button id="open-modal-btn" class="py-4 px-8 text-xl text-white font-bold rounded-full shadow-lg">
+            Coloque aqui suas intenções
+        </button>
+
+        <!-- Área para mensagens de status -->
+        <div id="status-message" class="mt-4 p-3 rounded-xl hidden text-sm font-semibold"></div>
+    </div>
+
+    <!-- Modal para o formulário de oração -->
+    <div id="prayer-modal">
+        <div class="modal-content">
+            <!-- Botão para fechar o modal -->
+            <span id="close-modal-btn">&times;</span>
+
+            <h2 class="text-3xl font-bold mb-6 text-center text-gray-200">
+                Compartilhe sua Oração
+            </h2>
+            <form id="prayer-form">
+                <!-- Campo para a intenção de oração (obrigatório) -->
+                <div class="mb-6">
+                    <label for="intention" class="block text-gray-400 font-semibold mb-2">
+                        Sua intenção de oração (obrigatório)
+                    </label>
+                    <textarea id="intention" name="intention" rows="6" class="w-full" required placeholder="Escreva aqui suas palavras..."></textarea>
+                </div>
+
+                <!-- Campo para o nome (opcional) -->
+                <div class="mb-6">
+                    <label for="name" class="block text-gray-400 font-semibold mb-2">
+                        Seu nome (opcional)
+                    </label>
+                    <input type="text" id="name" name="name" class="w-full" placeholder="Ex: Maria, João, etc.">
+                </div>
+
+                <!-- Botão de envio -->
+                <button type="submit" id="submit-btn" class="w-full py-3 px-6 text-white font-bold rounded-full flex items-center justify-center space-x-2">
+                    <span id="button-text">Enviar Oração</span>
+                    <div id="loading-spinner" class="spinner hidden"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Pega as referências dos elementos HTML
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const prayerModal = document.getElementById('prayer-modal');
+        const prayerForm = document.getElementById('prayer-form');
+        const statusMessage = document.getElementById('status-message');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        // Adiciona um evento de clique para abrir o modal
+        openModalBtn.addEventListener('click', () => {
+            prayerModal.style.display = 'flex';
+        });
+
+        // Adiciona um evento de clique para fechar o modal
+        closeModalBtn.addEventListener('click', () => {
+            prayerModal.style.display = 'none';
+        });
+
+        // Fecha o modal se o usuário clicar fora dele
+        window.addEventListener('click', (event) => {
+            if (event.target === prayerModal) {
+                prayerModal.style.display = 'none';
+            }
+        });
+
+        // Lida com o envio do formulário
+        prayerForm.addEventListener('submit', async (event) => {
+            // Previne o comportamento padrão de recarregar a página
+            event.preventDefault();
+
+            // Esconde mensagens anteriores
+            statusMessage.classList.add('hidden');
+            
+            // Exibe o spinner de carregamento e desabilita o botão
+            buttonText.textContent = 'Enviando...';
+            loadingSpinner.classList.remove('hidden');
+            prayerForm.querySelector('#submit-btn').disabled = true;
+
+            // Coleta os dados do formulário
+            const formData = new FormData(prayerForm);
+            const data = {
+                intention: formData.get('intention'),
+                name: formData.get('name') || 'Anônimo' // Se o nome estiver vazio, usa 'Anônimo'
+            };
+
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // !!!!!!!!!!! PASSO CRÍTICO: SUBSTITUA O URL ABAIXO !!!!!!!!!!!!!!!!!!!!!!!
+            // Você precisa publicar o script no Google Apps Script para obter este URL.
+            // Veja as instruções na minha próxima resposta.
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyD_72bNULYPac6C5ZUPo6HIzpx27aXf_hQsLdlzixb3twpPCp8MwZmPx8DtqqduRobig/exec'; 
+
+            try {
+                // Envia os dados para o Google Apps Script
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Necessário para evitar erros de CORS
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                // A resposta de "no-cors" não pode ser lida, então assumimos sucesso
+                // A menos que haja um erro de rede.
+                showMessage('Obrigado! Sua oração foi enviada com sucesso.', 'success');
+                prayerForm.reset();
+                setTimeout(() => {
+                    prayerModal.style.display = 'none';
+                }, 2000); // Fecha o modal após 2 segundos
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showMessage('Ops! Algo deu errado ao enviar a oração. Tente novamente.', 'error');
+            } finally {
+                // Volta o botão ao estado normal
+                buttonText.textContent = 'Enviar Oração';
+                loadingSpinner.classList.add('hidden');
+                prayerForm.querySelector('#submit-btn').disabled = false;
+            }
+        });
+        
+        // Função para exibir mensagens de status
+        function showMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+            if (type === 'success') {
+                statusMessage.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                statusMessage.classList.add('bg-red-500');
+            }
+        }
+    </script>
+</body>
+</html>
