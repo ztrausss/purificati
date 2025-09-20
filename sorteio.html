@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteador de Números</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; /* Fundo preto */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            padding: 1rem;
+        }
+        .container {
+            background-color: #2c2c2c; /* Fundo cinza escuro */
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Sombra mais escura */
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+        .input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+        }
+        .button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            background: #4a90e2; /* Cor azul para destacar */
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .result-box {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            min-height: 4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem; /* Fonte menor para a frase */
+            font-weight: 700;
+            transition: all 0.5s ease-in-out;
+            opacity: 0;
+            transform: scale(0.8);
+            line-height: 1.2;
+        }
+        .result-number {
+            font-size: 2.5rem; /* Fonte maior apenas para o número */
+            color: #4a90e2;
+            margin: 0 0.5rem;
+            font-weight: 800;
+        }
+        .result-box.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .title {
+                font-size: 1.5rem;
+            }
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            .input, .button {
+                font-size: 1rem;
+            }
+            .result-box {
+                font-size: 1.2rem;
+            }
+            .result-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">Sorteador de Números</h1>
+        <p class="subtitle">Insira um valor e sorteie um número entre 1 e o valor escolhido.</p>
+        
+        <div class="input-group">
+            <input type="number" id="maxValueInput" placeholder="Valor Máximo" class="input" min="1">
+        </div>
+        
+        <button id="drawButton" class="button">Sortear!</button>
+        
+        <div id="resultBox" class="result-box">
+            <span></span>
+        </div>
+    </div>
+
+    <script>
+        const drawButton = document.getElementById('drawButton');
+        const maxValueInput = document.getElementById('maxValueInput');
+        const resultBox = document.getElementById('resultBox');
+
+        drawButton.addEventListener('click', () => {
+            const maxValue = parseInt(maxValueInput.value, 10);
+
+            // Valida se o valor é um número válido e maior que 0
+            if (isNaN(maxValue) || maxValue <= 0) {
+                resultBox.classList.remove('show');
+                resultBox.innerHTML = '<span>⚠️</span>';
+                resultBox.classList.add('show');
+                return;
+            }
+
+            // Sorteia um número de 1 a maxValue
+            const randomNumber = Math.floor(Math.random() * maxValue) + 1;
+
+            // Animação para esconder e mostrar o resultado
+            resultBox.classList.remove('show');
+            setTimeout(() => {
+                resultBox.innerHTML = `O participante número: <span class="result-number">${randomNumber}</span>, foi escolhido.`;
+                resultBox.classList.add('show');
+            }, 300);
+        });
+    </script>
+
+</body>
+</html>
