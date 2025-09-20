@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Emoji</title>
+    <!-- Carrega o Tailwind CSS para estilos modernos e responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilo para a fonte customizada "Inter" */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-900 text-white;
+        }
+        /* Estilo para a animação do emoji */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-fadeInScale {
+            animation: fadeInScale 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="bg-gray-800 p-8 rounded-3xl shadow-lg text-center max-w-sm w-full space-y-8">
+        <!-- Título do aplicativo -->
+        <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            Gerador de Emojis
+        </h1>
+
+        <!-- Div para exibir o emoji gerado -->
+        <div id="emojiDisplay" class="text-[12rem] sm:text-[15rem] leading-none animate-fadeInScale">
+            <!-- Emoji será inserido aqui pelo JavaScript -->
+        </div>
+
+        <!-- Botões para interagir com o aplicativo -->
+        <div class="flex flex-col items-center justify-center gap-4">
+            <!-- Botões Voltar e Avançar -->
+            <div class="flex flex-row gap-4 w-full">
+                <button
+                    id="backButton"
+                    class="flex-1 px-8 py-3 bg-gray-600 text-white font-bold text-lg rounded-full shadow-lg transition-all duration-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                    disabled
+                >
+                    Voltar
+                </button>
+                <button
+                    id="forwardButton"
+                    class="flex-1 px-8 py-3 bg-gray-600 text-white font-bold text-lg rounded-full shadow-lg transition-all duration-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                    disabled
+                >
+                    Avançar
+                </button>
+            </div>
+
+            <!-- Botões Gerar -->
+            <div class="flex flex-col gap-4 w-full">
+                 <button
+                    id="easyGenerateButton"
+                    class="w-full px-8 py-4 bg-purple-600 text-white font-bold text-lg rounded-full shadow-lg transition-all duration-200 hover:bg-purple-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                >
+                    Gerar Emoji Fácil
+                </button>
+                <button
+                    id="hardGenerateButton"
+                    class="w-full px-8 py-4 bg-blue-600 text-white font-bold text-lg rounded-full shadow-lg transition-all duration-200 hover:bg-blue-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                >
+                    Gerar Emoji Difícil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript para a lógica do aplicativo -->
+    <script>
+        // Array com emojis de rosto (considerados "fáceis")
+        const easyEmojis = ['😊', '😂', '😍', '🤩', '🥳', '😎', '🤔', '😁', '😅', '😇', '😉', '😋', '🤗', '😏', '😐', '😑', '😮', '😵', '🤯', '😬', '😩', '🥺', '😭', '🤯', '😤', '😡', '😠', '😷', '🤒', '🤕', '😴', '👍', '👏', '✌️', '❤️', '🌟', '💯', '✨', '🔥', '💡', '🚀'];
+
+        // Array com uma seleção completa de emojis
+        const hardEmojis = [
+            '😊', '😂', '😍', '🤩', '🥳', '😎', '🤔', '👍', '👏', '🚀',
+            '🌟', '💯', '❤️', '💡', '🔥', '🌈', '🎉', '🎊', '✨', '🌍',
+            '🐧', '🦄', '🤖', '🐶', '🐱', '🦋', '🌸', '🍔', '🍕', '🌮',
+            '🍦', '🍩', '🍫', '☕', '🎶', '🎬', '⚽', '🏀', '🎮', '❤️‍🔥',
+            '🌲', '🌳', '🌺', '☀️', '🌙', '💫', '🌊', '🍎', '📚', '💻',
+            '🎨', '🎼', '🎲', '🧩', '🎸', '🥁', '🎺', '🎤', '🎧', '📱'
+        ];
+
+        // Referências para os elementos HTML
+        const emojiDisplay = document.getElementById('emojiDisplay');
+        const easyGenerateButton = document.getElementById('easyGenerateButton');
+        const hardGenerateButton = document.getElementById('hardGenerateButton');
+        const backButton = document.getElementById('backButton');
+        const forwardButton = document.getElementById('forwardButton');
+
+        // Variáveis para gerenciar o histórico de emojis
+        let emojiHistory = [];
+        let historyIndex = -1;
+
+        // Função para gerar um emoji aleatório a partir de um array
+        function generateRandomEmoji(emojiArray) {
+            // Remove a classe de animação para reiniciá-la
+            emojiDisplay.classList.remove('animate-fadeInScale');
+            // Força um reflow para a animação reiniciar
+            void emojiDisplay.offsetWidth; 
+
+            // Gera um índice aleatório e seleciona um emoji
+            const randomIndex = Math.floor(Math.random() * emojiArray.length);
+            const newEmoji = emojiArray[randomIndex];
+            
+            // Adiciona o novo emoji ao histórico
+            historyIndex++;
+            // Se já tivermos voltado, substitui os emojis à frente
+            if (emojiHistory.length > historyIndex) {
+                emojiHistory[historyIndex] = newEmoji;
+                emojiHistory = emojiHistory.slice(0, historyIndex + 1);
+            } else {
+                emojiHistory.push(newEmoji);
+            }
+
+            // Exibe o novo emoji
+            emojiDisplay.textContent = newEmoji;
+            
+            // Adiciona a classe de animação de volta
+            emojiDisplay.classList.add('animate-fadeInScale');
+
+            // Habilita ou desabilita os botões de navegação
+            updateButtonsState();
+        }
+
+        // Função para voltar para o emoji anterior no histórico
+        function goBack() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                emojiDisplay.textContent = emojiHistory[historyIndex];
+                updateButtonsState();
+            }
+        }
+
+        // Função para avançar para o próximo emoji no histórico
+        function goForward() {
+            if (historyIndex < emojiHistory.length - 1) {
+                historyIndex++;
+                emojiDisplay.textContent = emojiHistory[historyIndex];
+                updateButtonsState();
+            }
+        }
+
+        // Função para atualizar o estado dos botões de navegação
+        function updateButtonsState() {
+            backButton.disabled = historyIndex <= 0;
+            forwardButton.disabled = historyIndex >= emojiHistory.length - 1;
+        }
+
+        // Adiciona os event listeners aos botões
+        easyGenerateButton.addEventListener('click', () => generateRandomEmoji(easyEmojis));
+        hardGenerateButton.addEventListener('click', () => generateRandomEmoji(hardEmojis));
+        backButton.addEventListener('click', goBack);
+        forwardButton.addEventListener('click', goForward);
+
+        // Gera um emoji inicial quando a página carrega
+        window.onload = () => generateRandomEmoji(hardEmojis);
+    </script>
+</body>
+</html>
