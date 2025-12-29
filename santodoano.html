@@ -1,589 +1,39 @@
-import React, { useState, useRef } from 'react';
-import { 
-  Cross, Sparkles, ChevronRight, ChevronDown, ChevronUp, Share2, RefreshCw, 
-  Check, Search, Download, Flame, BookOpen, Shield, Heart, Leaf, Star, Church 
-} from 'lucide-react';
-
-// --- BANCO DE DADOS DE SANTOS ---
-const SAINTS_DB = [
-  // --- CLÁSSICOS & DOUTORES ---
-  {
-    name: "São Francisco de Assis",
-    dates: "1181 - 1226",
-    deathType: "Morte Natural",
-    patronage: "Animais, Ecologia, Paz",
-    bio: "Abandonou a riqueza para viver o Evangelho. Recebeu os estigmas de Cristo e cantou a fraternidade universal com todas as criaturas."
-  },
-  {
-    name: "Santo Antônio de Pádua",
-    dates: "1195 - 1231",
-    deathType: "Morte Natural",
-    patronage: "Pobres, Objetos Perdidos",
-    bio: "Grande pregador e taumaturgo. Doutor da Igreja, conhecido por sua profunda sabedoria bíblica e pelos pães distribuídos aos pobres."
-  },
-  {
-    name: "Santo Agostinho",
-    dates: "354 - 430",
-    deathType: "Morte Natural",
-    patronage: "Teólogos, Quem busca a Deus",
-    bio: "De vida inquieta na juventude, converteu-se e tornou-se um gigante da fé. Frase: 'Inquieto está nosso coração enquanto não repousa em Ti'."
-  },
-  {
-    name: "São Tomás de Aquino",
-    dates: "1225 - 1274",
-    deathType: "Morte Natural",
-    patronage: "Estudantes, Intelectuais",
-    bio: "O 'Doutor Angélico'. Harmonizou a fé e a razão. Escreveu a Suma Teológica e hinos eucarísticos sublimes como o 'Tantum Ergo'."
-  },
-  {
-    name: "Santa Teresa de Ávila",
-    dates: "1515 - 1582",
-    deathType: "Morte Natural",
-    patronage: "Professores, Vida Interior",
-    bio: "Mestra de oração e reformadora do Carmelo. Com personalidade forte e humor, ensinou que 'só Deus basta'."
-  },
-  {
-    name: "São Bento",
-    dates: "480 - 547",
-    deathType: "Morte Natural",
-    patronage: "Europa, Contra o Mal",
-    bio: "Pai do monaquismo. Seu lema 'Ora et Labora' construiu a civilização ocidental. Sua medalha é um escudo contra as ciladas espirituais."
-  },
-  {
-    name: "São João da Cruz",
-    dates: "1542 - 1591",
-    deathType: "Morte Natural",
-    patronage: "Poetas, Místicos",
-    bio: "Doutor da Igreja e reformador do Carmelo. Ensinou que na noite escura da alma é onde mais brilha a luz de Deus."
-  },
-
-  // --- SANTOS JOVENS & MODERNOS (Canonizados) ---
-  {
-    name: "São Carlo Acutis",
-    dates: "1991 - 2006",
-    deathType: "Morte Natural (Leucemia)",
-    patronage: "Internet, Jovens, Programadores",
-    bio: "O santo de tênis e jeans. Amava a Eucaristia e a computação. Dizia: 'Todos nascem originais, mas muitos morrem como fotocópias'."
-  },
-  {
-    name: "São Pier Giorgio Frassati",
-    dates: "1901 - 1925",
-    deathType: "Morte Natural (Poliomielite)",
-    patronage: "Jovens, Alpinistas",
-    bio: "O homem das oito bem-aventuranças. Alpinista cheio de vida que servia os pobres em segredo. Seu lema era 'Verso l'alto' (Para o alto!)."
-  },
-  {
-    name: "Santa Teresinha do Menino Jesus",
-    dates: "1873 - 1897",
-    deathType: "Morte Natural (Tuberculose)",
-    patronage: "Missões, Doentes",
-    bio: "Padroeira das Missões sem nunca ter saído do convento. Ensinou a 'Pequena Via': fazer as pequenas coisas com grande amor."
-  },
-  {
-    name: "São Domingos Sávio",
-    dates: "1842 - 1857",
-    deathType: "Morte Natural",
-    patronage: "Coroinhas, Adolescentes",
-    bio: "Aluno de Dom Bosco. Aos 14 anos atingiu a santidade. Dizia: 'Nós aqui fazemos consistir a santidade em estar sempre alegres'."
-  },
-  {
-    name: "São José Sánchez del Río",
-    dates: "1913 - 1928",
-    deathType: "Martírio",
-    patronage: "Jovens Perseguidos",
-    bio: "Menino mexicano mártir da Guerra Cristera. Torturado, não renunciou à fé e gritou 'Viva Cristo Rei!' antes de morrer."
-  },
-  {
-    name: "São Tarcísio",
-    dates: "Séc. III",
-    deathType: "Martírio",
-    patronage: "Coroinhas, Eucaristia",
-    bio: "Menino romano que preferiu morrer apedrejado a entregar as Hóstias Consagradas aos profanadores. Mártir da Eucaristia."
-  },
-  {
-    name: "Santa Maria Goretti",
-    dates: "1890 - 1902",
-    deathType: "Martírio (Pureza)",
-    patronage: "Pureza, Vítimas de Crime",
-    bio: "Morreu defendendo sua castidade. No leito de morte, perdoou seu assassino, que mais tarde se converteu."
-  },
-  {
-    name: "Santa Inês",
-    dates: "291 - 304",
-    deathType: "Martírio",
-    patronage: "Noivos, Castidade",
-    bio: "Jovem mártir romana de 13 anos. Símbolo de pureza e fidelidade a Cristo, o Cordeiro de Deus."
-  },
-  {
-    name: "São Gabriel de Nossa Senhora das Dores",
-    dates: "1838 - 1862",
-    deathType: "Morte Natural",
-    patronage: "Estudantes, Jovem Clero",
-    bio: "Conhecido como o 'Santo do Sorriso'. Passionista italiano, viveu a santidade na alegria e no cotidiano religioso."
-  },
-
-  // --- APÓSTOLOS & EVANGELISTAS ---
-  {
-    name: "São Pedro",
-    dates: "Séc. I",
-    deathType: "Martírio",
-    patronage: "Papas, Igreja",
-    bio: "O pescador que se tornou a Rocha da Igreja. Negou Jesus, mas foi perdoado e confirmou os irmãos na fé."
-  },
-  {
-    name: "São Paulo Apóstolo",
-    dates: "5 - 67 d.C.",
-    deathType: "Martírio (Decapitação)",
-    patronage: "Gentios, Escritores",
-    bio: "De perseguidor a maior missionário do Cristianismo. Escreveu grande parte do Novo Testamento. 'Combati o bom combate, guardei a fé'."
-  },
-  {
-    name: "São João Evangelista",
-    dates: "6 - 100 d.C.",
-    deathType: "Morte Natural",
-    patronage: "Amizade, Teólogos",
-    bio: "O Discípulo Amado. O único apóstolo ao pé da Cruz. Cuidou de Maria e escreveu o Evangelho do Verbo Encarnado."
-  },
-  {
-    name: "São Lucas",
-    dates: "Séc. I",
-    deathType: "Morte Natural",
-    patronage: "Médicos, Pintores",
-    bio: "Escreveu o Evangelho da Misericórdia e os Atos dos Apóstolos. O evangelista que mais detalhou a infância de Jesus e a vida de Maria."
-  },
-  {
-    name: "São Mateus",
-    dates: "Séc. I",
-    deathType: "Martírio",
-    patronage: "Banqueiros, Contadores",
-    bio: "De cobrador de impostos a Apóstolo. Deixou o dinheiro para seguir o verdadeiro Tesouro."
-  },
-  {
-    name: "São Marcos",
-    dates: "Séc. I",
-    deathType: "Martírio",
-    patronage: "Secretários",
-    bio: "Discípulo de Pedro e primo de Barnabé. Escreveu o primeiro e mais dinâmico Evangelho, focado nas ações de Jesus."
-  },
-  {
-    name: "São Judas Tadeu",
-    dates: "Séc. I",
-    deathType: "Martírio",
-    patronage: "Causas Impossíveis",
-    bio: "Apóstolo e primo de Jesus. Escreveu uma carta alertando contra os falsos mestres. Invocado nas situações desesperadoras."
-  },
-  {
-    name: "Santa Maria Madalena",
-    dates: "Séc. I",
-    deathType: "Morte Natural",
-    patronage: "Contemplativos, Arrependidos",
-    bio: "A Apóstola dos Apóstolos. Foi a primeira a ver o Cristo Ressuscitado e anunciar a Boa Nova aos discípulos."
-  },
-
-  // --- GRANDES MÁRTIRES & GUERREIROS ---
-  {
-    name: "São Jorge",
-    dates: "275 - 303",
-    deathType: "Martírio",
-    patronage: "Guerreiros, Escoteiros",
-    bio: "Tribuno militar romano que desafiou o imperador para defender a fé. Venceu o 'dragão' do mal com a lança da verdade."
-  },
-  {
-    name: "São Sebastião",
-    dates: "256 - 286",
-    deathType: "Martírio",
-    patronage: "Atletas, Contra Pestes",
-    bio: "Soldado romano que socorria cristãos às escondidas. Sobreviveu às flechadas e voltou para confrontar o imperador, sendo açoitado até a morte."
-  },
-  {
-    name: "Santa Joana d'Arc",
-    dates: "1412 - 1431",
-    deathType: "Martírio (Fogueira)",
-    patronage: "França, Soldados",
-    bio: "A Donzela de Orléans. Guiada por vozes celestes, liderou exércitos. Queimada injustamente, morreu olhando para uma cruz e chamando por Jesus."
-  },
-  {
-    name: "Santa Cecília",
-    dates: "Séc. II",
-    deathType: "Martírio",
-    patronage: "Músicos",
-    bio: "Cantava a Deus em seu coração mesmo durante o martírio. Padroeira da música sacra."
-  },
-  {
-    name: "Santa Luzia",
-    dates: "283 - 304",
-    deathType: "Martírio",
-    patronage: "Olhos, Oftalmologistas",
-    bio: "Mártir siciliana. Seu nome significa 'Luz'. Invocada contra as doenças da visão física e espiritual."
-  },
-  {
-    name: "Santa Bárbara",
-    dates: "Séc. III",
-    deathType: "Martírio",
-    patronage: "Arquitetos, Contra Raios",
-    bio: "Encarcerada pelo pai numa torre. Converteu-se e foi martirizada. Invocada contra tempestades e mortes repentinas."
-  },
-  {
-    name: "São Lourenço",
-    dates: "225 - 258",
-    deathType: "Martírio",
-    patronage: "Diáconos, Cozinheiros",
-    bio: "Diácono romano. Ao ser queimado vivo em uma grelha, disse com humor aos algozes: 'Virem-me, deste lado já estou assado'."
-  },
-
-  // --- MISSIONÁRIOS, FUNDADORES & CARIDADE ---
-  {
-    name: "São João Paulo II",
-    dates: "1920 - 2005",
-    deathType: "Morte Natural",
-    patronage: "Famílias, JMJ",
-    bio: "O Papa que viajou o mundo. Defensor da vida e da dignidade humana. Ensinou: 'Não tenhais medo! Abra as portas para Cristo!'."
-  },
-  {
-    name: "Madre Teresa de Calcutá",
-    dates: "1910 - 1997",
-    deathType: "Morte Natural",
-    patronage: "Voluntários",
-    bio: "Ícone da caridade mundial. Serviu os moribundos nas ruas da Índia, vendo neles o próprio Jesus."
-  },
-  {
-    name: "Santa Dulce dos Pobres",
-    dates: "1914 - 1992",
-    deathType: "Morte Natural",
-    patronage: "Doentes, Brasil",
-    bio: "O Anjo Bom da Bahia. De um galinheiro fez um hospital. Exemplo brasileiro de amor incansável ao próximo."
-  },
-  {
-    name: "São João Bosco",
-    dates: "1815 - 1888",
-    deathType: "Morte Natural",
-    patronage: "Juventude, Educadores",
-    bio: "Pai e Mestre da Juventude. Usava a alegria, a música e o carinho para educar e salvar almas."
-  },
-  {
-    name: "São Vicente de Paulo",
-    dates: "1581 - 1660",
-    deathType: "Morte Natural",
-    patronage: "Obras de Caridade",
-    bio: "Apóstolo da caridade organizada. Fundou ordens para servir os pobres e o clero."
-  },
-  {
-    name: "São Francisco Xavier",
-    dates: "1506 - 1552",
-    deathType: "Morte Natural",
-    patronage: "Missionários, Oriente",
-    bio: "O gigante das missões. Viajou incansavelmente pela Ásia batizando milhares. Companheiro de Santo Inácio."
-  },
-  {
-    name: "Santo Inácio de Loyola",
-    dates: "1491 - 1556",
-    deathType: "Morte Natural",
-    patronage: "Retiros, Jesuítas",
-    bio: "Soldado ferido que se converteu lendo vidas de santos. Criou os Exercícios Espirituais e fundou a Companhia de Jesus."
-  },
-  {
-    name: "São Filipe Neri",
-    dates: "1515 - 1595",
-    deathType: "Morte Natural",
-    patronage: "Alegria, Humor",
-    bio: "O Santo da Alegria. Evangelizava Roma com sorrisos. Seu coração dilatou-se fisicamente pelo ardor do Espírito Santo."
-  },
-  {
-    name: "São Camilo de Lellis",
-    dates: "1550 - 1614",
-    deathType: "Morte Natural",
-    patronage: "Hospitais, Enfermeiros",
-    bio: "De soldado viciado em jogo a santo enfermeiro. Fundou uma ordem para cuidar dos doentes com 'amor de mãe'."
-  },
-  {
-    name: "São Martinho de Lima",
-    dates: "1579 - 1639",
-    deathType: "Morte Natural",
-    patronage: "Justiça Social, Barbeiros",
-    bio: "Irmão dominicano humilde, filho de ex-escrava. Realizava milagres e falava com animais. O santo da vassoura."
-  },
-  {
-    name: "Santa Josefina Bakhita",
-    dates: "1869 - 1947",
-    deathType: "Morte Natural",
-    patronage: "Vítimas de Tráfico Humano",
-    bio: "Sequestrada e escravizada na infância, encontrou a liberdade em Cristo. Perdoou seus raptores e viveu servindo com doçura."
-  },
-  {
-    name: "Santa Rosa de Lima",
-    dates: "1586 - 1617",
-    deathType: "Morte Natural",
-    patronage: "América Latina",
-    bio: "Primeira santa das Américas. Mística e penitente, dedicou sua beleza a Deus e serviu os pobres em sua casa."
-  },
-  {
-    name: "Santa Kateri Tekakwitha",
-    dates: "1656 - 1680",
-    deathType: "Morte Natural",
-    patronage: "Ecologia, Indígenas",
-    bio: "O Lírio dos Mohawks. Jovem nativa americana que sofreu rejeição por sua fé, mantendo-se firme no voto de virgindade."
-  },
-  {
-    name: "São Charbel",
-    dates: "1828 - 1898",
-    deathType: "Morte Natural",
-    patronage: "Curas, Líbano",
-    bio: "Monge maronita eremita. Viveu em silêncio e oração profunda. Conhecido por milagres extraordinários de cura."
-  },
-  {
-    name: "São Maximiliano Kolbe",
-    dates: "1894 - 1941",
-    deathType: "Martírio",
-    patronage: "Jornalistas, Prisioneiros",
-    bio: "Deu a vida por um pai de família em Auschwitz. Cavaleiro da Imaculada, usou a imprensa para evangelizar."
-  },
-  {
-    name: "Santa Edith Stein",
-    dates: "1891 - 1942",
-    deathType: "Martírio (Câmara de Gás)",
-    patronage: "Filósofos, Europa",
-    bio: "Filósofa judia convertida, tornou-se carmelita (Teresa Benedita da Cruz). Morreu em Auschwitz oferecendo a vida pelo seu povo."
-  },
-  {
-    name: "Santa Faustina",
-    dates: "1905 - 1938",
-    deathType: "Morte Natural",
-    patronage: "Misericórdia Divina",
-    bio: "Secretária da Misericórdia. Recebeu as revelações de Jesus Misericordioso para preparar o mundo para Sua vinda."
-  },
-  {
-    name: "Santa Mônica",
-    dates: "331 - 387",
-    deathType: "Morte Natural",
-    patronage: "Mães, Esposas",
-    bio: "Modelo de perseverança. Rezou 30 anos pela conversão de seu filho Agostinho e de seu marido."
-  },
-  {
-    name: "Santa Rita de Cássia",
-    dates: "1381 - 1457",
-    deathType: "Morte Natural",
-    patronage: "Causas Impossíveis",
-    bio: "Esposa, mãe e religiosa. Carregou na fronte o estigma de um espinho da coroa de Cristo."
-  },
-  {
-    name: "Santa Clara de Assis",
-    dates: "1194 - 1253",
-    deathType: "Morte Natural",
-    patronage: "Televisão, Clarissas",
-    bio: "Plantinha de São Francisco. Com o Santíssimo Sacramento, expulsou exércitos invasores do convento."
-  },
-
-  // --- ANJOS & SAGRADA FAMÍLIA ---
-  {
-    name: "São José",
-    dates: "Séc. I",
-    deathType: "Morte Natural",
-    patronage: "Trabalhadores, Boa Morte",
-    bio: "Pai terreno de Jesus. O homem do silêncio e da justiça, protetor da Santa Igreja."
-  },
-  {
-    name: "São Miguel Arcanjo",
-    dates: "Eterno",
-    deathType: "Anjo",
-    patronage: "Polícia, Contra o Demônio",
-    bio: "Quem como Deus? Príncipe da Milícia Celeste e vencedor das batalhas espirituais."
-  },
-  {
-    name: "São Gabriel Arcanjo",
-    dates: "Eterno",
-    deathType: "Anjo",
-    patronage: "Mensageiros, Rádio",
-    bio: "O Anjo da Anunciação. Trouxe a boa nova da Encarnação a Maria e explicou as visões a Daniel."
-  },
-  {
-    name: "São Rafael Arcanjo",
-    dates: "Eterno",
-    deathType: "Anjo",
-    patronage: "Viajantes, Cura, Namoro",
-    bio: "Medicina de Deus. Guiou Tobias em sua viagem e curou a cegueira de Tobit."
-  }
-];
-
-export default function SorteioSantos() {
-  const [screen, setScreen] = useState('intro'); // intro, dragging, result
-  const [sliderValue, setSliderValue] = useState(0);
-  const [selectedSaint, setSelectedSaint] = useState(null);
-  const [isFading, setIsFading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [loadingImage, setLoadingImage] = useState(false);
-  const [showPrayer, setShowPrayer] = useState(false);
-
-  // Referência para o container do slider
-  const sliderContainerRef = useRef(null);
-
-  // Helper para determinar ícone e cor do santo
-  const getSaintIcon = (saint) => {
-    const death = saint.deathType.toLowerCase();
-    const bio = saint.bio.toLowerCase();
-    const patronage = saint.patronage.toLowerCase();
-    const name = saint.name.toLowerCase();
-
-    // Lógica de Prioridade
-    if (death.includes("martírio") || death.includes("mártir")) {
-        return { icon: Flame, color: "text-red-500", label: "Mártir" };
-    }
-    if (bio.includes("doutor") || bio.includes("escreveu") || patronage.includes("teólogos") || patronage.includes("estudantes") || patronage.includes("escritores")) {
-        return { icon: BookOpen, color: "text-blue-600", label: "Doutor/Escritor" };
-    }
-    if (patronage.includes("guerreiros") || patronage.includes("soldados") || patronage.includes("proteção") || patronage.includes("contra o mal")) {
-        return { icon: Shield, color: "text-gray-600", label: "Guerreiro/Protetor" };
-    }
-    if (patronage.includes("ecologia") || patronage.includes("natureza") || patronage.includes("animais")) {
-        return { icon: Leaf, color: "text-green-600", label: "Amigo da Criação" };
-    }
-    if (patronage.includes("jovens") || patronage.includes("adolescentes") || bio.includes("jovem")) {
-        return { icon: Star, color: "text-yellow-500", label: "Jovem Santo" };
-    }
-    if (patronage.includes("caridade") || patronage.includes("pobres") || patronage.includes("mães") || bio.includes("amor")) {
-        return { icon: Heart, color: "text-pink-500", label: "Caridade" };
-    }
-    if (patronage.includes("papas") || patronage.includes("igreja") || name.includes("papa")) {
-        return { icon: Church, color: "text-amber-600", label: "Igreja" };
-    }
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio de Santos 2025</title>
     
-    // Default
-    return { icon: Cross, color: "text-[#1e3a8a]", label: "Santo" };
-  };
-
-  // Seleciona um santo aleatório
-  const drawSaint = () => {
-    const randomIndex = Math.floor(Math.random() * SAINTS_DB.length);
-    setSelectedSaint(SAINTS_DB[randomIndex]);
-    setScreen('result');
-  };
-
-  // Reseta o app
-  const resetApp = () => {
-    setIsFading(true);
-    setTimeout(() => {
-      setSliderValue(0);
-      setScreen('intro');
-      setSelectedSaint(null);
-      setIsFading(false);
-      setShowToast(false);
-      setShowPrayer(false); // Reseta o accordion
-    }, 500);
-  };
-
-  // Controla o slider
-  const handleSliderChange = (e) => {
-    const value = parseInt(e.target.value);
-    setSliderValue(value);
-    if (value >= 98) {
-        // Vibração tátil se disponível
-        if (navigator.vibrate) navigator.vibrate(50);
-        drawSaint();
-    }
-  };
-
-  // Função segura para copiar texto
-  const copyToClipboard = () => {
-    if (!selectedSaint) return;
-    const text = `Meu santo protetor deste ano é: ${selectedSaint.name}!`;
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    // Método fallback para garantir compatibilidade
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";  // Evita scroll
-    textArea.style.left = "-9999px";
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    try {
-      document.execCommand('copy');
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-    } catch (err) {
-      console.error('Falha ao copiar', err);
-    }
+    <!-- Babel para compilar JSX no navegador -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    document.body.removeChild(textArea);
-  };
+    <!-- Html2Canvas para baixar a imagem -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-  // Helper para carregar o script do html2canvas dinamicamente
-  const loadHtml2Canvas = () => {
-    return new Promise((resolve, reject) => {
-        if (window.html2canvas) {
-            resolve(window.html2canvas);
-            return;
-        }
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-        script.onload = () => resolve(window.html2canvas);
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
-  };
-
-  // Função para baixar o card como imagem
-  const handleDownloadCard = async () => {
-    try {
-        setLoadingImage(true);
-        await loadHtml2Canvas();
-        const cardElement = document.getElementById('saint-card');
-        
-        if (!cardElement) {
-            setLoadingImage(false);
-            return;
-        }
-
-        // Opções do html2canvas para manipular o clone
-        const canvas = await window.html2canvas(cardElement, {
-            scale: 2, // Melhora a qualidade (retina)
-            backgroundColor: '#ffffff', // Força fundo branco
-            logging: false,
-            useCORS: true,
-            onclone: (clonedDoc) => {
-                // Esconde os botões de ação na versão clonada
-                const buttons = clonedDoc.getElementById('action-buttons');
-                if (buttons) buttons.style.display = 'none';
-
-                // Mostra a marca d'água/rodapé na versão clonada
-                const watermark = clonedDoc.getElementById('card-watermark');
-                if (watermark) watermark.style.display = 'block';
-            }
-        });
-
-        // Cria o link de download
-        const link = document.createElement('a');
-        link.download = `Santo_do_Ano_${selectedSaint.name.replace(/\s+/g, '_')}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        
-    } catch (error) {
-        console.error("Erro ao gerar imagem:", error);
-        alert("Não foi possível gerar a imagem. Tente tirar um print da tela.");
-    } finally {
-        setLoadingImage(false);
-    }
-  };
-
-  return (
-    <div className={`min-h-screen bg-[#0f172a] text-[#f8fafc] font-sans overflow-hidden flex flex-col items-center justify-center relative transition-opacity duration-500 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
-      
-      {/* Background Texture Subtle */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-32 left-20 w-64 h-64 bg-red-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-        
-        {/* Decorative Grid */}
-        <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(#C5A059 0.5px, transparent 0.5px)', backgroundSize: '20px 20px', opacity: 0.1 }}></div>
-      </div>
-
-      <style>{`
+    <!-- Fontes -->
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Lato:wght@300;400;700&display=swap');
         
         .font-cinzel { font-family: 'Cinzel', serif; }
         .font-lato { font-family: 'Lato', sans-serif; }
         
-        /* O thumb invisível para o input rotacionado */
+        /* Custom Range Slider Styling */
+        input[type=range] {
+          -webkit-appearance: none; 
+          background: transparent;
+          height: 100%;
+          cursor: pointer;
+        }
+        
+        /* Thumb invisível */
         input[type=range]::-webkit-slider-thumb {
           -webkit-appearance: none;
           height: 56px;
@@ -612,236 +62,356 @@ export default function SorteioSantos() {
             animation: fadeInDown 0.3s ease-out forwards;
         }
 
-        /* Classe utilitária para texto vertical */
-        .writing-vertical {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
+        .cursor-wait {
+            cursor: wait;
         }
-      `}</style>
+    </style>
+</head>
+<body class="bg-[#0f172a] text-[#f8fafc] font-sans overflow-hidden">
+    <div id="root"></div>
 
-      {/* TOAST NOTIFICATION */}
-      {showToast && (
-          <div className="fixed top-20 z-50 animate-fade-in-down">
-              <div className="bg-[#0f172a] text-[#C5A059] px-6 py-3 rounded-full shadow-lg flex items-center gap-2 border border-[#C5A059]">
-                  <Check className="w-4 h-4" />
-                  <span className="font-lato text-sm font-bold">Copiado para compartilhar!</span>
-              </div>
-          </div>
-      )}
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
 
-      <main className="z-10 w-full max-w-lg px-6 flex flex-col items-center justify-center min-h-[500px]">
-        
-        {/* HEADER FIXO - Mantém na tela inicial para dar contexto, escondido no card de resultado para focar no santo */}
-        <div className="absolute top-8 text-center opacity-80">
-            <h3 className="font-cinzel text-xs tracking-[0.3em] text-[#C5A059] uppercase">Santo do Ano</h3>
-            <div className="w-8 h-px bg-[#C5A059] mx-auto mt-2"></div>
-        </div>
+        // --- ÍCONES SVG (Para não depender de biblioteca externa) ---
+        const IconBase = ({ children, className, ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
+        );
 
-        {screen === 'intro' && (
-          <div className="flex flex-col items-center text-center animate-fade-in-up w-full max-w-md mt-12">
-            
-            <div className="mb-6 p-4 border-2 border-[#C5A059] rounded-full">
-                <Cross className="w-10 h-10 text-[#C5A059]" strokeWidth={1.5} />
-            </div>
+        const Cross = (props) => <IconBase {...props}><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/></IconBase>;
+        const Sparkles = (props) => <IconBase {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></IconBase>;
+        const ChevronRight = (props) => <IconBase {...props}><path d="m9 18 6-6-6-6"/></IconBase>;
+        const ChevronDown = (props) => <IconBase {...props}><path d="m6 9 6 6 6-6"/></IconBase>;
+        const ChevronUp = (props) => <IconBase {...props}><path d="m18 15-6-6-6 6"/></IconBase>;
+        const Share2 = (props) => <IconBase {...props}><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></IconBase>;
+        const RefreshCw = (props) => <IconBase {...props}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></IconBase>;
+        const Check = (props) => <IconBase {...props}><path d="M20 6 9 17l-5-5"/></IconBase>;
+        const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></IconBase>;
+        const Download = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></IconBase>;
+        const Flame = (props) => <IconBase {...props}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.1.2-2.2.5-3.3.3-1.4 1.8-2.2 3-1.2z"/></IconBase>;
+        const BookOpen = (props) => <IconBase {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></IconBase>;
+        const Shield = (props) => <IconBase {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></IconBase>;
+        const Heart = (props) => <IconBase {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></IconBase>;
+        const Leaf = (props) => <IconBase {...props}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></IconBase>;
+        const Star = (props) => <IconBase {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></IconBase>;
+        const Church = (props) => <IconBase {...props}><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M17 21v-8.4a1.2 1.2 0 0 0-1.2-1.2h-7.6a1.2 1.2 0 0 0-1.2 1.2V21"/><path d="M12 3a5 5 0 0 1 5 5v3a1.1 1.1 0 0 1-1.1 1.1h-7.8A1.1 1.1 0 0 1 7 11V8a5 5 0 0 1 5-5Z"/></IconBase>;
 
-            <h1 className="font-cinzel text-3xl md:text-5xl font-bold mb-2 text-[#C5A059]">
-              Intercessor
-            </h1>
-            
-            <p className="font-lato text-gray-200 text-base mb-6 max-w-xs leading-relaxed">
-              O Espírito Santo sopra onde quer. Quem será seu companheiro de jornada neste ano?
-            </p>
+        // --- BANCO DE DADOS DE SANTOS ---
+        const SAINTS_DB = [
+          { name: "São Francisco de Assis", dates: "1181 - 1226", deathType: "Morte Natural", patronage: "Animais, Ecologia, Paz", bio: "Abandonou a riqueza para viver o Evangelho. Recebeu os estigmas de Cristo e cantou a fraternidade universal com todas as criaturas." },
+          { name: "Santo Antônio de Pádua", dates: "1195 - 1231", deathType: "Morte Natural", patronage: "Pobres, Objetos Perdidos", bio: "Grande pregador e taumaturgo. Doutor da Igreja, conhecido por sua profunda sabedoria bíblica e pelos pães distribuídos aos pobres." },
+          { name: "Santo Agostinho", dates: "354 - 430", deathType: "Morte Natural", patronage: "Teólogos, Quem busca a Deus", bio: "De vida inquieta na juventude, converteu-se e tornou-se um gigante da fé. Frase: 'Inquieto está nosso coração enquanto não repousa em Ti'." },
+          { name: "São Tomás de Aquino", dates: "1225 - 1274", deathType: "Morte Natural", patronage: "Estudantes, Intelectuais", bio: "O 'Doutor Angélico'. Harmonizou a fé e a razão. Escreveu a Suma Teológica e hinos eucarísticos sublimes como o 'Tantum Ergo'." },
+          { name: "Santa Teresa de Ávila", dates: "1515 - 1582", deathType: "Morte Natural", patronage: "Professores, Vida Interior", bio: "Mestra de oração e reformadora do Carmelo. Com personalidade forte e humor, ensinou que 'só Deus basta'." },
+          { name: "São Bento", dates: "480 - 547", deathType: "Morte Natural", patronage: "Europa, Contra o Mal", bio: "Pai do monaquismo. Seu lema 'Ora et Labora' construiu a civilização ocidental. Sua medalha é um escudo contra as ciladas espirituais." },
+          { name: "São João da Cruz", dates: "1542 - 1591", deathType: "Morte Natural", patronage: "Poetas, Místicos", bio: "Doutor da Igreja e reformador do Carmelo. Ensinou que na noite escura da alma é onde mais brilha a luz de Deus." },
+          { name: "São Carlo Acutis", dates: "1991 - 2006", deathType: "Morte Natural (Leucemia)", patronage: "Internet, Jovens, Programadores", bio: "O santo de tênis e jeans. Amava a Eucaristia e a computação. Dizia: 'Todos nascem originais, mas muitos morrem como fotocópias'." },
+          { name: "São Pier Giorgio Frassati", dates: "1901 - 1925", deathType: "Morte Natural (Poliomielite)", patronage: "Jovens, Alpinistas", bio: "O homem das oito bem-aventuranças. Alpinista cheio de vida que servia os pobres em segredo. Seu lema era 'Verso l'alto' (Para o alto!)." },
+          { name: "Santa Teresinha do Menino Jesus", dates: "1873 - 1897", deathType: "Morte Natural (Tuberculose)", patronage: "Missões, Doentes", bio: "Padroeira das Missões sem nunca ter saído do convento. Ensinou a 'Pequena Via': fazer as pequenas coisas com grande amor." },
+          { name: "São Domingos Sávio", dates: "1842 - 1857", deathType: "Morte Natural", patronage: "Coroinhas, Adolescentes", bio: "Aluno de Dom Bosco. Aos 14 anos atingiu a santidade. Dizia: 'Nós aqui fazemos consistir a santidade em estar sempre alegres'." },
+          { name: "São José Sánchez del Río", dates: "1913 - 1928", deathType: "Martírio", patronage: "Jovens Perseguidos", bio: "Menino mexicano mártir da Guerra Cristera. Torturado, não renunciou à fé e gritou 'Viva Cristo Rei!' antes de morrer." },
+          { name: "São Tarcísio", dates: "Séc. III", deathType: "Martírio", patronage: "Coroinhas, Eucaristia", bio: "Menino romano que preferiu morrer apedrejado a entregar as Hóstias Consagradas aos profanadores. Mártir da Eucaristia." },
+          { name: "Santa Maria Goretti", dates: "1890 - 1902", deathType: "Martírio (Pureza)", patronage: "Pureza, Vítimas de Crime", bio: "Morreu defendendo sua castidade. No leito de morte, perdoou seu assassino, que mais tarde se converteu." },
+          { name: "Santa Inês", dates: "291 - 304", deathType: "Martírio", patronage: "Noivos, Castidade", bio: "Jovem mártir romana de 13 anos. Símbolo de pureza e fidelidade a Cristo, o Cordeiro de Deus." },
+          { name: "São Gabriel de Nossa Senhora das Dores", dates: "1838 - 1862", deathType: "Morte Natural", patronage: "Estudantes, Jovem Clero", bio: "Conhecido como o 'Santo do Sorriso'. Passionista italiano, viveu a santidade na alegria e no cotidiano religioso." },
+          { name: "São Pedro", dates: "Séc. I", deathType: "Martírio", patronage: "Papas, Igreja", bio: "O pescador que se tornou a Rocha da Igreja. Negou Jesus, mas foi perdoado e confirmou os irmãos na fé." },
+          { name: "São Paulo Apóstolo", dates: "5 - 67 d.C.", deathType: "Martírio (Decapitação)", patronage: "Gentios, Escritores", bio: "De perseguidor a maior missionário do Cristianismo. Escreveu grande parte do Novo Testamento. 'Combati o bom combate, guardei a fé'." },
+          { name: "São João Evangelista", dates: "6 - 100 d.C.", deathType: "Morte Natural", patronage: "Amizade, Teólogos", bio: "O Discípulo Amado. O único apóstolo ao pé da Cruz. Cuidou de Maria e escreveu o Evangelho do Verbo Encarnado." },
+          { name: "São Lucas", dates: "Séc. I", deathType: "Morte Natural", patronage: "Médicos, Pintores", bio: "Escreveu o Evangelho da Misericórdia e os Atos dos Apóstolos. O evangelista que mais detalhou a infância de Jesus e a vida de Maria." },
+          { name: "São Mateus", dates: "Séc. I", deathType: "Martírio", patronage: "Banqueiros, Contadores", bio: "De cobrador de impostos a Apóstolo. Deixou o dinheiro para seguir o verdadeiro Tesouro." },
+          { name: "São Marcos", dates: "Séc. I", deathType: "Martírio", patronage: "Secretários", bio: "Discípulo de Pedro e primo de Barnabé. Escreveu o primeiro e mais dinâmico Evangelho, focado nas ações de Jesus." },
+          { name: "São Judas Tadeu", dates: "Séc. I", deathType: "Martírio", patronage: "Causas Impossíveis", bio: "Apóstolo e primo de Jesus. Escreveu uma carta alertando contra os falsos mestres. Invocado nas situações desesperadoras." },
+          { name: "Santa Maria Madalena", dates: "Séc. I", deathType: "Morte Natural", patronage: "Contemplativos, Arrependidos", bio: "A Apóstola dos Apóstolos. Foi a primeira a ver o Cristo Ressuscitado e anunciar a Boa Nova aos discípulos." },
+          { name: "São Jorge", dates: "275 - 303", deathType: "Martírio", patronage: "Guerreiros, Escoteiros", bio: "Tribuno militar romano que desafiou o imperador para defender a fé. Venceu o 'dragão' do mal com a lança da verdade." },
+          { name: "São Sebastião", dates: "256 - 286", deathType: "Martírio", patronage: "Atletas, Contra Pestes", bio: "Soldado romano que socorria cristãos às escondidas. Sobreviveu às flechadas e voltou para confrontar o imperador, sendo açoitado até a morte." },
+          { name: "Santa Joana d'Arc", dates: "1412 - 1431", deathType: "Martírio (Fogueira)", patronage: "França, Soldados", bio: "A Donzela de Orléans. Guiada por vozes celestes, liderou exércitos. Queimada injustamente, morreu olhando para uma cruz e chamando por Jesus." },
+          { name: "Santa Cecília", dates: "Séc. II", deathType: "Martírio", patronage: "Músicos", bio: "Cantava a Deus em seu coração mesmo durante o martírio. Padroeira da música sacra." },
+          { name: "Santa Luzia", dates: "283 - 304", deathType: "Martírio", patronage: "Olhos, Oftalmologistas", bio: "Mártir siciliana. Seu nome significa 'Luz'. Invocada contra as doenças da visão física e espiritual." },
+          { name: "Santa Bárbara", dates: "Séc. III", deathType: "Martírio", patronage: "Arquitetos, Contra Raios", bio: "Encarcerada pelo pai numa torre. Converteu-se e foi martirizada. Invocada contra tempestades e mortes repentinas." },
+          { name: "São Lourenço", dates: "225 - 258", deathType: "Martírio", patronage: "Diáconos, Cozinheiros", bio: "Diácono romano. Ao ser queimado vivo em uma grelha, disse com humor aos algozes: 'Virem-me, deste lado já estou assado'." },
+          { name: "São João Paulo II", dates: "1920 - 2005", deathType: "Morte Natural", patronage: "Famílias, JMJ", bio: "O Papa que viajou o mundo. Defensor da vida e da dignidade humana. Ensinou: 'Não tenhais medo! Abra as portas para Cristo!'." },
+          { name: "Madre Teresa de Calcutá", dates: "1910 - 1997", deathType: "Morte Natural", patronage: "Voluntários", bio: "Ícone da caridade mundial. Serviu os moribundos nas ruas da Índia, vendo neles o próprio Jesus." },
+          { name: "Santa Dulce dos Pobres", dates: "1914 - 1992", deathType: "Morte Natural", patronage: "Doentes, Brasil", bio: "O Anjo Bom da Bahia. De um galinheiro fez um hospital. Exemplo brasileiro de amor incansável ao próximo." },
+          { name: "São João Bosco", dates: "1815 - 1888", deathType: "Morte Natural", patronage: "Juventude, Educadores", bio: "Pai e Mestre da Juventude. Usava a alegria, a música e o carinho para educar e salvar almas." },
+          { name: "São Vicente de Paulo", dates: "1581 - 1660", deathType: "Morte Natural", patronage: "Obras de Caridade", bio: "Apóstolo da caridade organizada. Fundou ordens para servir os pobres e o clero." },
+          { name: "São Francisco Xavier", dates: "1506 - 1552", deathType: "Morte Natural", patronage: "Missionários, Oriente", bio: "O gigante das missões. Viajou incansavelmente pela Ásia batizando milhares. Companheiro de Santo Inácio." },
+          { name: "Santo Inácio de Loyola", dates: "1491 - 1556", deathType: "Morte Natural", patronage: "Retiros, Jesuítas", bio: "Soldado ferido que se converteu lendo vidas de santos. Criou os Exercícios Espirituais e fundou a Companhia de Jesus." },
+          { name: "São Filipe Neri", dates: "1515 - 1595", deathType: "Morte Natural", patronage: "Alegria, Humor", bio: "O Santo da Alegria. Evangelizava Roma com sorrisos. Seu coração dilatou-se fisicamente pelo ardor do Espírito Santo." },
+          { name: "São Camilo de Lellis", dates: "1550 - 1614", deathType: "Morte Natural", patronage: "Hospitais, Enfermeiros", bio: "De soldado viciado em jogo a santo enfermeiro. Fundou uma ordem para cuidar dos doentes com 'amor de mãe'." },
+          { name: "São Martinho de Lima", dates: "1579 - 1639", deathType: "Morte Natural", patronage: "Justiça Social, Barbeiros", bio: "Irmão dominicano humilde, filho de ex-escrava. Realizava milagres e falava com animais. O santo da vassoura." },
+          { name: "Santa Josefina Bakhita", dates: "1869 - 1947", deathType: "Morte Natural", patronage: "Vítimas de Tráfico Humano", bio: "Sequestrada e escravizada na infância, encontrou a liberdade em Cristo. Perdoou seus raptores e viveu servindo com doçura." },
+          { name: "Santa Rosa de Lima", dates: "1586 - 1617", deathType: "Morte Natural", patronage: "América Latina", bio: "Primeira santa das Américas. Mística e penitente, dedicou sua beleza a Deus e serviu os pobres em sua casa." },
+          { name: "Santa Kateri Tekakwitha", dates: "1656 - 1680", deathType: "Morte Natural", patronage: "Ecologia, Indígenas", bio: "O Lírio dos Mohawks. Jovem nativa americana que sofreu rejeição por sua fé, mantendo-se firme no voto de virgindade." },
+          { name: "São Charbel", dates: "1828 - 1898", deathType: "Morte Natural", patronage: "Curas, Líbano", bio: "Monge maronita eremita. Viveu em silêncio e oração profunda. Conhecido por milagres extraordinários de cura." },
+          { name: "São Maximiliano Kolbe", dates: "1894 - 1941", deathType: "Martírio", patronage: "Jornalistas, Prisioneiros", bio: "Deu a vida por um pai de família em Auschwitz. Cavaleiro da Imaculada, usou a imprensa para evangelizar." },
+          { name: "Santa Edith Stein", dates: "1891 - 1942", deathType: "Martírio (Câmara de Gás)", patronage: "Filósofos, Europa", bio: "Filósofa judia convertida, tornou-se carmelita (Teresa Benedita da Cruz). Morreu em Auschwitz oferecendo a vida pelo seu povo." },
+          { name: "Santa Faustina", dates: "1905 - 1938", deathType: "Morte Natural", patronage: "Misericórdia Divina", bio: "Secretária da Misericórdia. Recebeu as revelações de Jesus Misericordioso para preparar o mundo para Sua vinda." },
+          { name: "Santa Mônica", dates: "331 - 387", deathType: "Morte Natural", patronage: "Mães, Esposas", bio: "Modelo de perseverança. Rezou 30 anos pela conversão de seu filho Agostinho e de seu marido." },
+          { name: "Santa Rita de Cássia", dates: "1381 - 1457", deathType: "Morte Natural", patronage: "Causas Impossíveis", bio: "Esposa, mãe e religiosa. Carregou na fronte o estigma de um espinho da coroa de Cristo." },
+          { name: "Santa Clara de Assis", dates: "1194 - 1253", deathType: "Morte Natural", patronage: "Televisão, Clarissas", bio: "Plantinha de São Francisco. Com o Santíssimo Sacramento, expulsou exércitos invasores do convento." },
+          { name: "São José", dates: "Séc. I", deathType: "Morte Natural", patronage: "Trabalhadores, Boa Morte", bio: "Pai terreno de Jesus. O homem do silêncio e da justiça, protetor da Santa Igreja." },
+          { name: "São Miguel Arcanjo", dates: "Eterno", deathType: "Anjo", patronage: "Polícia, Contra o Demônio", bio: "Quem como Deus? Príncipe da Milícia Celeste e vencedor das batalhas espirituais." },
+          { name: "São Gabriel Arcanjo", dates: "Eterno", deathType: "Anjo", patronage: "Mensageiros, Rádio", bio: "O Anjo da Anunciação. Trouxe a boa nova da Encarnação a Maria e explicou as visões a Daniel." },
+          { name: "São Rafael Arcanjo", dates: "Eterno", deathType: "Anjo", patronage: "Viajantes, Cura, Namoro", bio: "Medicina de Deus. Guiou Tobias em sua viagem e curou a cegueira de Tobit." }
+        ];
 
-            {/* CONTAINER PARA TEXTO + ORAÇÃO */}
-            <div className="w-full mb-8 space-y-4">
+        function App() {
+            const [screen, setScreen] = useState('intro'); // intro, result
+            const [sliderValue, setSliderValue] = useState(0);
+            const [selectedSaint, setSelectedSaint] = useState(null);
+            const [isFading, setIsFading] = useState(false);
+            const [showToast, setShowToast] = useState(false);
+            const [loadingImage, setLoadingImage] = useState(false);
+            const [showPrayer, setShowPrayer] = useState(false);
+
+            // Helper para ícones
+            const getSaintIcon = (saint) => {
+                const death = saint.deathType.toLowerCase();
+                const bio = saint.bio.toLowerCase();
+                const patronage = saint.patronage.toLowerCase();
+                const name = saint.name.toLowerCase();
+
+                if (death.includes("martírio") || death.includes("mártir")) return { icon: Flame, color: "text-red-500" };
+                if (bio.includes("doutor") || bio.includes("escreveu") || patronage.includes("teólogos")) return { icon: BookOpen, color: "text-blue-600" };
+                if (patronage.includes("guerreiros") || patronage.includes("soldados") || patronage.includes("proteção") || patronage.includes("contra o mal")) return { icon: Shield, color: "text-gray-600" };
+                if (patronage.includes("ecologia") || patronage.includes("natureza") || patronage.includes("animais")) return { icon: Leaf, color: "text-green-600" };
+                if (patronage.includes("jovens") || patronage.includes("adolescentes") || bio.includes("jovem")) return { icon: Star, color: "text-yellow-500" };
+                if (patronage.includes("caridade") || patronage.includes("pobres") || patronage.includes("mães")) return { icon: Heart, color: "text-pink-500" };
+                if (patronage.includes("papas") || patronage.includes("igreja") || name.includes("papa")) return { icon: Church, color: "text-amber-600" };
                 
-                {/* CAIXA DE EXPLICAÇÃO */}
-                <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-[#C5A059]/30 shadow-sm">
-                    <p className="font-lato text-sm text-gray-100 text-justify leading-relaxed">
-                        <span className="text-[#C5A059] font-bold">O santo do ano</span>, ou amigo do céu, é um ato piedoso muito interessante adotado por alguns fiéis em todo começo de ano. São Carlo Acutis, em 2006, participou desta atividade e foi “escolhido” por Santo Alessandro Sauli. Segundo relatos contidos no livro <span className="italic">O Segredo do Meu Filho</span>, de Antonia Salzano (mãe de Carlo), essa escolha teve um significado profundo, pois no dia de Santo Alessandro Sauli, ela recebeu a notícia da morte cerebral de Carlo.
-                    </p>
-                </div>
+                return { icon: Cross, color: "text-[#1e3a8a]" };
+            };
 
-                {/* DROPBOX (ACCORDION) DA ORAÇÃO */}
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-[#C5A059]/30 shadow-sm overflow-hidden transition-all duration-300">
-                    <button
-                        onClick={() => setShowPrayer(!showPrayer)}
-                        className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-colors"
-                    >
-                        <span className="font-cinzel text-sm text-[#C5A059] font-bold flex items-center gap-2">
-                            <Sparkles className="w-3 h-3" /> Oração Inicial
-                        </span>
-                        {showPrayer ? <ChevronUp className="w-4 h-4 text-[#C5A059]"/> : <ChevronDown className="w-4 h-4 text-[#C5A059]"/>}
-                    </button>
+            const drawSaint = () => {
+                const randomIndex = Math.floor(Math.random() * SAINTS_DB.length);
+                setSelectedSaint(SAINTS_DB[randomIndex]);
+                setScreen('result');
+            };
 
-                    <div className={`transition-all duration-500 ease-in-out ${showPrayer ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="p-4 pt-0 border-t border-[#C5A059]/10">
-                            <p className="font-lato italic text-white text-sm md:text-base text-justify leading-relaxed mt-2">
-                                "Vinde Espírito Santo, enchei os corações dos vossos fiéis e acendei neles o fogo do Vosso Amor. Enviai o Vosso Espírito e tudo será criado e renovareis a face da terra.
-                                <br/><br/>
-                                Oremos: Ó Deus que instruíste os corações dos vossos fiéis, com a luz do Espírito Santo, fazei que apreciemos retamente todas as coisas segundo o mesmo Espírito e gozemos da sua consolação. Por Cristo Senhor Nosso. Amém"
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            const resetApp = () => {
+                setIsFading(true);
+                setTimeout(() => {
+                    setSliderValue(0);
+                    setScreen('intro');
+                    setSelectedSaint(null);
+                    setIsFading(false);
+                    setShowToast(false);
+                    setShowPrayer(false);
+                }, 500);
+            };
 
-            {/* Text Instruction - Moved Above Slider */}
-            <div className={`mb-3 flex items-center justify-center transition-opacity duration-300 ${sliderValue > 10 ? 'opacity-0' : 'opacity-100'}`}>
-                <span className="font-cinzel text-xs font-bold tracking-widest text-[#C5A059] animate-pulse text-center">
-                    DESLIZE PARA REVELAR O SEU SANTO INTERCESSOR DO ANO
-                </span>
-                <ChevronRight className="w-4 h-4 text-[#C5A059] ml-1" />
-            </div>
+            const handleSliderChange = (e) => {
+                const value = parseInt(e.target.value);
+                setSliderValue(value);
+                if (value >= 98) {
+                    if (navigator.vibrate) navigator.vibrate(50);
+                    drawSaint();
+                }
+            };
 
-            {/* SLIDER AREA HORIZONTAL */}
-            <div className="w-full relative h-16 bg-white/10 rounded-full border border-white/10 overflow-hidden shadow-inner touch-none">
-                {/* Progress Bar */}
-                <div 
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#C5A059] to-[#E5C079] opacity-30 transition-all duration-75 ease-out"
-                    style={{ width: `${sliderValue}%` }}
-                ></div>
-
-                {/* The Input */}
-                <input 
-                    type="range" 
-                    min="0" 
-                    max="100" 
-                    value={sliderValue} 
-                    onChange={handleSliderChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                />
-
-                {/* Custom Thumb (The Cross) */}
-                <div 
-                    className="absolute top-1 h-14 w-14 bg-[#C5A059] rounded-full shadow-xl flex items-center justify-center pointer-events-none transition-all duration-75 ease-out z-10"
-                    style={{ left: `calc(${sliderValue}% - ${sliderValue * 0.56}px)` }} 
-                >
-                    <Cross className="w-8 h-8 text-[#0f172a]" />
-                </div>
-            </div>
-          </div>
-        )}
-
-        {screen === 'result' && selectedSaint && (
-          <div className="w-full max-w-md animate-fade-in-up">
-            {/* CARD - ID ADICIONADO PARA CAPTURA */}
-            <div id="saint-card" className="bg-white w-full rounded-t-[3rem] rounded-b-2xl shadow-2xl overflow-hidden border-t-8 border-[#C5A059] relative text-[#1e3a8a]">
+            const copyToClipboard = () => {
+                if (!selectedSaint) return;
+                const text = `Meu santo protetor deste ano é: ${selectedSaint.name}!`;
                 
-                {/* Decorative corner */}
-                <div className="absolute top-4 right-4 text-[#C5A059] opacity-20">
-                    <Sparkles className="w-8 h-8" />
-                </div>
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    setShowToast(true);
+                    setTimeout(() => setShowToast(false), 3000);
+                } catch (err) {
+                    console.error('Falha ao copiar', err);
+                }
+                document.body.removeChild(textArea);
+            };
 
-                <div className="pt-12 pb-8 px-8 flex flex-col items-center text-center">
+            const handleDownloadCard = async () => {
+                try {
+                    setLoadingImage(true);
+                    const cardElement = document.getElementById('saint-card');
+                    if (!cardElement) { setLoadingImage(false); return; }
+
+                    const canvas = await window.html2canvas(cardElement, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        useCORS: true,
+                        onclone: (clonedDoc) => {
+                            const buttons = clonedDoc.getElementById('action-buttons');
+                            if (buttons) buttons.style.display = 'none';
+                            const watermark = clonedDoc.getElementById('card-watermark');
+                            if (watermark) watermark.style.display = 'block';
+                        }
+                    });
+
+                    const link = document.createElement('a');
+                    link.download = `Santo_do_Ano_${selectedSaint.name.replace(/\s+/g, '_')}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } catch (error) {
+                    console.error("Erro", error);
+                    alert("Erro ao gerar imagem.");
+                } finally {
+                    setLoadingImage(false);
+                }
+            };
+
+            return (
+                <div className={`min-h-screen bg-[#0f172a] text-[#f8fafc] font-sans overflow-hidden flex flex-col items-center justify-center relative transition-opacity duration-500 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
                     
-                    {/* DYNAMIC ICON SECTION */}
-                    {(() => {
-                        const { icon: SaintIcon, color } = getSaintIcon(selectedSaint);
-                        return (
-                            <div className={`mb-4 p-3 rounded-full bg-gray-50 border border-gray-100 ${color} shadow-sm`}>
-                                <SaintIcon className="w-12 h-12" strokeWidth={1.5} />
+                    {/* Background */}
+                    <div className="absolute inset-0 opacity-5 pointer-events-none overflow-hidden">
+                        <div className="absolute top-0 left-0 w-64 h-64 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+                        <div className="absolute -bottom-32 left-20 w-64 h-64 bg-red-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+                        <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(#C5A059 0.5px, transparent 0.5px)', backgroundSize: '20px 20px', opacity: 0.1 }}></div>
+                    </div>
+
+                    {showToast && (
+                        <div className="fixed top-20 z-50 animate-fade-in-down">
+                            <div className="bg-[#0f172a] text-[#C5A059] px-6 py-3 rounded-full shadow-lg flex items-center gap-2 border border-[#C5A059]">
+                                <Check className="w-4 h-4" />
+                                <span className="font-lato text-sm font-bold">Copiado para compartilhar!</span>
                             </div>
-                        );
-                    })()}
-
-                    <div className="mb-2">
-                        <span className="inline-block px-3 py-1 bg-[#1e3a8a]/10 text-[#1e3a8a] text-xs font-bold tracking-wider rounded-full uppercase">
-                            {selectedSaint.deathType.includes("Martírio") ? "Mártir" : "Confessor da Fé"}
-                        </span>
-                    </div>
-
-                    <h2 className="font-cinzel text-2xl md:text-3xl font-bold text-[#1e3a8a] mb-2 leading-tight">
-                        {selectedSaint.name}
-                    </h2>
-
-                    <p className="font-lato text-[#C5A059] text-sm font-bold mb-6">
-                        {selectedSaint.dates}
-                    </p>
-
-                    <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-6"></div>
-
-                    <div className="text-left w-full space-y-4">
-                        <div>
-                            <p className="text-xs uppercase text-gray-400 tracking-wider font-bold mb-1">Padroeiro</p>
-                            <p className="font-lato text-gray-800 text-sm leading-snug">{selectedSaint.patronage}</p>
                         </div>
-                        
-                        <div>
-                            <p className="text-xs uppercase text-gray-400 tracking-wider font-bold mb-1">Vida & Santidade</p>
-                            <p className="font-lato text-gray-800 text-base leading-relaxed text-justify">
-                                {selectedSaint.bio}
-                            </p>
+                    )}
+
+                    <main className="z-10 w-full max-w-lg px-6 flex flex-col items-center justify-center min-h-[500px]">
+                        <div className="absolute top-8 text-center opacity-80">
+                            <h3 className="font-cinzel text-xs tracking-[0.3em] text-[#C5A059] uppercase">Santo do Ano</h3>
+                            <div className="w-8 h-px bg-[#C5A059] mx-auto mt-2"></div>
                         </div>
 
-                        {/* SEARCH SECTION */}
-                        <div>
-                            <div className="flex items-center gap-1 mb-1 text-gray-400">
-                                <Search className="w-3 h-3" />
-                                <p className="text-xs uppercase tracking-wider font-bold">Aprofunde-se</p>
+                        {screen === 'intro' && (
+                            <div className="flex flex-col items-center text-center animate-fade-in-up w-full max-w-md mt-12">
+                                <div className="mb-6 p-4 border-2 border-[#C5A059] rounded-full">
+                                    <Cross className="w-10 h-10 text-[#C5A059]" />
+                                </div>
+                                <h1 className="font-cinzel text-3xl md:text-5xl font-bold mb-2 text-[#C5A059]">Intercessor</h1>
+                                <p className="font-lato text-gray-200 text-base mb-6 max-w-xs leading-relaxed">
+                                    O Espírito Santo sopra onde quer. Quem será seu companheiro de jornada neste ano?
+                                </p>
+
+                                <div className="w-full mb-8 space-y-4">
+                                    <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-[#C5A059]/30 shadow-sm">
+                                        <p className="font-lato text-sm text-gray-100 text-justify leading-relaxed">
+                                            <span className="text-[#C5A059] font-bold">O santo do ano</span>, ou amigo do céu, é um ato piedoso muito interessante adotado por alguns fiéis em todo começo de ano. São Carlo Acutis, em 2006, participou desta atividade e foi “escolhido” por Santo Alessandro Sauli. Segundo relatos contidos no livro <span className="italic">O Segredo do Meu Filho</span>, de Antonia Salzano (mãe de Carlo), essa escolha teve um significado profundo, pois no dia de Santo Alessandro Sauli, ela recebeu a notícia da morte cerebral de Carlo.
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-[#C5A059]/30 shadow-sm overflow-hidden transition-all duration-300">
+                                        <button onClick={() => setShowPrayer(!showPrayer)} className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-colors">
+                                            <span className="font-cinzel text-sm text-[#C5A059] font-bold flex items-center gap-2">
+                                                <Sparkles className="w-3 h-3" /> Oração Inicial
+                                            </span>
+                                            {showPrayer ? <ChevronUp className="w-4 h-4 text-[#C5A059]"/> : <ChevronDown className="w-4 h-4 text-[#C5A059]"/>}
+                                        </button>
+                                        <div className={`transition-all duration-500 ease-in-out ${showPrayer ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                            <div className="p-4 pt-0 border-t border-[#C5A059]/10">
+                                                <p className="font-lato italic text-white text-sm md:text-base text-justify leading-relaxed mt-2">
+                                                    "Vinde Espírito Santo, enchei os corações dos vossos fiéis e acendei neles o fogo do Vosso Amor. Enviai o Vosso Espírito e tudo será criado e renovareis a face da terra.
+                                                    <br/><br/>
+                                                    Oremos: Ó Deus que instruíste os corações dos vossos fiéis, com a luz do Espírito Santo, fazei que apreciemos retamente todas as coisas segundo o mesmo Espírito e gozemos da sua consolação. Por Cristo Senhor Nosso. Amém"
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={`mb-3 flex items-center justify-center transition-opacity duration-300 ${sliderValue > 10 ? 'opacity-0' : 'opacity-100'}`}>
+                                    <span className="font-cinzel text-xs font-bold tracking-widest text-[#C5A059] animate-pulse text-center">
+                                        DESLIZE PARA REVELAR O SEU SANTO INTERCESSOR DO ANO
+                                    </span>
+                                    <ChevronRight className="w-4 h-4 text-[#C5A059] ml-1" />
+                                </div>
+
+                                <div className="w-full relative h-16 bg-white/10 rounded-full border border-white/10 overflow-hidden shadow-inner touch-none">
+                                    <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#C5A059] to-[#E5C079] opacity-30 transition-all duration-75 ease-out" style={{ width: `${sliderValue}%` }}></div>
+                                    <input type="range" min="0" max="100" value={sliderValue} onChange={handleSliderChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
+                                    <div className="absolute top-1 h-14 w-14 bg-[#C5A059] rounded-full shadow-xl flex items-center justify-center pointer-events-none transition-all duration-75 ease-out z-10" style={{ left: `calc(${sliderValue}% - ${sliderValue * 0.56}px)` }}>
+                                        <Cross className="w-8 h-8 text-[#0f172a]" />
+                                    </div>
+                                </div>
                             </div>
-                            <p className="font-lato text-gray-600 text-sm leading-snug italic">
-                                Para se aprofundar mais, busque por Vida de "{selectedSaint.name}", assim como orações dedicadas a {selectedSaint.name.includes("Santa") || selectedSaint.name.includes("Madre") ? "ela" : "ele"}.
-                            </p>
-                        </div>
+                        )}
 
-                        <div className="mt-4 p-3 bg-[#FDFBF7] border border-[#C5A059]/20 rounded-lg">
-                             <p className="font-cinzel text-xs text-[#1e3a8a] text-center">
-                                "{selectedSaint.name}, rogai por nós!"
-                             </p>
-                        </div>
-                    </div>
+                        {screen === 'result' && selectedSaint && (
+                            <div className="w-full max-w-md animate-fade-in-up">
+                                <div id="saint-card" className="bg-white w-full rounded-t-[3rem] rounded-b-2xl shadow-2xl overflow-hidden border-t-8 border-[#C5A059] relative text-[#1e3a8a]">
+                                    <div className="absolute top-4 right-4 text-[#C5A059] opacity-20"><Sparkles className="w-8 h-8" /></div>
+                                    <div className="pt-12 pb-8 px-8 flex flex-col items-center text-center">
+                                        {(() => {
+                                            const { icon: SaintIcon, color } = getSaintIcon(selectedSaint);
+                                            return (
+                                                <div className={`mb-4 p-3 rounded-full bg-gray-50 border border-gray-100 ${color} shadow-sm`}>
+                                                    <SaintIcon className="w-12 h-12" strokeWidth={1.5} />
+                                                </div>
+                                            );
+                                        })()}
+                                        <div className="mb-2"><span className="inline-block px-3 py-1 bg-[#1e3a8a]/10 text-[#1e3a8a] text-xs font-bold tracking-wider rounded-full uppercase">{selectedSaint.deathType.includes("Martírio") ? "Mártir" : "Confessor da Fé"}</span></div>
+                                        <h2 className="font-cinzel text-2xl md:text-3xl font-bold text-[#1e3a8a] mb-2 leading-tight">{selectedSaint.name}</h2>
+                                        <p className="font-lato text-[#C5A059] text-sm font-bold mb-6">{selectedSaint.dates}</p>
+                                        <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-6"></div>
+                                        <div className="text-left w-full space-y-4">
+                                            <div>
+                                                <p className="text-xs uppercase text-gray-400 tracking-wider font-bold mb-1">Padroeiro</p>
+                                                <p className="font-lato text-gray-800 text-sm leading-snug">{selectedSaint.patronage}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs uppercase text-gray-400 tracking-wider font-bold mb-1">Vida & Santidade</p>
+                                                <p className="font-lato text-gray-800 text-base leading-relaxed text-justify">{selectedSaint.bio}</p>
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-1 mb-1 text-gray-400">
+                                                    <Search className="w-3 h-3" />
+                                                    <p className="text-xs uppercase tracking-wider font-bold">Aprofunde-se</p>
+                                                </div>
+                                                <p className="font-lato text-gray-600 text-sm leading-snug italic">
+                                                    Para se aprofundar mais, busque por Vida de "{selectedSaint.name}", assim como orações dedicadas a {selectedSaint.name.includes("Santa") || selectedSaint.name.includes("Madre") ? "ela" : "ele"}.
+                                                </p>
+                                            </div>
+                                            <div className="mt-4 p-3 bg-[#FDFBF7] border border-[#C5A059]/20 rounded-lg">
+                                                <p className="font-cinzel text-xs text-[#1e3a8a] text-center">"{selectedSaint.name}, rogai por nós!"</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-[#1e3a8a] p-4 text-white relative">
+                                        <div id="card-watermark" className="hidden text-center py-2">
+                                            <p className="font-cinzel text-[#C5A059] text-xs tracking-[0.3em] uppercase">Santo do Ano 2025</p>
+                                            <p className="text-[10px] text-white/50 mt-1">Ad Maiorem Dei Gloriam</p>
+                                        </div>
+                                        <div id="action-buttons" className="flex justify-between items-center w-full">
+                                            <div className="flex gap-2">
+                                                <button onClick={copyToClipboard} className="flex items-center gap-1 text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-[#C5A059] transition-colors">
+                                                    <Share2 className="w-4 h-4" /> <span className="hidden md:inline">Copiar</span>
+                                                </button>
+                                                <button onClick={handleDownloadCard} disabled={loadingImage} className={`flex items-center gap-1 text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-[#C5A059] transition-colors ${loadingImage ? 'opacity-50 cursor-wait' : ''}`}>
+                                                    <Download className="w-4 h-4" /> <span className="hidden md:inline">{loadingImage ? 'Gerando...' : 'Baixar'}</span>
+                                                </button>
+                                            </div>
+                                            <button onClick={resetApp} className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-[#C5A059] transition-colors">
+                                                Novo Sorteio <RefreshCw className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="text-center mt-6 text-white/40 text-xs font-lato max-w-xs mx-auto">Reze uma Ave-Maria em agradecimento pelo santo que lhe foi confiado.</p>
+                            </div>
+                        )}
+                    </main>
+                    <div className="absolute bottom-4 text-[10px] text-white/20 font-cinzel tracking-[0.2em] uppercase">Ad Maiorem Dei Gloriam</div>
                 </div>
+            );
+        }
 
-                {/* RODAPÉ DO CARD - Botões de Ação + Marca d'água escondida */}
-                <div className="bg-[#1e3a8a] p-4 text-white relative">
-                    
-                    {/* MARCA D'ÁGUA (visível apenas na imagem baixada) */}
-                    <div id="card-watermark" className="hidden text-center py-2">
-                        <p className="font-cinzel text-[#C5A059] text-xs tracking-[0.3em] uppercase">Santo do Ano 2025</p>
-                        <p className="text-[10px] text-white/50 mt-1">Ad Maiorem Dei Gloriam</p>
-                    </div>
-
-                    {/* BOTÕES DE AÇÃO (visíveis apenas na tela) */}
-                    <div id="action-buttons" className="flex justify-between items-center w-full">
-                        <div className="flex gap-2">
-                            <button 
-                                onClick={copyToClipboard}
-                                className="flex items-center gap-1 text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-[#C5A059] transition-colors"
-                            >
-                                <Share2 className="w-4 h-4" /> <span className="hidden md:inline">Copiar</span>
-                            </button>
-                            <button 
-                                onClick={handleDownloadCard}
-                                disabled={loadingImage}
-                                className={`flex items-center gap-1 text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-[#C5A059] transition-colors ${loadingImage ? 'opacity-50 cursor-wait' : ''}`}
-                            >
-                                <Download className="w-4 h-4" /> <span className="hidden md:inline">{loadingImage ? 'Gerando...' : 'Baixar'}</span>
-                            </button>
-                        </div>
-
-                        <button 
-                            onClick={resetApp}
-                            className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-[#C5A059] transition-colors"
-                        >
-                            Novo Sorteio <RefreshCw className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <p className="text-center mt-6 text-white/40 text-xs font-lato max-w-xs mx-auto">
-                Reze uma Ave-Maria em agradecimento pelo santo que lhe foi confiado.
-            </p>
-          </div>
-        )}
-
-      </main>
-
-      {/* Footer Decoration */}
-      <div className="absolute bottom-4 text-[10px] text-white/20 font-cinzel tracking-[0.2em] uppercase">
-        Ad Maiorem Dei Gloriam
-      </div>
-    </div>
-  );
-}
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
