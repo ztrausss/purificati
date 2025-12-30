@@ -95,6 +95,7 @@
         const Leaf = (props) => <IconBase {...props}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></IconBase>;
         const Star = (props) => <IconBase {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></IconBase>;
         const Church = (props) => <IconBase {...props}><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M17 21v-8.4a1.2 1.2 0 0 0-1.2-1.2h-7.6a1.2 1.2 0 0 0-1.2 1.2V21"/><path d="M12 3a5 5 0 0 1 5 5v3a1.1 1.1 0 0 1-1.1 1.1h-7.8A1.1 1.1 0 0 1 7 11V8a5 5 0 0 1 5-5Z"/></IconBase>;
+        const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
 
         // --- BANCO DE DADOS DE SANTOS ---
         const SAINTS_DB = [
@@ -163,6 +164,7 @@
             const [showToast, setShowToast] = useState(false);
             const [loadingImage, setLoadingImage] = useState(false);
             const [showPrayer, setShowPrayer] = useState(false);
+            const [generatedImage, setGeneratedImage] = useState(null);
 
             // Helper para ícones
             const getSaintIcon = (saint) => {
@@ -197,6 +199,7 @@
                     setIsFading(false);
                     setShowToast(false);
                     setShowPrayer(false);
+                    setGeneratedImage(null);
                 }, 500);
             };
 
@@ -250,13 +253,21 @@
                         }
                     });
 
+                    // 1. Gera a URL da imagem
+                    const dataUrl = canvas.toDataURL('image/png');
+                    
+                    // 2. Define o estado para mostrar o Modal (Fallback para quem não baixa automático)
+                    setGeneratedImage(dataUrl);
+
+                    // 3. Tenta o download automático (funciona em Desktop/Android)
                     const link = document.createElement('a');
                     link.download = `Santo_do_Ano_${selectedSaint.name.replace(/\s+/g, '_')}.png`;
-                    link.href = canvas.toDataURL('image/png');
+                    link.href = dataUrl;
                     link.click();
+
                 } catch (error) {
                     console.error("Erro", error);
-                    alert("Erro ao gerar imagem.");
+                    alert("Não foi possível gerar a imagem automaticamente. Tente tirar um print da tela.");
                 } finally {
                     setLoadingImage(false);
                 }
@@ -278,6 +289,25 @@
                             <div className="bg-[#0f172a] text-[#C5A059] px-6 py-3 rounded-full shadow-lg flex items-center gap-2 border border-[#C5A059]">
                                 <Check className="w-4 h-4" />
                                 <span className="font-lato text-sm font-bold">Copiado para compartilhar!</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* MODAL DE IMAGEM GERADA (Fallback para iOS/Mobile) */}
+                    {generatedImage && (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={() => setGeneratedImage(null)}>
+                            <div className="bg-white rounded-xl p-4 max-w-sm w-full relative animate-fade-in-down" onClick={e => e.stopPropagation()}>
+                                <button onClick={() => setGeneratedImage(null)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 p-2">
+                                    <X className="w-6 h-6"/>
+                                </button>
+                                <div className="text-center mb-4">
+                                    <p className="text-[#1e3a8a] font-cinzel font-bold text-lg">Seu Santinho</p>
+                                    <p className="text-gray-500 text-xs mt-1">Caso o download não inicie, segure na imagem para salvar.</p>
+                                </div>
+                                <img src={generatedImage} alt="Santo do Ano Gerado" className="w-full rounded-lg shadow-lg border border-gray-200" />
+                                <button onClick={() => setGeneratedImage(null)} className="mt-4 w-full bg-[#1e3a8a] text-white py-3 rounded-lg font-bold text-sm hover:bg-[#152860] transition-colors">
+                                    Fechar
+                                </button>
                             </div>
                         </div>
                     )}
