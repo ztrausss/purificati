@@ -157,6 +157,21 @@
                             <span class="bg-purple-900 text-purple-300 px-2 py-1 rounded">Metabólica</span>
                         </div>
                     </div>
+
+                    <!-- Botão Guia Nutricional -->
+                    <div onclick="renderNutrition()" 
+                         class="group bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 p-4 rounded-xl cursor-pointer transition-all duration-200 shadow-sm relative overflow-hidden mb-6">
+                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
+                        <div class="flex justify-between items-center pl-3">
+                            <div>
+                                <span class="text-xs font-bold text-slate-500 uppercase">Dicas Essenciais</span>
+                                <h3 class="text-lg font-bold text-slate-100 group-hover:text-yellow-400 transition-colors">Guia de Alimentação</h3>
+                                <p class="text-sm text-slate-400 mt-1">O que comer para crescer</p>
+                            </div>
+                            <i data-lucide="utensils" class="text-slate-600 group-hover:text-white transition"></i>
+                        </div>
+                    </div>
+
                     <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest ml-1 mb-2">Selecione o Dia</h3>
             `;
 
@@ -177,6 +192,87 @@
                 `;
             }
             html += `</div>`;
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function renderNutrition() {
+            const container = document.getElementById('app-container');
+            const homeBtn = document.getElementById('home-btn');
+            homeBtn.classList.remove('hidden');
+            window.scrollTo(0,0);
+
+            let html = `
+                <div class="fade-in pb-10">
+                    <div class="mb-6">
+                        <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Combustível</span>
+                        <h2 class="text-2xl font-bold text-white leading-tight">Nutrição para Hipertrofia</h2>
+                        <p class="text-slate-400 mt-2 text-sm">O treino quebra a fibra, a comida constrói.</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Card 1: Calorias -->
+                        <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 bg-blue-900/30 rounded-lg text-blue-400"><i data-lucide="scale" class="w-5 h-5"></i></div>
+                                <h3 class="font-bold text-slate-100">Superávit Calórico</h3>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Para ganhar massa, você precisa comer mais calorias do que gasta. Não tenha medo de comida "de verdade". Aumente as porções de carboidratos (arroz, batata, macarrão) progressivamente.
+                            </p>
+                        </div>
+
+                        <!-- Card 2: Proteína -->
+                        <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 bg-emerald-900/30 rounded-lg text-emerald-400"><i data-lucide="beef" class="w-5 h-5"></i></div>
+                                <h3 class="font-bold text-slate-100">Proteína é Rei</h3>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                Tente consumir entre <strong>1.6g a 2.0g</strong> de proteína por kg de peso corporal todos os dias.
+                            </p>
+                            <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                                <p class="text-xs text-slate-400 uppercase font-bold mb-2">Fontes Econômicas:</p>
+                                <ul class="text-sm text-slate-300 list-disc list-inside space-y-1">
+                                    <li>Ovos (inteiros)</li>
+                                    <li>Peito de Frango / Carne Moída</li>
+                                    <li>Sardinha / Atum</li>
+                                    <li>Leite / Iogurte / Queijo Cotagge</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Água -->
+                        <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 bg-cyan-900/30 rounded-lg text-cyan-400"><i data-lucide="droplet" class="w-5 h-5"></i></div>
+                                <h3 class="font-bold text-slate-100">Hidratação</h3>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Músculo desidratado não cresce e você perde força. Beba pelo menos <strong>3 a 4 litros</strong> de água por dia.
+                            </p>
+                        </div>
+
+                        <!-- Card 4: Timing -->
+                        <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="p-2 bg-yellow-900/30 rounded-lg text-yellow-400"><i data-lucide="clock" class="w-5 h-5"></i></div>
+                                <h3 class="font-bold text-slate-100">O que comer?</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-xs text-yellow-500 font-bold uppercase mb-1">Pré-Treino (1h a 1h30 antes)</p>
+                                    <p class="text-slate-300 text-sm">Foco em Carbo de média absorção + Proteína. <br>Ex: Pão com ovo, Mingau de aveia, Banana com iogurte.</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-yellow-500 font-bold uppercase mb-1">Pós-Treino</p>
+                                    <p class="text-slate-300 text-sm">Refeição sólida completa para repor energia. <br>Ex: Prato de "pedreiro" (Arroz, Feijão, Carne e Salada).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
             container.innerHTML = html;
             lucide.createIcons();
         }
