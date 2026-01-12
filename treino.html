@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino Home - Hipertrofia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Scrollbar for dark theme */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header Fixo -->
+    <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-tight text-blue-400 flex items-center gap-2">
+                <i data-lucide="dumbbell" class="w-6 h-6"></i>
+                Home Workout
+            </h1>
+            <button onclick="renderHome()" id="home-btn" class="hidden text-sm bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition">
+                Voltar
+            </button>
+        </div>
+    </header>
+
+    <!-- Container Principal -->
+    <main id="app-container" class="flex-1 max-w-md mx-auto w-full p-4 fade-in">
+        <!-- O conteúdo será injetado aqui via JavaScript -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center p-4 text-slate-600 text-xs mt-auto">
+        <p>Foco: Estética Masculina &bull; Volume Load</p>
+    </footer>
+
+    <script>
+        // --- DADOS DO TREINO (Baseados na nossa conversa) ---
+        const workoutData = {
+            'A': {
+                title: "Treino A: Push",
+                subtitle: "Peito, Ombro Lateral, Tríceps + Abs",
+                day: "Segunda",
+                color: "border-l-4 border-blue-500",
+                exercises: [
+                    { name: "Supino Inclinado c/ Halteres", sets: "4", reps: "8-12", rest: "90-120s", muscle: "Peitoral Superior (Encher o peito)", exec: "Banco a 30-45°. Desça controlando até o halter tocar a lateral do peito. Suba espremendo." },
+                    { name: "Supino Reto c/ Halteres", sets: "3", reps: "8-12", rest: "90-120s", muscle: "Peitoral Maior", exec: "Costas firmes. Pés travados no chão. Cotovelos levemente para dentro (não deixe 90°)." },
+                    { name: "Desenvolvimento Arnold", sets: "3", reps: "10-12", rest: "90s", muscle: "Ombros (Completo)", exec: "Comece com a palma virada para você. Ao subir, gire até a palma ficar para frente." },
+                    { name: "Elevação Lateral", sets: "5", reps: "12-15", rest: "60s", muscle: "Deltoide Lateral (Largura)", exec: "Cotovelos semiflexionados. Imagine que está derramando uma jarra de água. Não use impulso." },
+                    { name: "Bi-set: Tríceps Testa + Flexão Fechada", sets: "4", reps: "10-12 + Falha", rest: "90s", muscle: "Tríceps (Volume)", exec: "Faça o testa deitado. Solte os pesos e imediatamente faça flexão com as mãos juntas (diamante)." },
+                    { name: "Abdominal Supra (Crunch)", sets: "4", reps: "15-20", rest: "60s", muscle: "Abdômen Superior", exec: "Deitado, joelhos flexionados. Solte todo o ar ao subir enrolando a coluna. Segure 1s em cima." }
+                ]
+            },
+            'B': {
+                title: "Treino B: Pull",
+                subtitle: "Costas, Trapézio, Bíceps",
+                day: "Terça",
+                color: "border-l-4 border-emerald-500",
+                exercises: [
+                    { name: "Remada Serrote (Kroc Rows)", sets: "4", reps: "10-15", rest: "90-120s", muscle: "Grande Dorsal (Asa)", exec: "Use sua CARGA MÁXIMA. Apoie no banco. Puxe levando o halter no quadril, não no peito." },
+                    { 
+                        name: "Remada Curvada (Supinada)", 
+                        sets: "3", 
+                        reps: "10-12", 
+                        rest: "90-120s",
+                        muscle: "Dorsal Baixa / Bíceps", 
+                        exec: "Palmas para frente. Tronco inclinado. Puxe fechando as escápulas atrás. Mantenha a coluna neutra.",
+                        video: "https://www.youtube.com/embed/cMQpvkZGQrE" 
+                    },
+                    { name: "Encolhimento de Ombros", sets: "4", reps: "20", rest: "60s", muscle: "Trapézio (Yoke)", exec: "Segure halteres pesados. Encolha o ombro na orelha e segure 2 segundos. Desça devagar." },
+                    { 
+                        name: "Crucifixo Inverso", 
+                        sets: "3", 
+                        reps: "15", 
+                        rest: "60s",
+                        muscle: "Posterior de Ombro", 
+                        exec: "Tronco inclinado. Abra os braços focando apenas na parte de trás do ombro. Carga leve.",
+                        video: "https://www.youtube.com/embed/C9Q9so5Fqws"
+                    },
+                    { 
+                        name: "Rosca Direta (com rotação)", 
+                        sets: "4", 
+                        reps: "8-12", 
+                        rest: "60-90s",
+                        muscle: "Bíceps", 
+                        exec: "Comece neutro, suba girando o dedinho para fora. Contraia forte no topo.",
+                        video: "https://www.youtube.com/embed/1N1Q4lxhG5c"
+                    },
+                    { name: "Rosca Martelo", sets: "3", reps: "12-15", rest: "60s", muscle: "Braquial e Antebraço", exec: "Pegada neutra o tempo todo. Foco na grossura do braço." }
+                ]
+            },
+            'C': {
+                title: "Treino C: Legs",
+                subtitle: "Pernas Completo + Abs",
+                day: "Quarta",
+                color: "border-l-4 border-red-500",
+                exercises: [
+                    { name: "Agachamento Búlgaro", sets: "4", reps: "8-12", rest: "120s", muscle: "Quadríceps/Glúteo", exec: "O exercício rei. Pé de trás no banco. Desça até o joelho quase tocar o chão. Tronco inclinado para frente." },
+                    { name: "Stiff com Halteres", sets: "4", reps: "10-12", rest: "90-120s", muscle: "Posterior de Coxa", exec: "Joelhos semi-travados. Desça o tronco mantendo a lombar reta. Sinta alongar atrás da coxa." },
+                    { name: "Agachamento (Halteres no Ombro)", sets: "4", reps: "15-20", rest: "90s", muscle: "Pernas (Metabólico)", exec: "Volume alto para compensar falta de carga extrema. Não tranque o joelho em cima." },
+                    { name: "Panturrilha Unilateral", sets: "5", reps: "15", rest: "45-60s", muscle: "Panturrilhas", exec: "Use um degrau. Segure o halter na mesma mão da perna que trabalha. Amplitude total." },
+                    { name: "Abdominal Bicicleta", sets: "4", reps: "20 total", rest: "60s", muscle: "Oblíquos (Lateral)", exec: "Mãos na cabeça. Leve o cotovelo direito em direção ao joelho esquerdo e alterne. Controle o movimento." }
+                ]
+            },
+            'D': {
+                title: "Treino D: Upper Body",
+                subtitle: "Volume & Pump",
+                day: "Quinta",
+                color: "border-l-4 border-purple-500",
+                exercises: [
+                    { name: "Flexões (Pés Elevados)", sets: "4", reps: "Falha", rest: "90s", muscle: "Peitoral Superior", exec: "Pés no sofá/banco. Mãos no chão. Tente encostar o nariz no chão." },
+                    { name: "Barra Fixa ou Remada na Mesa", sets: "4", reps: "Falha", rest: "90s", muscle: "Costas", exec: "Se não tiver barra, deite embaixo de uma mesa robusta e se puxe para cima." },
+                    { name: "Desenvolvimento em Pé", sets: "3", reps: "12", rest: "90s", muscle: "Ombros (Estabilidade)", exec: "Em pé, glúteo e abdômen travados. Empurre acima da cabeça." },
+                    { name: "Elevação Lateral", sets: "4", reps: "15", rest: "45-60s", muscle: "Deltoide Lateral", exec: "Menos descanso aqui (30-45s). Foco no pump (inchaço)." },
+                    { name: "Super-Série: Martelo + Francês", sets: "4", reps: "12+12", rest: "90s", muscle: "Bíceps e Tríceps", exec: "Faça rosca martelo e vá direto, sem soltar o peso, para o tríceps francês." }
+                ]
+            },
+            'E': {
+                title: "Treino E: Lower + Core",
+                subtitle: "Cadeia Posterior & Abdômen Infra",
+                day: "Sexta",
+                color: "border-l-4 border-orange-500",
+                exercises: [
+                    { name: "Levantamento Terra c/ Halteres", sets: "5", reps: "8-10", rest: "120-180s", muscle: "Cadeia Posterior", exec: "Carga máxima. Agache para pegar, suba estendendo tudo. Coluna neutra sempre." },
+                    { name: "Avanço (Passada Caminhando)", sets: "3", reps: "20 passos", rest: "90-120s", muscle: "Pernas", exec: "Dê passos largos pela casa. O joelho de trás deve chegar perto do chão." },
+                    { name: "Abdominal Infra", sets: "4", reps: "15", rest: "60s", muscle: "Abdômen Inferior", exec: "Deitado, mãos sob o quadril. Eleve as pernas esticadas." },
+                    { name: "Prancha Abdominal", sets: "4", reps: "1 min", rest: "60s", muscle: "Core (Cintura)", exec: "Cotovelos no chão. Corpo reto. Contraia glúteo para não doer a lombar." }
+                ]
+            }
+        };
+
+        // --- LÓGICA DA APLICAÇÃO ---
+
+        function renderHome() {
+            const container = document.getElementById('app-container');
+            const homeBtn = document.getElementById('home-btn');
+            
+            homeBtn.classList.add('hidden');
+            
+            let html = `
+                <div class="space-y-4 fade-in">
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6">
+                        <h2 class="text-lg font-semibold text-white">Resumo da Semana</h2>
+                        <p class="text-slate-400 text-sm mt-1">5 Dias de Treino • Foco em V-Shape</p>
+                        <div class="flex gap-2 mt-4 text-xs font-mono">
+                            <span class="bg-blue-900 text-blue-300 px-2 py-1 rounded">Mecânica</span>
+                            <span class="bg-purple-900 text-purple-300 px-2 py-1 rounded">Metabólica</span>
+                        </div>
+                    </div>
+                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest ml-1 mb-2">Selecione o Dia</h3>
+            `;
+
+            for (const [key, data] of Object.entries(workoutData)) {
+                html += `
+                    <div onclick="renderWorkout('${key}')" 
+                         class="group bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 p-4 rounded-xl cursor-pointer transition-all duration-200 shadow-sm relative overflow-hidden">
+                         <div class="absolute left-0 top-0 bottom-0 w-1 ${data.color.split(' ')[1]}"></div>
+                        <div class="flex justify-between items-center pl-3">
+                            <div>
+                                <span class="text-xs font-bold text-slate-500 uppercase">${data.day}</span>
+                                <h3 class="text-lg font-bold text-slate-100 group-hover:text-blue-400 transition-colors">${data.title}</h3>
+                                <p class="text-sm text-slate-400 mt-1">${data.subtitle}</p>
+                            </div>
+                            <i data-lucide="chevron-right" class="text-slate-600 group-hover:text-white transition"></i>
+                        </div>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function renderWorkout(id) {
+            const container = document.getElementById('app-container');
+            const homeBtn = document.getElementById('home-btn');
+            const data = workoutData[id];
+
+            homeBtn.classList.remove('hidden');
+            window.scrollTo(0,0);
+
+            let html = `
+                <div class="fade-in pb-10">
+                    <div class="mb-6">
+                        <span class="text-xs font-bold text-slate-500 uppercase block mb-1">${data.day}</span>
+                        <h2 class="text-2xl font-bold text-white leading-tight">${data.title}</h2>
+                        <p class="text-slate-400 mt-2 text-sm">${data.subtitle}</p>
+                    </div>
+
+                    <div class="space-y-3">
+            `;
+
+            data.exercises.forEach((ex, index) => {
+                let videoBlock = '';
+                if (ex.video) {
+                    videoBlock = `
+                        <div class="mt-4 pt-3 border-t border-slate-800">
+                            <span class="text-slate-500 text-xs uppercase font-bold block mb-2 flex items-center gap-1">
+                                <i data-lucide="youtube" class="w-3 h-3"></i> Vídeo de Execução
+                            </span>
+                            <div class="rounded-lg overflow-hidden bg-slate-900 border border-slate-700 aspect-video relative shadow-lg">
+                                <iframe src="${ex.video}" class="absolute top-0 left-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden transition-all duration-300">
+                        <!-- Cabeçalho do Card (Clicável) -->
+                        <div onclick="toggleDetails(${index})" class="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800/50 select-none">
+                            <div class="flex-1 pr-4">
+                                <h3 class="font-semibold text-slate-200 text-base">${ex.name}</h3>
+                            </div>
+                            <div class="flex flex-col items-end min-w-[60px]">
+                                <span class="text-lg font-bold text-blue-400">${ex.sets}</span>
+                                <span class="text-xs text-slate-500 uppercase">Séries</span>
+                            </div>
+                        </div>
+
+                        <!-- Detalhes (Escondido) -->
+                        <div id="details-${index}" class="hidden bg-slate-950/50 border-t border-slate-800 p-4 text-sm space-y-3">
+                            
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="timer" class="w-4 h-4 text-slate-500 mt-1 shrink-0"></i>
+                                <div>
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Descanso</span>
+                                    <p class="text-slate-300 font-mono">${ex.rest}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="repeat" class="w-4 h-4 text-slate-500 mt-1 shrink-0"></i>
+                                <div>
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Repetições</span>
+                                    <p class="text-slate-300 font-mono">${ex.reps}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="biceps-flexed" class="w-4 h-4 text-slate-500 mt-1 shrink-0"></i>
+                                <div>
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Músculo Alvo</span>
+                                    <p class="text-emerald-400 font-medium">${ex.muscle}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="info" class="w-4 h-4 text-slate-500 mt-1 shrink-0"></i>
+                                <div>
+                                    <span class="text-slate-500 text-xs uppercase font-bold">Execução</span>
+                                    <p class="text-slate-300 leading-relaxed">${ex.exec}</p>
+                                </div>
+                            </div>
+                            ${videoBlock}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>
+                <div class="mt-8 p-4 bg-blue-900/20 border border-blue-900 rounded-lg flex gap-3">
+                    <i data-lucide="flame" class="text-blue-400 w-5 h-5 shrink-0"></i>
+                    <p class="text-xs text-blue-200">
+                        <strong>Dica de Intensidade:</strong> Se a carga estiver leve, aumente o tempo de descida para 3 ou 4 segundos (Tempo 3-0-1).
+                    </p>
+                </div>
+            </div>`;
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function toggleDetails(index) {
+            const element = document.getElementById(`details-${index}`);
+            // Simple toggle logic
+            if (element.classList.contains('hidden')) {
+                element.classList.remove('hidden');
+                element.classList.add('fade-in');
+            } else {
+                element.classList.add('hidden');
+                element.classList.remove('fade-in');
+            }
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            renderHome();
+        });
+
+    </script>
+</body>
+</html>
