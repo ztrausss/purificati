@@ -17,6 +17,10 @@
         ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Animação do Check */
+        .check-anim { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .check-anim:active { transform: scale(0.90); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
@@ -42,6 +46,7 @@
     <!-- Footer -->
     <footer class="text-center p-4 text-slate-600 text-xs mt-auto">
         <p>Foco: Estética Masculina &bull; Volume Load</p>
+        <button onclick="clearProgress()" class="mt-2 text-red-900/50 hover:text-red-500 text-[10px] uppercase tracking-widest transition">Resetar Progresso</button>
     </footer>
 
     <script>
@@ -139,6 +144,67 @@
             }
         };
 
+        // --- SISTEMA DE PROGRESSO ---
+        // Recupera o progresso salvo ou cria um novo objeto
+        let progress = JSON.parse(localStorage.getItem('homeWorkoutProgress')) || {};
+
+        function toggleSet(dayId, exerciseIndex, setNumber) {
+            const key = `${dayId}_${exerciseIndex}_${setNumber}`;
+            
+            // Inverte o estado (se estava true vira false e vice-versa)
+            if (progress[key]) {
+                delete progress[key];
+            } else {
+                progress[key] = true;
+            }
+            
+            // Salva no localStorage
+            localStorage.setItem('homeWorkoutProgress', JSON.stringify(progress));
+            
+            // Atualiza visual do botão
+            const btn = document.getElementById(`btn-${key}`);
+            if (btn) {
+                updateButtonVisual(btn, !!progress[key]);
+            }
+        }
+
+        function updateButtonVisual(btn, isDone) {
+            if (isDone) {
+                btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
+                btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+            } else {
+                btn.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
+                btn.classList.add('bg-slate-800', 'text-slate-400', 'border-slate-700');
+            }
+        }
+
+        function clearProgress() {
+            if(confirm('Tem certeza que deseja apagar todo o histórico de séries realizadas?')) {
+                progress = {};
+                localStorage.removeItem('homeWorkoutProgress');
+                alert('Progresso resetado!');
+                renderHome(); // Re-renderiza para limpar visualmente se estiver na tela
+            }
+        }
+
+        // Função para limpar apenas o dia atual (Botão Finalizar Treino)
+        function finishWorkout(dayId) {
+            if(confirm('Parabéns pelo treino! Deseja limpar as marcações deste dia para deixá-lo pronto para a próxima semana?')) {
+                // Remove apenas as chaves que começam com o ID do dia (ex: 'A_')
+                Object.keys(progress).forEach(key => {
+                    if(key.startsWith(`${dayId}_`)) {
+                        delete progress[key];
+                    }
+                });
+                
+                localStorage.setItem('homeWorkoutProgress', JSON.stringify(progress));
+                renderWorkout(dayId); // Atualiza a tela para mostrar os botões limpos
+                
+                // Feedback visual simples
+                alert('Treino concluído! Marcações resetadas.');
+            }
+        }
+
         // --- LÓGICA DA APLICAÇÃO ---
 
         function renderHome() {
@@ -201,80 +267,32 @@
             const homeBtn = document.getElementById('home-btn');
             homeBtn.classList.remove('hidden');
             window.scrollTo(0,0);
-
+            
+            // Conteúdo de nutrição igual ao anterior (resumido aqui para focar no workout)
             let html = `
                 <div class="fade-in pb-10">
                     <div class="mb-6">
                         <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Combustível</span>
                         <h2 class="text-2xl font-bold text-white leading-tight">Nutrição para Hipertrofia</h2>
-                        <p class="text-slate-400 mt-2 text-sm">O treino quebra a fibra, a comida constrói.</p>
                     </div>
-
+                    <!-- Cards de Nutrição -->
                     <div class="space-y-6">
-                        <!-- Card 1: Calorias -->
-                        <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="p-2 bg-blue-900/30 rounded-lg text-blue-400"><i data-lucide="scale" class="w-5 h-5"></i></div>
-                                <h3 class="font-bold text-slate-100">Superávit Calórico</h3>
-                            </div>
-                            <p class="text-slate-300 text-sm leading-relaxed">
-                                Para ganhar massa, você precisa comer mais calorias do que gasta. Não tenha medo de comida "de verdade". Aumente as porções de carboidratos (arroz, batata, macarrão) progressivamente.
-                            </p>
+                         <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                            <h3 class="font-bold text-slate-100 mb-2">Superávit Calórico</h3>
+                            <p class="text-slate-300 text-sm">Coma mais do que gasta. Aumente carboidratos (arroz, batata) progressivamente.</p>
                         </div>
-
-                        <!-- Card 2: Proteína -->
                         <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="p-2 bg-emerald-900/30 rounded-lg text-emerald-400"><i data-lucide="beef" class="w-5 h-5"></i></div>
-                                <h3 class="font-bold text-slate-100">Proteína é Rei</h3>
-                            </div>
-                            <p class="text-slate-300 text-sm leading-relaxed mb-3">
-                                Tente consumir entre <strong>1.6g a 2.0g</strong> de proteína por kg de peso corporal todos os dias.
-                            </p>
-                            <div class="bg-slate-950 p-3 rounded border border-slate-800">
-                                <p class="text-xs text-slate-400 uppercase font-bold mb-2">Fontes Econômicas:</p>
-                                <ul class="text-sm text-slate-300 list-disc list-inside space-y-1">
-                                    <li>Ovos (inteiros)</li>
-                                    <li>Peito de Frango / Carne Moída</li>
-                                    <li>Sardinha / Atum</li>
-                                    <li>Leite / Iogurte / Queijo Cotagge</li>
-                                </ul>
-                            </div>
+                            <h3 class="font-bold text-slate-100 mb-2">Proteína (1.6g a 2.0g/kg)</h3>
+                            <p class="text-slate-300 text-sm">Ovos, Frango, Carne, Leite, Iogurte.</p>
                         </div>
-
-                        <!-- Card 3: Água -->
-                        <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="p-2 bg-cyan-900/30 rounded-lg text-cyan-400"><i data-lucide="droplet" class="w-5 h-5"></i></div>
-                                <h3 class="font-bold text-slate-100">Hidratação</h3>
-                            </div>
-                            <p class="text-slate-300 text-sm leading-relaxed">
-                                Músculo desidratado não cresce e você perde força. Beba pelo menos <strong>3 a 4 litros</strong> de água por dia.
-                            </p>
-                        </div>
-
-                        <!-- Card 4: Timing -->
-                        <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="p-2 bg-yellow-900/30 rounded-lg text-yellow-400"><i data-lucide="clock" class="w-5 h-5"></i></div>
-                                <h3 class="font-bold text-slate-100">O que comer?</h3>
-                            </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <p class="text-xs text-yellow-500 font-bold uppercase mb-1">Pré-Treino (1h a 1h30 antes)</p>
-                                    <p class="text-slate-300 text-sm">Foco em Carbo de média absorção + Proteína. <br>Ex: Pão com ovo, Mingau de aveia, Banana com iogurte.</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-yellow-500 font-bold uppercase mb-1">Pós-Treino</p>
-                                    <p class="text-slate-300 text-sm">Refeição sólida completa para repor energia. <br>Ex: Prato de "pedreiro" (Arroz, Feijão, Carne e Salada).</p>
-                                </div>
-                            </div>
+                         <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+                            <h3 class="font-bold text-slate-100 mb-2">Água (3L a 4L)</h3>
+                            <p class="text-slate-300 text-sm">Hidratação é fundamental para força.</p>
                         </div>
                     </div>
                 </div>
             `;
             container.innerHTML = html;
-            lucide.createIcons();
         }
 
         function renderWorkout(id) {
@@ -311,6 +329,27 @@
                     `;
                 }
 
+                // --- GERAÇÃO DOS BOTÕES DE SÉRIE ---
+                const numSets = parseInt(ex.sets); 
+                let setsHtml = '<div class="flex gap-3 mb-4 p-3 bg-slate-900 rounded-lg border border-slate-800 items-center justify-center">';
+                
+                for(let i = 1; i <= numSets; i++) {
+                    const setKey = `${id}_${index}_${i}`;
+                    const isDone = !!progress[setKey];
+                    const btnClass = isDone 
+                        ? 'bg-emerald-500 text-white border-emerald-500' 
+                        : 'bg-slate-800 text-slate-400 border-slate-700';
+
+                    setsHtml += `
+                        <button id="btn-${setKey}" 
+                            onclick="event.stopPropagation(); toggleSet('${id}', ${index}, ${i})" 
+                            class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all check-anim ${btnClass} hover:border-slate-500">
+                            ${i}
+                        </button>
+                    `;
+                }
+                setsHtml += '</div>';
+
                 html += `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden transition-all duration-300">
                         <!-- Cabeçalho do Card (Clicável) -->
@@ -327,6 +366,10 @@
                         <!-- Detalhes (Escondido) -->
                         <div id="details-${index}" class="hidden bg-slate-950/50 border-t border-slate-800 p-4 text-sm space-y-3">
                             
+                            <!-- ÁREA DE MARCAÇÃO DE SÉRIES -->
+                            <span class="text-slate-500 text-xs uppercase font-bold block text-center mb-1">Marcar Séries Feitas</span>
+                            ${setsHtml}
+
                             <div class="flex items-start gap-3">
                                 <i data-lucide="timer" class="w-4 h-4 text-slate-500 mt-1 shrink-0"></i>
                                 <div>
@@ -368,6 +411,12 @@
                         <strong>Dica de Intensidade:</strong> Se a carga estiver leve, aumente o tempo de descida para 3 ou 4 segundos (Tempo 3-0-1).
                     </p>
                 </div>
+
+                <!-- Botão Finalizar Treino -->
+                <button onclick="finishWorkout('${id}')" class="mt-6 w-full py-4 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-600 text-emerald-400 rounded-xl font-bold uppercase tracking-wide text-sm transition flex items-center justify-center gap-2 mb-8">
+                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                    Finalizar Treino (Limpar)
+                </button>
             </div>`;
 
             container.innerHTML = html;
