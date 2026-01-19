@@ -21,6 +21,13 @@
         /* Animação do Check */
         .check-anim { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .check-anim:active { transform: scale(0.90); }
+
+        /* Remove setas do input number */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
@@ -84,13 +91,13 @@
                     },
                     { name: "Encolhimento de Ombros", sets: "4", reps: "20", rest: "60s", muscle: "Trapézio (Yoke)", exec: "Segure halteres pesados. Encolha o ombro na orelha e segure 2 segundos. Desça devagar." },
                     { 
-                        name: "Crucifixo Inverso", 
+                        name: "Remada Aberta (Cotovelos 90°)", 
                         sets: "3", 
-                        reps: "15", 
+                        reps: "12-15", 
                         rest: "60s",
                         muscle: "Posterior de Ombro", 
-                        exec: "Tronco inclinado. Abra os braços focando apenas na parte de trás do ombro. Carga leve.",
-                        video: "https://www.youtube.com/embed/C9Q9so5Fqws"
+                        exec: "Tronco inclinado. Diferente da remada comum, puxe os halteres na linha do peito com os cotovelos bem abertos para os lados.",
+                        video: "https://www.youtube.com/embed/IA1wFqXXl1M"
                     },
                     { 
                         name: "Rosca Direta (com rotação)", 
@@ -144,24 +151,27 @@
             }
         };
 
-        // --- SISTEMA DE PROGRESSO ---
-        // Recupera o progresso salvo ou cria um novo objeto
+        // --- SISTEMA DE PROGRESSO E CARGAS ---
         let progress = JSON.parse(localStorage.getItem('homeWorkoutProgress')) || {};
 
         function toggleSet(dayId, exerciseIndex, setNumber) {
             const key = `${dayId}_${exerciseIndex}_${setNumber}`;
-            
-            // Inverte o estado (se estava true vira false e vice-versa)
             if (progress[key]) {
                 delete progress[key];
             } else {
                 progress[key] = true;
             }
-            
-            // Salva no localStorage
+            saveAndRefreshButton(key);
+        }
+
+        function saveWeight(dayId, exerciseIndex, value) {
+            const key = `weight_${dayId}_${exerciseIndex}`;
+            progress[key] = value;
             localStorage.setItem('homeWorkoutProgress', JSON.stringify(progress));
-            
-            // Atualiza visual do botão
+        }
+
+        function saveAndRefreshButton(key) {
+            localStorage.setItem('homeWorkoutProgress', JSON.stringify(progress));
             const btn = document.getElementById(`btn-${key}`);
             if (btn) {
                 updateButtonVisual(btn, !!progress[key]);
@@ -179,29 +189,26 @@
         }
 
         function clearProgress() {
-            if(confirm('Tem certeza que deseja apagar todo o histórico de séries realizadas?')) {
+            if(confirm('Tem certeza que deseja apagar todo o histórico (séries e cargas)?')) {
                 progress = {};
                 localStorage.removeItem('homeWorkoutProgress');
                 alert('Progresso resetado!');
-                renderHome(); // Re-renderiza para limpar visualmente se estiver na tela
+                renderHome();
             }
         }
 
-        // Função para limpar apenas o dia atual (Botão Finalizar Treino)
         function finishWorkout(dayId) {
-            if(confirm('Parabéns pelo treino! Deseja limpar as marcações deste dia para deixá-lo pronto para a próxima semana?')) {
-                // Remove apenas as chaves que começam com o ID do dia (ex: 'A_')
+            if(confirm('Parabéns pelo treino! Deseja limpar as marcações deste dia para a próxima semana? (As cargas serão mantidas)')) {
+                // Limpa apenas os checks de série (que começam com 'A_0_1'), mas MANTÉM os pesos (que começam com 'weight_')
                 Object.keys(progress).forEach(key => {
-                    if(key.startsWith(`${dayId}_`)) {
+                    if(key.startsWith(`${dayId}_`) && !key.startsWith(`weight_`)) {
                         delete progress[key];
                     }
                 });
                 
                 localStorage.setItem('homeWorkoutProgress', JSON.stringify(progress));
-                renderWorkout(dayId); // Atualiza a tela para mostrar os botões limpos
-                
-                // Feedback visual simples
-                alert('Treino concluído! Marcações resetadas.');
+                renderWorkout(dayId); 
+                alert('Treino concluído! Marcações resetadas, cargas salvas.');
             }
         }
 
@@ -210,14 +217,13 @@
         function renderHome() {
             const container = document.getElementById('app-container');
             const homeBtn = document.getElementById('home-btn');
-            
             homeBtn.classList.add('hidden');
             
             let html = `
                 <div class="space-y-4 fade-in">
                     <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6">
                         <h2 class="text-lg font-semibold text-white">Resumo da Semana</h2>
-                        <p class="text-slate-400 text-sm mt-1">5 Dias de Treino • Foco em V-Shape</p>
+                        <p class="text-slate-400 text-sm mt-1">Foco na Semana 2: Progressão de Carga</p>
                         <div class="flex gap-2 mt-4 text-xs font-mono">
                             <span class="bg-blue-900 text-blue-300 px-2 py-1 rounded">Mecânica</span>
                             <span class="bg-purple-900 text-purple-300 px-2 py-1 rounded">Metabólica</span>
@@ -268,14 +274,12 @@
             homeBtn.classList.remove('hidden');
             window.scrollTo(0,0);
             
-            // Conteúdo de nutrição igual ao anterior (resumido aqui para focar no workout)
             let html = `
                 <div class="fade-in pb-10">
                     <div class="mb-6">
                         <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Combustível</span>
                         <h2 class="text-2xl font-bold text-white leading-tight">Nutrição para Hipertrofia</h2>
                     </div>
-                    <!-- Cards de Nutrição -->
                     <div class="space-y-6">
                          <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
                             <h3 class="font-bold text-slate-100 mb-2">Superávit Calórico</h3>
@@ -329,9 +333,9 @@
                     `;
                 }
 
-                // --- GERAÇÃO DOS BOTÕES DE SÉRIE ---
+                // --- BOTÕES DE SÉRIE ---
                 const numSets = parseInt(ex.sets); 
-                let setsHtml = '<div class="flex gap-3 mb-4 p-3 bg-slate-900 rounded-lg border border-slate-800 items-center justify-center">';
+                let setsHtml = '<div class="flex gap-2 items-center">';
                 
                 for(let i = 1; i <= numSets; i++) {
                     const setKey = `${id}_${index}_${i}`;
@@ -343,45 +347,50 @@
                     setsHtml += `
                         <button id="btn-${setKey}" 
                             onclick="event.stopPropagation(); toggleSet('${id}', ${index}, ${i})" 
-                            class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all check-anim ${btnClass} hover:border-slate-500">
+                            class="w-8 h-8 rounded-full border flex items-center justify-center font-bold text-xs transition-all check-anim ${btnClass} hover:border-slate-500">
                             ${i}
                         </button>
                     `;
                 }
                 setsHtml += '</div>';
 
+                // --- CAMPO DE CARGA (NOVO) ---
+                const weightKey = `weight_${id}_${index}`;
+                const savedWeight = progress[weightKey] || '';
+                
                 html += `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden transition-all duration-300">
                         <!-- Cabeçalho do Card (Clicável) -->
-                        <div onclick="toggleDetails(${index})" class="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800/50 select-none">
-                            <div class="flex-1 pr-4">
-                                <h3 class="font-semibold text-slate-200 text-base">${ex.name}</h3>
+                        <div onclick="toggleDetails(${index})" class="p-4 flex flex-col gap-3 cursor-pointer hover:bg-slate-800/50 select-none">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-semibold text-slate-200 text-base flex-1 pr-2">${ex.name}</h3>
+                                <div class="flex flex-col items-end">
+                                    <span class="text-sm font-bold text-blue-400">${ex.sets} x ${ex.reps}</span>
+                                </div>
                             </div>
-                            <div class="flex flex-col items-end min-w-[60px]">
-                                <span class="text-lg font-bold text-blue-400">${ex.sets}</span>
-                                <span class="text-xs text-slate-500 uppercase">Séries</span>
+                            
+                            <!-- Mini Controls no Card Fechado -->
+                            <div class="flex justify-between items-center mt-1" onclick="event.stopPropagation()">
+                                ${setsHtml}
+                                <div class="flex items-center gap-2 bg-slate-950 rounded-lg p-1 border border-slate-800">
+                                    <span class="text-[10px] text-slate-500 uppercase font-bold pl-2">Kg</span>
+                                    <input type="number" 
+                                           value="${savedWeight}"
+                                           onchange="saveWeight('${id}', ${index}, this.value)"
+                                           placeholder="0" 
+                                           class="w-12 bg-transparent text-right text-sm font-mono text-emerald-400 focus:outline-none p-1"
+                                    >
+                                </div>
                             </div>
                         </div>
 
                         <!-- Detalhes (Escondido) -->
                         <div id="details-${index}" class="hidden bg-slate-950/50 border-t border-slate-800 p-4 text-sm space-y-3">
-                            
-                            <!-- ÁREA DE MARCAÇÃO DE SÉRIES -->
-                            <span class="text-slate-500 text-xs uppercase font-bold block text-center mb-1">Marcar Séries Feitas</span>
-                            ${setsHtml}
-
                             <div class="flex items-start gap-3">
                                 <i data-lucide="timer" class="w-4 h-4 text-slate-500 mt-1 shrink-0"></i>
                                 <div>
                                     <span class="text-slate-500 text-xs uppercase font-bold">Descanso</span>
                                     <p class="text-slate-300 font-mono">${ex.rest}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <i data-lucide="repeat" class="w-4 h-4 text-slate-500 mt-1 shrink-0"></i>
-                                <div>
-                                    <span class="text-slate-500 text-xs uppercase font-bold">Repetições</span>
-                                    <p class="text-slate-300 font-mono">${ex.reps}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-3">
@@ -408,14 +417,14 @@
                 <div class="mt-8 p-4 bg-blue-900/20 border border-blue-900 rounded-lg flex gap-3">
                     <i data-lucide="flame" class="text-blue-400 w-5 h-5 shrink-0"></i>
                     <p class="text-xs text-blue-200">
-                        <strong>Dica de Intensidade:</strong> Se a carga estiver leve, aumente o tempo de descida para 3 ou 4 segundos (Tempo 3-0-1).
+                        <strong>Dica de Intensidade:</strong> Aumente a carga se conseguir fazer mais repetições do que o indicado.
                     </p>
                 </div>
 
                 <!-- Botão Finalizar Treino -->
                 <button onclick="finishWorkout('${id}')" class="mt-6 w-full py-4 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-600 text-emerald-400 rounded-xl font-bold uppercase tracking-wide text-sm transition flex items-center justify-center gap-2 mb-8">
                     <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                    Finalizar Treino (Limpar)
+                    Finalizar Treino (Limpar Séries)
                 </button>
             </div>`;
 
@@ -425,7 +434,6 @@
 
         function toggleDetails(index) {
             const element = document.getElementById(`details-${index}`);
-            // Simple toggle logic
             if (element.classList.contains('hidden')) {
                 element.classList.remove('hidden');
                 element.classList.add('fade-in');
@@ -435,7 +443,6 @@
             }
         }
 
-        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
             renderHome();
         });
