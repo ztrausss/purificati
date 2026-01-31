@@ -39,7 +39,7 @@
                 <h2 id="display-name" class="text-lg font-black text-yellow-500 leading-none">---</h2>
             </div>
             <div class="text-right">
-                <span id="display-phase" class="text-[10px] bg-white/10 px-2 py-1 rounded-full font-mono font-bold tracking-tighter">FASE 0/10</span>
+                <span id="display-phase" class="text-[10px] bg-white/10 px-2 py-1 rounded-full font-mono font-bold tracking-tighter text-white">FASE 0/10</span>
             </div>
         </div>
 
@@ -74,14 +74,14 @@
                 <h1 class="text-5xl font-black italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-blue-400 via-white to-red-400">
                     LIBERDADE
                 </h1>
-                <p class="text-sm text-gray-400 font-medium text-center px-4">"Tudo posso, mas nem tudo me convém" (1 Coríntios 6,12)</p>
+                <p class="text-sm text-gray-400 font-medium text-center px-4">"Tudo posso, mas nem tudo me convém"</p>
             </div>
             
-            <div class="glass p-6 rounded-3xl space-y-4">
+            <div class="glass p-6 rounded-3xl space-y-4 text-white">
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase ml-1">Digite seu nome</label>
                     <input type="text" id="input-name" placeholder="Ex: João Silva" 
-                        class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-blue-500 transition-all font-bold text-white">
+                        class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-blue-500 transition-all font-bold">
                 </div>
                 <button onclick="startGame()" class="btn-press w-full bg-white text-black p-4 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-200 transition-all">
                     Iniciar Jornada
@@ -91,21 +91,27 @@
 
         <!-- TELA 2: BLOQUEIO POR TOKEN -->
         <div id="screen-lock" class="hidden text-center space-y-6 animate-in zoom-in duration-500">
+            <!-- Mensagem de Sucesso -->
             <div id="confirmation-msg" class="hidden mb-4 p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold animate-confirm">
                 ✅ Sua escolha foi registrada!
             </div>
 
+            <!-- Mensagem de Erro -->
+            <div id="error-msg" class="hidden mb-4 p-3 rounded-2xl bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold animate-confirm">
+                ❌ Código incorreto! Tente novamente.
+            </div>
+
             <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto border border-white/10 shadow-xl">
-                <span class="text-3xl">🔒</span>
+                <span class="text-3xl text-white">🔒</span>
             </div>
             <div class="space-y-2">
-                <h2 class="text-2xl font-black">Reflexão em Progresso</h2>
+                <h2 class="text-2xl font-black text-white">Reflexão em Progresso</h2>
                 <p class="text-gray-400 text-sm px-8">Aguarde o Mestre conduzir a próxima etapa e revelar o código secreto.</p>
             </div>
             <div class="glass p-6 rounded-3xl space-y-4">
                 <input type="text" id="input-token" placeholder="CÓDIGO SECRETO" 
                     class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-2xl text-center font-mono font-bold tracking-[0.5em] uppercase focus:border-yellow-500 outline-none text-white">
-                <button onclick="unlockPhase()" class="btn-press w-full bg-yellow-600 p-4 rounded-2xl font-black uppercase tracking-widest hover:bg-yellow-500 transition-all">
+                <button onclick="unlockPhase()" class="btn-press w-full bg-yellow-600 p-4 rounded-2xl font-black uppercase tracking-widest hover:bg-yellow-500 transition-all text-white">
                     Avançar Caminho
                 </button>
             </div>
@@ -134,7 +140,7 @@
         <!-- TELA 4: FINAL -->
         <div id="screen-end" class="hidden space-y-6 text-center animate-in fade-in duration-1000">
             <div class="space-y-2">
-                <h2 class="text-4xl font-black tracking-tighter">Veredito</h2>
+                <h2 class="text-4xl font-black tracking-tighter text-white">Veredito</h2>
                 <p id="final-label" class="text-yellow-500 font-bold uppercase text-xs tracking-widest"></p>
             </div>
             
@@ -159,15 +165,15 @@
     <script>
         const GAME_DATA = {
             1: { 
-                token: "SURGE", 
-                title: "O Silêncio Interior", 
-                story: "Seu despertador toca no sábado às 7h para o grupo de oração online. Você sente um cansaço profundo da semana. Ao pegar o celular, as notificações das redes sociais brilham com vídeos engraçados e fofocas. A cama parece o lugar mais seguro do mundo agora.", 
-                a: "Ficar na cama e se perder nos vídeos. Afinal, você merece um descanso e Deus entende seu cansaço.", 
-                b: "Levantar imediatamente e dedicar seus primeiros pensamentos a Deus, cumprindo o compromisso de oração.", 
-                pA: -3, cA: 6, pB: 6, cB: -4 
+                token: "LEVANTA", 
+                title: "O Limite do Próprio Templo", 
+                story: "O despertador toca. Você sabe que pode entrar na oração, mas também sabe que seu corpo está no limite. Nos últimos dias você tem se forçado demais — e isso tem te deixado irritado, impaciente e seco espiritualmente. Você se pergunta se continuar forçando agora não vai transformar a oração em obrigação vazia.", 
+                a: "Ficar na cama por mais um tempo, acreditando que cuidar do corpo agora pode evitar um dia inteiro de mau humor e ressentimento espiritual.", 
+                b: "Levantar-se e ir para a oração, mesmo sabendo que talvez você esteja rezando mais por dever do que por amor.", 
+                pA: 0, cA: 8, pB: 6, cB: -6 
             },
             2: { 
-                token: "SILENTIUM", 
+                token: "SILENCIO", 
                 title: "O Almoço da Discórdia", 
                 story: "Em um almoço de família, surge o nome de uma pessoa que todos sabem que errou feio. O clima esquenta e começam a ridicularizá-la. Você tem uma informação 'quente' que faria todos rirem e confirmaria sua popularidade na roda.", 
                 a: "Compartilhar a informação. O riso do grupo traz uma sensação de pertencimento e justiça contra quem errou.", 
@@ -175,31 +181,31 @@
                 pA: -5, cA: 4, pB: 5, cB: -3 
             },
             3: { 
-                token: "PURITAS", 
+                token: "PUREZA", 
                 title: "O Santuário do Quarto", 
-                story: "Você está sozinho estudando no PC tarde da noite. Surge um pop-up com imagens sugestivas. A curiosidade e o impulso biológico gritam. 'Ninguém vai saber', diz uma voz na sua cabeça. É apenas um clique.", 
-                a: "Clicar e ceder à curiosidade momentânea, buscando o prazer imediato da imagem.", 
-                b: "Fechar todas as abas, afastar-se da tela e buscar ocupar a mente com algo que edifique sua alma.", 
+                story: "Você está sozinho estudando no PC tarde da noite. Surge um pop-up com imagens sugestivas. A curiosidade e o impulso biológico gritam. 'Ninguém vai saber', diz uma voz na sua cabeça. É apenas um clique. Parte de você pensa que lutar contra tudo o tempo inteiro só gera tensão e repressão — e que talvez encarar isso de forma “madura” seja melhor do que fugir sempre.", 
+                a: "Olhar rapidamente, tentando manter controle e convencendo-se de que a pureza também envolve não ter medo do próprio corpo.", 
+                b: "Fechar tudo, mesmo sentindo que está evitando um confronto interno que cedo ou tarde vai voltar.", 
                 pA: -12, cA: 9, pB: 10, cB: -6 
             },
             4: { 
-                token: "JUSTITIA", 
+                token: "JUSTICA", 
                 title: "A Honestidade Invisível", 
-                story: "Ao comprar um lanche, você percebe que o caixa lhe deu uma nota de R$ 50 a mais de troco. O lugar está lotado, o atendente está estressado e a empresa é uma grande rede que, teoricamente, 'não sentirá falta'.", 
-                a: "Guardar o dinheiro. Você encara isso como um 'presente' inesperado para comprar algo que você realmente quer.", 
-                b: "Enfrentar a fila novamente para devolver o valor, reconhecendo que a justiça não depende do tamanho do dono.", 
+                story: "Ao comprar um lanche, você percebe que o caixa lhe deu uma nota de R$ 50 a mais de troco. O lugar está lotado, o atendente está estressado e a empresa é uma grande rede que, teoricamente, 'não sentirá falta'. Você pensa no atendente: se você devolver o dinheiro, ele pode ser advertido, perder parte do salário ou passar por constrangimento. Se ficar com o dinheiro, ninguém será diretamente ferido — ao menos não agora.", 
+                a: "Guardar o dinheiro, acreditando que evitar um mal imediato também é uma forma de responsabilidade.", 
+                b: "Devolver, mesmo sem saber se isso realmente ajudará a situação de alguém.", 
                 pA: -7, cA: 12, pB: 8, cB: -6 
             },
             5: { 
-                token: "AMICITIA", 
+                token: "AMIZADE", 
                 title: "O Peso do Pertencimento", 
-                story: "Seus melhores amigos planejam uma viagem para uma festa onde o uso de drogas e a promiscuidade são a regra. Eles dizem que você é 'careta' e que precisa 'viver um pouco'. Se você não for, o grupo pode se afastar de você.", 
-                a: "Ir à viagem para manter os amigos. Você acredita que pode controlar a situação e não se influenciar.", 
-                b: "Recusar o convite com firmeza e caridade, mesmo sabendo que isso pode causar um distanciamento social.", 
+                story: "Seus melhores amigos planejam uma viagem para uma festa onde o uso de drogas e a promiscuidade são a regra. Eles dizem que você é \"careta\" e que precisa \"viver um pouco\". Seus amigos não te obrigam a nada. Eles só querem sua presença. Você percebe que, quando está com eles, você não faz tudo errado — mas também começa a ceder aos poucos, quase sem perceber.", 
+                a: "Ir, acreditando que amadurecer na fé também significa aprender a conviver com ambientes imperfeitos.", 
+                b: "Não ir, reconhecendo que, mesmo sem cair diretamente, você vai se enfraquecendo por dentro.", 
                 pA: -8, cA: 10, pB: 8, cB: -10 
             },
             6: { 
-                token: "HUMILITAS", 
+                token: "HUMILDADE", 
                 title: "A Máscara da Perfeição", 
                 story: "Você cometeu um erro grave em um projeto voluntário da paróquia que prejudicou um evento. Ninguém sabe que foi você, e a culpa está sendo atribuída a uma falha técnica geral. Admitir o erro destruiria sua imagem de 'jovem exemplar'.", 
                 a: "Permanecer calado. O evento já passou e você se compromete a ser mais cuidadoso no futuro sem se expor.", 
@@ -209,21 +215,21 @@
             7: { 
                 token: "MISERICORDIA", 
                 title: "A Prisão do Rancor", 
-                story: "Alguém que te humilhou publicamente anos atrás agora precisa de um favor profissional que só você pode fazer. Você sente o desejo amargo de 'dar o troco' e provar que ela colheu o que plantou ao ignorar o pedido.", 
-                a: "Recusar a ajuda com uma desculpa educada, sentindo a satisfação silenciosa de ver a pessoa em dificuldade.", 
-                b: "Ajudar a pessoa com excelência e desprendimento, decidindo que a vingança não terá lugar no seu coração.", 
-                pA: -10, cA: 5, pB: 15, cB: -8 
+                story: "Alguém que te humilhou publicamente anos atrás agora precisa de um favor profissional que só você pode fazer. Ajudar essa pessoa vai te desgastar emocionalmente. Você não sente ódio, mas sente cansaço. Parte de você acha que misericórdia não deveria ser sinônimo de autoanulação.", 
+                a: "Recusar, preservando sua saúde emocional e seus limites.", 
+                b: "Ajudar, mesmo sem sentir vontade, como um ato consciente que vai além do sentimento.", 
+                pA: -10, cA: 10, pB: 15, cB: -12 
             },
             8: { 
-                token: "METANOIA", 
+                token: "CONVERSAO", 
                 title: "A Hierarquia dos Amores", 
-                story: "Seus jogos de PC ou séries favoritas estão consumindo 5 ou 6 horas por dia. Sua vida de oração virou um 'Pai Nosso' rápido antes de dormir e você mal tem tempo para conversar com seus pais. Você sente que está perdendo o controle.", 
-                a: "Continuar com a rotina. É sua única forma de lazer e você sente que pode compensar o lado espiritual depois.", 
-                b: "Fazer um jejum digital radical e reorganizar seus horários, colocando Deus e a família no topo da agenda.", 
-                pA: -10, cA: 12, pB: 12, cB: -15 
+                story: "Seus jogos de PC ou séries favoritas estão consumindo 5 ou 6 horas por dia. Sua vida de oração virou um \"Pai Nosso\" rápido antes de dormir e você mal tem tempo para conversar com seus pais. Você sente que está perdendo o controle. Você já tentou mudanças radicais antes — e falhou. Cortes bruscos te desanimam rápido. Ao mesmo tempo, mudanças suaves demais nunca duram.", 
+                a: "Reduzir gradualmente, apostando na constância e no realismo.", 
+                b: "Fazer um corte mais firme por um período, mesmo correndo o risco de desistir depois.", 
+                pA: 5, cA: 8, pB: 12, cB: -15 
             },
             9: { 
-                token: "TESTIMONIUM", 
+                token: "TESTEMUNHO", 
                 title: "O Corajoso de Papel", 
                 story: "Em uma conversa na faculdade ou trabalho, começam a ridicularizar os valores cristãos sobre a vida e a família com argumentos agressivos. Você sente seu coração bater forte. Todos sabem que você é católico e esperam sua reação.", 
                 a: "Concordar com o grupo ou rir das piadas para não ser rotulado como fanático ou 'cancelado' socialmente.", 
@@ -231,7 +237,7 @@
                 pA: -18, cA: 15, pB: 18, cB: -18 
             },
             10: { 
-                token: "TOTUS_TUUS", 
+                token: "ENTREGA", 
                 title: "O Sim Sem Reservas", 
                 story: "Você tem um plano de carreira ambicioso e seguro. No entanto, em oração, você sente um chamado inquietante para uma missão de longo prazo que exige abrir mão desse conforto. É o medo do futuro contra a voz de Deus.", 
                 a: "Ignorar o chamado e seguir seu plano. Você se convence de que pode servir a Deus apenas com seu sucesso financeiro.", 
@@ -257,7 +263,7 @@
 
         function startGame() {
             const name = document.getElementById('input-name').value.trim();
-            if(!name) return alert("Digite seu nome para começar!");
+            if(!name) return alert("Digite seu nome!");
             gameState.name = name;
             gameState.status = "locking";
             save();
@@ -265,15 +271,23 @@
 
         function unlockPhase() {
             const input = document.getElementById('input-token').value.toUpperCase().trim();
+            const errorMsg = document.getElementById('error-msg');
+            
             if(input === GAME_DATA[gameState.currentPhase].token) {
                 gameState.status = "gaming";
                 gameState.justSent = false;
+                errorMsg.classList.add('hidden');
                 document.getElementById('input-token').value = "";
                 save();
             } else {
-                alert("Código Inválido!");
+                errorMsg.classList.remove('hidden');
+                document.getElementById('confirmation-msg').classList.add('hidden');
             }
         }
+
+        document.getElementById('input-token').addEventListener('input', () => {
+            document.getElementById('error-msg').classList.add('hidden');
+        });
 
         function handleChoice(type) {
             const data = GAME_DATA[gameState.currentPhase];
@@ -337,12 +351,12 @@
                 const gabaritoList = document.getElementById('gabarito-list');
 
                 gabaritoList.innerHTML = choices.map(item => `
-                    <div class="bg-white/5 p-3 rounded-xl border border-white/5 space-y-1 shadow-sm">
+                    <div class="bg-white/5 p-3 rounded-xl border border-white/5 space-y-1 shadow-sm text-white text-xs">
                         <div class="flex justify-between items-center text-[9px] uppercase font-black tracking-widest text-slate-500">
                             <span>Fase ${item.fase}</span>
                             <span class="${item.escolha === 'A' ? 'text-orange-500' : 'text-blue-400'}">Escolha ${item.escolha}</span>
                         </div>
-                        <p class="text-white font-bold">${item.titulo}</p>
+                        <p class="font-bold">${item.titulo}</p>
                         <p class="text-slate-400 leading-tight italic">"${item.resumo}"</p>
                     </div>
                 `).join('');
@@ -358,7 +372,7 @@
                 } else {
                     icon.innerText = "⛓️";
                     label.innerText = "Prisioneiro do Próprio Eu";
-                    text.innerText = `${name}, você escolheu o 'Tudo posso' quase todas as vezes. Agora você tem o mundo aos seus pés, mas seu coração está inquieto e pesado. Sempre há tempo para voltar.`;
+                    text.innerText = `${name}, você escolheu o 'Tudo posso' na maioria das vezes. Agora você tem o mundo aos seus pés, mas seu coração está inquieto e pesado. Sempre há tempo para voltar.`;
                 }
             }
         }
