@@ -81,7 +81,7 @@
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-gray-500 uppercase ml-1">Digite seu nome</label>
                     <input type="text" id="input-name" placeholder="Ex: João Silva" 
-                        class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-blue-500 transition-all font-bold">
+                        class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-blue-500 transition-all font-bold text-white">
                 </div>
                 <button onclick="startGame()" class="btn-press w-full bg-white text-black p-4 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-200 transition-all">
                     Iniciar Jornada
@@ -91,9 +91,10 @@
 
         <!-- TELA 2: BLOQUEIO POR TOKEN -->
         <div id="screen-lock" class="hidden text-center space-y-6 animate-in zoom-in duration-500">
-            <!-- Mensagem de Sucesso -->
-            <div id="confirmation-msg" class="hidden mb-4 p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold animate-confirm">
-                ✅ Sua escolha foi registrada!
+            <!-- Mensagem de Sucesso com a última escolha -->
+            <div id="confirmation-msg" class="hidden mb-4 p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-left animate-confirm">
+                <p class="text-[10px] font-black uppercase tracking-widest mb-1">✅ Escolha registrada com sucesso!</p>
+                <p id="last-choice-display" class="text-xs text-gray-300 italic font-medium leading-tight"></p>
             </div>
 
             <!-- Mensagem de Erro -->
@@ -253,7 +254,8 @@
             currentPhase: 1,
             status: "start",
             choices: [],
-            justSent: false
+            justSent: false,
+            lastChoiceText: "" // Armazena o texto da última escolha feita
         };
 
         function save() {
@@ -276,6 +278,7 @@
             if(input === GAME_DATA[gameState.currentPhase].token) {
                 gameState.status = "gaming";
                 gameState.justSent = false;
+                gameState.lastChoiceText = "";
                 errorMsg.classList.add('hidden');
                 document.getElementById('input-token').value = "";
                 save();
@@ -291,13 +294,16 @@
 
         function handleChoice(type) {
             const data = GAME_DATA[gameState.currentPhase];
+            const chosenText = type === 'A' ? data.a : data.b;
             
             gameState.choices.push({
                 fase: gameState.currentPhase,
                 titulo: data.title,
                 escolha: type,
-                resumo: type === 'A' ? data.a : data.b
+                resumo: chosenText
             });
+
+            gameState.lastChoiceText = chosenText;
 
             if(type === 'A') {
                 gameState.paz += data.pA;
@@ -318,7 +324,7 @@
         }
 
         function render() {
-            const { status, name, paz, conf, currentPhase, choices, justSent } = gameState;
+            const { status, name, paz, conf, currentPhase, choices, justSent, lastChoiceText } = gameState;
 
             document.getElementById('header-ui').classList.toggle('hidden', status === 'start' || status === 'end');
             document.getElementById('display-name').innerText = name;
@@ -334,7 +340,14 @@
             document.getElementById('screen-end').classList.toggle('hidden', status !== 'end');
 
             const confirmMsg = document.getElementById('confirmation-msg');
-            confirmMsg.classList.toggle('hidden', !(status === 'locking' && justSent));
+            const lastChoiceDisplay = document.getElementById('last-choice-display');
+            
+            if (status === 'locking' && justSent) {
+                confirmMsg.classList.remove('hidden');
+                lastChoiceDisplay.innerText = `"${lastChoiceText}"`;
+            } else {
+                confirmMsg.classList.add('hidden');
+            }
 
             if(status === 'gaming') {
                 const data = GAME_DATA[currentPhase];
