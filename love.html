@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Enigma de Amor</title>
+    <!-- Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React e Babel para rodar o código no navegador -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        /* Esconder setas de input number */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="bg-rose-50 text-slate-800">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Ícones em SVG para garantir compatibilidade total sem dependências externas complexas
+        const Icons = {
+            Heart: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            ),
+            Flower: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500"><circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5 4.5 4.5 0 1 1 16.5 12 4.5 4.5 0 1 1 12 16.5"/><path d="M12 7.5V2"/><path d="M12 22v-5.5"/><path d="M16.5 12H22"/><path d="M2 12h5.5"/></svg>
+            ),
+            Dino: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600"><path d="M16 3c-1.5 0-3 1-3 3 0 1.5 1 2.5 2 3.5S18 11 18 13v1"/><path d="M14 17a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v2h12v-2Z"/><path d="M22 17v2h-4v-2a3 3 0 0 0-3-3"/><path d="M18 13c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2Z"/></svg>
+            ),
+            Microscope: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 1 1-2-2V6h6v4.14"/><path d="M12 2v4"/><path d="M11 4h2"/></svg>
+            ),
+            Graduation: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            ),
+            Sparkle: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            ),
+            Check: () => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><path d="M20 6 9 17l-5-5"/></svg>
+            )
+        };
+
+        const App = () => {
+            const TARGET_COL = 10;
+            const crosswordData = [
+                {
+                    word: "ADENIUM",
+                    clue: "A primeira parte do nome científico da sua flor favorita.",
+                    row: 0,
+                    col: TARGET_COL,
+                    icon: <Icons.Flower />
+                },
+                {
+                    word: "LINDA",
+                    clue: "Um adjetivo que descreve perfeitamente sua beleza exterior e interior.",
+                    row: 1,
+                    col: TARGET_COL,
+                    icon: <Icons.Heart />
+                },
+                {
+                    word: "TYRANNOSAURUS",
+                    clue: "O nome científico do mais famoso dos dinossauros.",
+                    row: 2,
+                    col: TARGET_COL - 1,
+                    icon: <Icons.Dino />
+                },
+                {
+                    word: "CIENCIAS NATURAIS",
+                    clue: "O campo de estudo que explica a vida e o mundo que você tanto admira.",
+                    row: 3,
+                    col: TARGET_COL - 9,
+                    icon: <Icons.Microscope />
+                },
+                {
+                    word: "ERUDITA",
+                    clue: "Reflete sua inteligência e o vasto conhecimento que você cultiva.",
+                    row: 4,
+                    col: TARGET_COL,
+                    icon: <Icons.Graduation />
+                }
+            ];
+
+            const [grid, setGrid] = useState(Array(5).fill(null).map(() => Array(25).fill("")));
+            const [completed, setCompleted] = useState(false);
+
+            const handleInputChange = (r, c, val) => {
+                if (val.length > 1) return;
+                const newGrid = [...grid];
+                newGrid[r][c] = val.toUpperCase();
+                setGrid(newGrid);
+                checkWin(newGrid);
+            };
+
+            const checkWin = (currentGrid) => {
+                const isWin = crosswordData.every(item => {
+                    const word = item.word;
+                    for (let i = 0; i < word.length; i++) {
+                        if (word[i] === " ") continue;
+                        if (currentGrid[item.row][item.col + i] !== word[i]) return false;
+                    }
+                    return true;
+                });
+                if (isWin) setCompleted(true);
+            };
+
+            const getCellInfo = (r, c) => {
+                for (let item of crosswordData) {
+                    const word = item.word;
+                    if (r === item.row && c >= item.col && c < item.col + word.length) {
+                        const char = word[c - item.col];
+                        if (char === " ") return { active: false, isSpace: true };
+                        return { active: true, isTargetColumn: c === TARGET_COL, isSpace: false };
+                    }
+                }
+                return { active: false, isSpace: false };
+            };
+
+            return (
+                <div className="min-h-screen py-8 px-4 flex flex-col items-center">
+                    <div className="max-w-6xl w-full bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-rose-100">
+                        
+                        <header className="text-center mb-8">
+                            <h1 className="text-3xl md:text-4xl font-serif font-bold text-rose-600 mb-2 flex items-center justify-center gap-2">
+                                <Icons.Sparkle />
+                                O Enigma de Amor
+                                <Icons.Sparkle />
+                            </h1>
+                            <p className="text-slate-500 italic">
+                                Resolva as pistas sobre suas paixões para completar o desafio.
+                            </p>
+                        </header>
+
+                        <div className="flex flex-col items-center overflow-x-auto mb-10">
+                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 min-w-max">
+                                <div className="grid gap-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(22, 35px)' }}>
+                                    {[...Array(5)].map((_, r) => (
+                                        <React.Fragment key={r}>
+                                            {[...Array(22)].map((_, c) => {
+                                                const { active, isTargetColumn, isSpace } = getCellInfo(r, c);
+                                                if (isSpace) return <div key={`${r}-${c}`} className="w-full aspect-square" />;
+                                                return active ? (
+                                                    <input
+                                                        key={`${r}-${c}`}
+                                                        type="text"
+                                                        maxLength={1}
+                                                        value={grid[r][c]}
+                                                        onChange={(e) => handleInputChange(r, c, e.target.value)}
+                                                        className={`w-full aspect-square text-center font-bold text-lg rounded-md border-2 transition-all outline-none
+                                                            ${isTargetColumn 
+                                                                ? 'bg-rose-100 border-rose-400 text-rose-700 focus:ring-2 focus:ring-rose-500 shadow-inner' 
+                                                                : 'bg-white border-slate-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200'}
+                                                            ${completed ? 'border-green-500 bg-green-50' : ''}
+                                                        `}
+                                                    />
+                                                ) : (
+                                                    <div key={`${r}-${c}`} className="w-full aspect-square" />
+                                                );
+                                            })}
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-bold text-slate-700 border-b pb-2 flex items-center gap-2">
+                                    Pistas da Natureza e Beleza
+                                </h2>
+                                {[0, 1, 3].map(idx => (
+                                    <div key={idx} className="flex gap-3 p-3 rounded-lg hover:bg-rose-50 transition-colors">
+                                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold">
+                                            {idx + 1}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                {crosswordData[idx].icon}
+                                                <span className="font-semibold text-slate-700">Palavra {idx + 1}</span>
+                                            </div>
+                                            <p className="text-slate-600 text-sm">{crosswordData[idx].clue}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-bold text-slate-700 border-b pb-2 flex items-center gap-2">
+                                    Pistas da Mente e História
+                                </h2>
+                                {[2, 4].map(idx => (
+                                    <div key={idx} className="flex gap-3 p-3 rounded-lg hover:bg-rose-50 transition-colors">
+                                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold">
+                                            {idx + 1}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                {crosswordData[idx].icon}
+                                                <span className="font-semibold text-slate-700">Palavra {idx + 1}</span>
+                                            </div>
+                                            <p className="text-slate-600 text-sm">{crosswordData[idx].clue}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {completed && (
+                            <div className="mt-10 p-8 bg-green-50 border-2 border-dashed border-green-300 rounded-3xl text-center transition-all animate-bounce">
+                                <Icons.Check />
+                                <h2 className="text-3xl font-serif font-bold text-green-700 mb-2">Perfeito, Alyne!</h2>
+                                <p className="text-green-600 text-lg">
+                                    Você decifrou cada parte. O seu nome se encontrou com a sua essência. ❤️
+                                </p>
+                            </div>
+                        )}
+
+                        <footer className="mt-12 pt-6 border-t border-rose-100 text-center">
+                            <p className="text-rose-400 flex items-center justify-center gap-2 italic">
+                                Feito com carinho para a minha pessoa favorita.
+                            </p>
+                        </footer>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
