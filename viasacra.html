@@ -46,6 +46,13 @@
             border-width: 1px;
         }
 
+        /* Botão de Destaque Carmesim */
+        .bg-carmesim-button {
+            background-color: #dc2626;
+            border: 1px solid #991b1b;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
+        }
+
         .flow-line {
             width: 2px;
             background: linear-gradient(to bottom, #374151, #dc2626, #ff1a1a);
@@ -164,13 +171,13 @@
                     <span class="text-4xl">✝️</span>
                 </div>
                 <h2 class="header-font text-4xl text-white">Caminho da Paixão</h2>
-                <p class="italic opacity-80 mt-4 text-lg">"Nós Vos adoramos, ó Cristo, e Vos bendizemos."</p>
+                <p class="italic opacity-80 mt-4 text-lg text-gray-300 font-serif">"Nós Vos adoramos, ó Cristo, e Vos bendizemos."</p>
             </div>
             
-            <button onclick="startMeditation()" class="bg-accent-red hover:bg-red-700 text-white px-8 py-5 rounded-md font-bold transition w-full shadow-lg shadow-red-900/20 active:scale-95 text-xl uppercase tracking-widest">
+            <button onclick="startMeditation()" class="bg-carmesim-button hover:bg-red-700 text-white px-8 py-5 rounded-md font-bold transition w-full shadow-lg active:scale-95 text-xl uppercase tracking-widest border border-red-900">
                 Iniciar Meditação
             </button>
-            <button id="resume-btn" onclick="resumeMeditation()" class="hidden border border-gray-600 hover:bg-gray-800 text-white px-8 py-5 rounded-md font-bold transition w-full text-lg uppercase tracking-widest">
+            <button id="resume-btn" onclick="resumeMeditation()" class="hidden border border-gray-600 hover:bg-gray-800 text-white px-8 py-5 rounded-md font-bold transition w-full text-lg uppercase tracking-widest mt-4">
                 Continuar Percurso
             </button>
         </div>
@@ -331,7 +338,7 @@
             {
                 title: "Jesus cai pela segunda vez",
                 img: "https://i.ibb.co/twRkDBHR/estacao7.png",
-                place: "A fadiga é extrema. Sinta a pulsação nas têmporas. A cruz parece dobrar de peso. O som das correntes a arrastar. Desta vez, levantar-se parece impossível.",
+                place: "A fadiga é extrema. Sinta a pulsação nas têmporas. A cruz parece dobrar de peso. O som das correntes a arrastar. Desta vez, levantar-se parece impossível. O corpo treme.",
                 colloquy: "Quando eu caio repetidamente nos mesmos erros, não permitas que eu me desespere. O Teu esforço para levantar ensina-me que a santidade é começar de novo.",
                 contemplation: "Contemplemos a segunda queda de Jesus sob o peso da Cruz, na qual se lhe aprofundam todas as chagas e se renovam todas as angústias do doloroso Senhor.",
                 prayer: "Ó mansíssimo Jesus, quantas vezes me concedestes o perdão! Eu, porém, recaí nos mesmos pecados. Pelo mérito desta nova queda, ajudai-me a perseverar em vossa graça." + conclusion,
