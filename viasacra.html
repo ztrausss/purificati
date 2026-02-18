@@ -17,7 +17,7 @@
             font-family: 'Cinzel', serif;
         }
 
-        /* ESTADO 1: ATIVO (Carmesim) - Passo que está a ser lido */
+        /* 1. ESTADO ATIVO: Vermelho Carmesim (O que está a ser lido) */
         .step-active {
             color: #dc2626;
             border-color: #991b1b;
@@ -27,17 +27,17 @@
             border-width: 2px;
         }
 
-        /* ESTADO 2: FUTURO (Vermelho Vivo) - Passos que ainda virão */
+        /* 2. ESTADO FUTURO: Vermelho Vivo (O que ainda virá) */
         .step-future {
             color: #ff1a1a;
             border-color: #ff1a1a;
-            background: rgba(255, 0, 0, 0.08);
+            background: rgba(255, 0, 0, 0.1);
             opacity: 1;
             border-width: 1px;
             border-style: solid;
         }
 
-        /* ESTADO 3: PASSADO (Cinza) - Passos já concluídos */
+        /* 3. ESTADO CONCLUÍDO: Cinza (O que já foi visto) */
         .step-seen {
             color: #6b7280;
             border-color: #374151;
@@ -83,7 +83,8 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            opacity: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
         .loading-shimmer {
             background: #1a1212;
@@ -109,36 +110,22 @@
             max-height: 2000px;
             padding-top: 1.5rem;
         }
-        
-        .image-error-msg {
-            display: none;
-            position: absolute;
-            bottom: 10px;
-            font-size: 10px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
     </style>
     <script>
         function onImgLoad(img) {
             const wrapper = document.getElementById('img-wrapper');
-            const errorMsg = document.getElementById('image-error-msg');
             if (wrapper) wrapper.classList.remove('loading-shimmer');
-            if (errorMsg) errorMsg.style.display = 'none';
             img.style.opacity = "1";
         }
 
         function onImgError(img) {
             const wrapper = document.getElementById('img-wrapper');
-            const errorMsg = document.getElementById('image-error-msg');
             if (wrapper) wrapper.classList.remove('loading-shimmer');
-            
+            // Fallback para ícone amigável em SVG Data URI
             if (!img.dataset.failed) {
                 img.dataset.failed = "true";
-                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%233d2b2b' stroke-width='1'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'%3E%3C/path%3E%3Ccircle cx='9' cy='9' r='2'%3E%3C/circle%3E%3C/svg%3E";
+                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%233d2b2b' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'%3E%3C/path%3E%3Ccircle cx='9' cy='9' r='2'%3E%3C/circle%3E%3C/svg%3E";
                 img.style.opacity = "0.2";
-                if (errorMsg) errorMsg.style.display = 'block';
             }
         }
 
@@ -191,7 +178,7 @@
         <!-- Station View -->
         <div id="station-view" class="hidden space-y-6 fade-in">
             <div class="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold mb-2">
-                <span id="station-number" class="text-red-500">Estação I</span>
+                <span id="station-number" class="text-red-500 font-bold">Estação I</span>
                 <span id="station-index-label" class="opacity-40">1 / 14</span>
             </div>
             <div class="w-full bg-gray-900 h-1 rounded-full overflow-hidden mb-8">
@@ -201,13 +188,13 @@
             <h2 id="station-title" class="header-font text-3xl text-center text-white mb-8 leading-tight"></h2>
 
             <div class="image-container shadow-2xl loading-shimmer" id="img-wrapper">
-                <img id="station-image" src="" alt="Representação da Estação" 
+                <img id="station-image" src="" alt="Representação Artística" 
+                     referrerpolicy="no-referrer"
                      onload="onImgLoad(this)"
                      onerror="onImgError(this)">
-                <div id="image-error-msg" class="image-error-msg">Aguardando imagem direta...</div>
             </div>
 
-            <!-- FLUXO VERTICAL -->
+            <!-- FLUXO VERTICAL DA ESTAÇÃO -->
             <div class="relative pl-8 space-y-5 pb-12">
                 <div class="absolute left-[15px] top-4 bottom-4 flow-line opacity-30"></div>
 
@@ -216,28 +203,28 @@
                     <div class="absolute left-[10px] step-dot"></div>
                     <h3 class="text-sm font-bold uppercase tracking-widest flex justify-between items-center">
                         <span>1. Composição de Lugar</span>
-                        <span class="text-[10px] opacity-70 font-sans">Visualização</span>
+                        <span class="text-[10px] opacity-70 font-sans">Sentidos</span>
                     </h3>
-                    <div id="place-content" class="collapsible-content italic text-xl leading-relaxed font-serif text-gray-200"></div>
+                    <div id="place-content" class="collapsible-content italic text-xl leading-relaxed font-serif text-gray-200 text-justify"></div>
                 </div>
 
                 <!-- 2. Colóquio Pessoal -->
                 <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(1)">
                     <div class="absolute left-[10px] step-dot"></div>
                     <h3 class="text-sm font-bold uppercase tracking-widest">2. Colóquio Pessoal</h3>
-                    <div id="colloquy-content" class="collapsible-content text-lg leading-relaxed text-gray-300"></div>
+                    <div id="colloquy-content" class="collapsible-content text-lg leading-relaxed text-gray-300 text-justify"></div>
                 </div>
 
-                <!-- 3. Adoração -->
+                <!-- 3. Adoração e Contemplação -->
                 <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(2)">
                     <div class="absolute left-[10px] step-dot"></div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest">3. Adoração e Contemplação</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest">3. Adoração</h3>
                     <div class="collapsible-content space-y-6">
                         <p class="text-base font-bold border-l-4 border-red-800 pl-4 py-2 bg-red-900/10">
                             ℣. Nós Vos adoramos, ó Cristo, e Vos bendizemos.<br>
                             ℟. Porque, por Vossa santa Cruz, redimistes o mundo.
                         </p>
-                        <p id="contemplation-content" class="text-lg opacity-90"></p>
+                        <p id="contemplation-content" class="text-lg opacity-90 text-justify"></p>
                     </div>
                 </div>
 
@@ -245,7 +232,7 @@
                 <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(3)">
                     <div class="absolute left-[10px] step-dot"></div>
                     <h3 class="text-sm font-bold uppercase tracking-widest">4. Oração de Santo Afonso</h3>
-                    <div id="prayer-content" class="collapsible-content text-lg leading-relaxed font-serif text-gray-200"></div>
+                    <div id="prayer-content" class="collapsible-content text-lg leading-relaxed font-serif text-gray-200 text-justify"></div>
                 </div>
 
                 <!-- 5. Orações Finais -->
@@ -265,7 +252,7 @@
                 </div>
             </div>
 
-            <!-- Navegação -->
+            <!-- Navegação Entre Estações -->
             <div class="flex justify-between items-center pt-6 border-t border-white/10">
                 <button onclick="prevStation()" class="text-gray-500 hover:text-white flex items-center gap-2 transition p-4 active:scale-90 font-bold uppercase text-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -289,8 +276,8 @@
         const stations = [
             {
                 title: "Jesus é condenado à morte",
-                img: "https://ibb.co/Lzq9FBfW",
-                place: "Sinta o calor escaldante do sol do meio-dia no pátio. Ouça o rugido da multidão, como um mar revolto. O cheiro de suor e poeira é sufocante. Toque a pedra fria e lisa do pretório sob os seus pés enquanto Jesus, em silêncio, recebe a sentença.",
+                img: "https://i.ibb.co/3y8S3VHq/estacao1.jpg",
+                place: "Sinta o calor escaldante do sol do meio-dia no pátio. Ouça o rugido da multidão, como um mar revolto. O cheiro de suor e poeira é sufocante. Toque a pedra fria e lisa do pretório enquanto Jesus, em silêncio, recebe a sentença.",
                 colloquy: "Senhor, quão frequentemente eu também Vos condeno com os meus julgamentos apressados? Em silêncio, peço perdão por todas as vezes que escolhi Barrabás em vez de Ti.",
                 contemplation: "Contemplemos como Jesus Cristo, já flagelado e coroado de espinhos, foi por fim injustamente condenado à morte por Pilatos.",
                 prayer: "Ó Jesus adorável, não foi Pilatos, mas minha vida iníqua que vos condenou à morte. Pelo mérito deste tão penoso itinerário, peço-vos que me acompanheis no caminho pela qual minha alma se dirige à eternidade. Amo-vos, ó Jesus, meu Amor, mais do que a mim mesmo, e do fundo do coração me arrependo de ter-vos ofendido. Não permitais que eu novamente me separe de vós." + conclusion,
@@ -298,7 +285,7 @@
             },
             {
                 title: "Jesus carrega a Cruz",
-                img: "https://ibb.co/rjvsDRR",
+                img: "https://i.ibb.co/Mv96Fxx/estacao2.png",
                 place: "Ouça o som surdo da madeira pesada atingindo o chão. Sinta o cheiro de resina da madeira bruta. Imagine o primeiro contacto do madeiro com o ombro já dilacerado pela flagelação. O peso é imediato, o equilíbrio é difícil.",
                 colloquy: "Jesus, este peso não é Teu, é meu. Ajuda-me a não fugir das minhas pequenas cruzes diárias, mas a abraçá-las com o mesmo amor que vejo nos Teus olhos agora.",
                 contemplation: "Contemplemos como Jesus Cristo, levando a Cruz aos ombros, lembrava-se no caminho de oferecer por nós ao Pai eterno a morte que havia de sofrer.",
@@ -307,7 +294,7 @@
             },
             {
                 title: "Jesus cai pela primeira vez",
-                img: "https://ibb.co/pvM04SqC",
+                img: "https://i.ibb.co/PZPm1dkB/estacao3.png",
                 place: "Sinta o impacto seco dos joelhos contra as pedras afiadas. O gosto metálico de sangue e o gosto de terra na boca. O ar foge dos pulmões por um instante. O riso dos soldados ecoa ao redor.",
                 colloquy: "Na minha primeira queda, quando o entusiasmo da fé desvanece, dá-me a força de olhar para Ti e levantar-me novamente.",
                 contemplation: "Contemplemos a primeira queda de Jesus sob o peso da Cruz. Tinha Ele a carne ferida e a cabeça coroada de espinhos; derramara tanto sangue, que mal podia mover os pés.",
@@ -316,7 +303,7 @@
             },
             {
                 title: "Jesus encontra a sua Mãe",
-                img: "https://ibb.co/zYtczwZ",
+                img: "https://i.ibb.co/3qPXnHc/estacao4.png",
                 place: "O caos da multidão parece sumir. Foca-te apenas em dois pares de olhos. O rosto de Maria está pálido, mas firme. Sinta a dor que não precisa de palavras. O cheiro de casa e de infância misturado ao horror.",
                 colloquy: "Mãe das Dores, ensina-me a permanecer de pé nos encontros difíceis da vida. Que o Teu olhar me console quando eu não tiver mais palavras.",
                 contemplation: "Contemplemos como deve ter sido o encontro do Filho e da Mãe. Jesus e Maria se olharam, e os olhares mudos foram setas a atravessar o coração amante de ambos.",
@@ -325,16 +312,16 @@
             },
             {
                 title: "O Cirineu ajuda Jesus",
-                img: "https://ibb.co/Zzm1525N",
+                img: "https://i.ibb.co/b5JRTbT7/estacao5.png",
                 place: "Sinta a resistência muscular de Simão sendo vencida pela compaixão. Toque a madeira áspera ao lado de Jesus. Sinta o calor do corpo d'Ele perto do seu. O fôlego d'Ele é curto e pesado.",
                 colloquy: "Senhor, que eu não seja um ajudante por obrigação, mas por amor. Quem são os 'Cristos' cansados no meu caminho que precisam que eu divida o peso hoje?",
                 contemplation: "Contemplemos como os judeus obrigaram Simão de Cirene a carregar a Cruz atrás do Senhor, vendo Jesus quase expirar a cada passo devido ao cansaço.",
-                prayer: "Ó dulcíssimo Jesus, não quero, como o Cirineu, repudiar a Cruz. De bom grado a abraço e tomo sobre mim; abraço especialmente a morte que para mim estabelecestes, com todas as dores." + conclusion,
+                prayer: "Ó dulcíssimo Jesus, não quero, como o Cirineu, repudiar a Cruz. De bom grado a abraço e tomo sobre mim; abraço especialmente a morte que para mim estabelecestes." + conclusion,
                 hymn: "Em extremo desmaiado, / Teve auxílio, tão cansado, / Recebendo o Cireneu. / Pela Virgem dolorosa, / Vossa Mãe tão piedosa, / Perdoai-me, meu Jesus."
             },
             {
                 title: "Verónica enxuga o rosto de Jesus",
-                img: "https://ibb.co/jPfmGKv4",
+                img: "https://i.ibb.co/ksBj0ngc/estacao6.png",
                 place: "Toque a maciez do linho branco contrastando com a pele ferida. Sinta o sangue quente manchando o tecido. O rosto de Jesus deixa uma impressão eterna. Um gesto de doçura em meio à brutalidade.",
                 colloquy: "Senhor, imprime o Teu rosto na minha alma. Que eu tenha a coragem de Verónica para agir com ternura mesmo quando o mundo ao redor é violento.",
                 contemplation: "Contemplemos como aquela santa mulher Verônica, vendo Jesus abatido pelas dores, estendeu-lhe um pano em que Ele deixou impressa sua imagem.",
@@ -343,8 +330,8 @@
             },
             {
                 title: "Jesus cai pela segunda vez",
-                img: "https://ibb.co/FkpNz6hp",
-                place: "A fadiga é extrema. Sinta a pulsação nas têmporas. A cruz parece dobrar de peso. O som das correntes a arrastar. Desta vez, levantar-se parece impossível. O corpo treme.",
+                img: "https://i.ibb.co/twRkDBHR/estacao7.png",
+                place: "A fadiga é extrema. Sinta a pulsação nas têmporas. A cruz parece dobrar de peso. O som das correntes a arrastar. Desta vez, levantar-se parece impossível.",
                 colloquy: "Quando eu caio repetidamente nos mesmos erros, não permitas que eu me desespere. O Teu esforço para levantar ensina-me que a santidade é começar de novo.",
                 contemplation: "Contemplemos a segunda queda de Jesus sob o peso da Cruz, na qual se lhe aprofundam todas as chagas e se renovam todas as angústias do doloroso Senhor.",
                 prayer: "Ó mansíssimo Jesus, quantas vezes me concedestes o perdão! Eu, porém, recaí nos mesmos pecados. Pelo mérito desta nova queda, ajudai-me a perseverar em vossa graça." + conclusion,
@@ -352,7 +339,7 @@
             },
             {
                 title: "Jesus consola as mulheres",
-                img: "https://ibb.co/Csn3KhxF",
+                img: "https://i.ibb.co/wrKFhMD1/estacao8.png",
                 place: "Ouça o som do choro lamentoso. Sinta a humidade das lágrimas. A voz de Jesus é rouca, mas clara: 'Não choreis por mim...'. Sinta o peso da responsabilidade espiritual que Ele nos entrega.",
                 colloquy: "Senhor, que eu não chore apenas por sentimentos passageiros, mas que as minhas lágrimas se transformem em conversão real para mim e para os meus.",
                 contemplation: "Contemplemos como estas mulheres são tocadas de comiseração e choram copiosamente. Mas, voltando-se a elas, Ele diz: 'Não choreis por mim; antes, chorai por vós mesmas'.",
@@ -361,7 +348,7 @@
             },
             {
                 title: "Jesus cai pela terceira vez",
-                img: "https://ibb.co/BVNNM8SL",
+                img: "https://i.ibb.co/jvRRX71h/estacao9.png",
                 place: "O solo está perto do Calvário. A exaustão é total. Sinta o cheiro de morte que paira no ar. Jesus está quase fundido à terra. O silêncio dos soldados que agora percebem que Ele está no limite.",
                 colloquy: "Pela Tua queda mais dolorosa, dá-me a perseverança final. Que nada, nem a morte, me separe do Teu amor.",
                 contemplation: "Contemplemos a terceira queda de Cristo sob o peso da Cruz. Caiu porque era demasiada a sua fraqueza e excessiva a crueldade dos algozes.",
@@ -370,7 +357,7 @@
             },
             {
                 title: "Jesus é despojado das vestes",
-                img: "https://ibb.co/hQYsJhb",
+                img: "https://i.ibb.co/8vYMLTq/estacao10.png",
                 place: "Sinta o vento frio batendo nas feridas abertas quando o tecido é arrancado. A humilhação da nudez. O olhar escarninho dos que sorteiam as Suas roupas.",
                 colloquy: "Jesus pobre e humilde, despoja-me do meu orgulho e da minha vaidade. Que eu não tenha medo de ser visto como sou, pois Tu conheces o meu coração.",
                 contemplation: "Contemplemos com que violência arrancaram as vestes a Cristo. Estando as vestes interiores coladas à carne pelas chagas, tiraram-nas com tal crueldade.",
@@ -379,7 +366,7 @@
             },
             {
                 title: "Jesus é pregado na Cruz",
-                img: "https://ibb.co/p6vTmdqQ",
+                img: "https://i.imgur.com/yqTywVJ.jpeg",
                 place: "O som metálico e estridente do martelo batendo no cravo. Uma dor lancinante que atravessa os nervos. Sinta a imobilidade absoluta. O céu começa a escurecer.",
                 colloquy: "Senhor, prende os meus pés e mãos ao Teu Evangelho. Que eu não busque outra liberdade senão a de amar-Te sem reservas.",
                 contemplation: "Contemplemos como Jesus, tendo sido lançado sobre a Cruz, estende as suas mãos e oferece ao Pai eterno o sacrifício de sua vida.",
@@ -388,7 +375,7 @@
             },
             {
                 title: "Jesus morre na Cruz",
-                img: "https://ibb.co/VcfH4y54",
+                img: "https://i.ibb.co/DH0G2XT2/estacao12.png",
                 place: "Foca-te no último suspiro. O silêncio que se abate sobre a Terra. Sinta o tremor do chão sob os seus pés. A sede extrema. Olhe para o lado aberto de onde sai sangue e água.",
                 colloquy: "Meu Deus e meu Tudo. No Teu último suspiro, entrego o meu espírito. Obrigado por não teres guardado nada para Ti, mas teres dado tudo por mim.",
                 contemplation: "Contemplemos como Jesus, depois de três horas de agonia na Cruz, consumido de dores, morre por fim, deixando cair a cabeça sobre o peito.",
@@ -397,7 +384,7 @@
             },
             {
                 title: "Jesus é descido da Cruz",
-                img: "https://ibb.co/hJCw72fy",
+                img: "https://i.ibb.co/mVSgDh8G/estacao13.png",
                 place: "Sinta o peso do corpo frio e sem vida sendo colocado no colo de Maria. Toque as chagas agora silenciosas. O cheiro de mirra e aloe começa a ser preparado.",
                 colloquy: "Pousa no meu coração, Senhor, como pousaste no colo de Tua Mãe. Que eu seja um lugar de repouso para Ti através da minha caridade.",
                 contemplation: "Contemplemos como dois discípulos de Jesus, José e Nicodemos, o desceram da Cruz e o puseram nos braços de sua aflita Mãe.",
@@ -406,7 +393,7 @@
             },
             {
                 title: "Jesus é sepultado",
-                img: "https://ibb.co/zTwpx9Ds",
+                img: "https://i.ibb.co/B5Rb3WFL/estacao14.png",
                 place: "O frescor da pedra dentro do túmulo novo. O eco dos passos diminuindo. O som pesado da pedra rolando para fechar a entrada. O escuro absoluto.",
                 colloquy: "Jesus, no silêncio do sepulcro, aguardo Contigo a Ressurreição. Ensina-me a saber esperar as promessas de Deus mesmo quando tudo parece morto.",
                 contemplation: "Contemplemos como os discípulos levaram o corpo de Jesus para o sepultar, acompanhando-o também a sua santa Mãe.",
@@ -455,7 +442,10 @@
             const wrapper = document.getElementById('img-wrapper');
             const img = document.getElementById('station-image');
             
+            // Força o estado de carregamento
             wrapper.classList.add('loading-shimmer');
+            img.style.opacity = "0";
+            delete img.dataset.failed;
             img.src = s.img;
             
             const progress = ((currentIndex + 1) / 14) * 100;
@@ -465,7 +455,7 @@
             toggleStep(0);
 
             const nextBtn = document.getElementById('next-btn');
-            nextBtn.innerHTML = (currentIndex === 13) ? "Finalizar" : `Próxima Estação <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
+            nextBtn.innerHTML = (currentIndex === 13) ? "Finalizar" : `Próxima <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
 
             localStorage.setItem('viaSacra_progress', currentIndex);
             window.scrollTo({ top: 0, behavior: 'smooth' });
