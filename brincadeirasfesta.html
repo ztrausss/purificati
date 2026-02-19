@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxo Infantil - Festa de São José</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .card-game {
+            transition: transform 0.2s ease;
+        }
+
+        .card-game:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-line {
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .step-line::after {
+                content: '';
+                position: absolute;
+                top: 40%;
+                left: 100%;
+                width: 20px;
+                height: 2px;
+                background: #cbd5e1;
+                z-index: 1;
+            }
+            .step-line:last-child::after {
+                display: none;
+            }
+        }
+
+        .badge-machine {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            color: #475569;
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-12">
+
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white py-10 px-4 text-center shadow-lg border-b-4 border-indigo-900">
+        <h1 class="text-3xl md:text-5xl font-bold mb-2 uppercase tracking-tight text-yellow-400">Festa do Padroeiro 2025</h1>
+        <p class="text-indigo-100 text-lg md:text-xl font-light italic">Área de brincadeiras - Paróquia São José</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 mt-8">
+        
+        <!-- Info Primária -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <!-- Datas -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-orange-100">
+                <h3 class="font-bold text-xl mb-4 flex items-center text-orange-600">
+                    <span class="mr-2">📅</span> Datas da Festa
+                </h3>
+                <div class="grid grid-cols-2 gap-2 text-center text-sm">
+                    <div class="bg-orange-50 p-2 rounded-xl font-bold text-orange-700 border border-orange-100">07/03</div>
+                    <div class="bg-orange-50 p-2 rounded-xl font-bold text-orange-700 border border-orange-100">08/03</div>
+                    <div class="bg-orange-50 p-2 rounded-xl font-bold text-orange-700 border border-orange-100">14/03</div>
+                    <div class="bg-orange-50 p-2 rounded-xl font-bold text-orange-700 border border-orange-100">15/03</div>
+                </div>
+            </div>
+
+            <!-- Cantinho São Francisco -->
+            <div class="md:col-span-2 bg-green-600 text-white p-6 rounded-3xl shadow-md relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="font-bold text-2xl mb-2 flex items-center">
+                        <span class="mr-2">🌿</span> Cantinho São Francisco de Assis
+                    </h3>
+                    <p class="text-green-50 leading-tight mb-4 text-sm md:text-base">
+                        Centro de sustentabilidade. Aqui as crianças aprendem a cuidar da criação através da reciclagem.
+                    </p>
+                    <div class="bg-green-700/50 p-3 rounded-2xl border border-green-500/30 text-xs md:text-sm leading-relaxed">
+                        <strong>Regra de Participação:</strong> Entregar a sacolinha <strong>cheia</strong> e <strong>separada</strong> (somente latas OU somente garrafas) para ganhar o Vale São Francisco.
+                    </div>
+                </div>
+                <span class="absolute -right-4 -bottom-4 text-9xl opacity-10">🐾</span>
+            </div>
+        </div>
+
+        <!-- Seção de Brincadeiras -->
+        <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
+            <h2 class="text-2xl font-bold text-slate-700 flex items-center">
+                <span class="bg-indigo-700 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                Guia de Jogos e Recompensas
+            </h2>
+            <div class="flex items-center gap-2 text-[10px] md:text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full shadow-inner">
+                <span>🎫 TICKET AUTOMÁTICO</span>
+                <span class="text-slate-300">|</span>
+                <span>🎟️ VALE SÃO FRANCISCO</span>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Pescaria -->
+            <div class="card-game bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="bg-blue-500 p-4 text-center">
+                    <span class="text-4xl">🎣</span>
+                </div>
+                <div class="p-5 flex flex-col flex-grow">
+                    <h4 class="font-bold text-lg mb-1 text-center">Pescaria</h4>
+                    <div class="w-full text-center mb-3">
+                        <div class="badge-machine inline-block text-[10px] px-2 py-0.5 rounded-md font-bold uppercase">Ficha da Máquina</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Regra</p>
+                        <p class="text-sm font-semibold text-slate-700">Livre</p>
+                    </div>
+
+                    <div class="mt-auto space-y-3">
+                        <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
+                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-0.5">🏆 Prêmio Principal</p>
+                            <p class="text-sm font-bold text-blue-800 leading-tight">Brinquedo + Algodão Doce</p>
+                        </div>
+                        <div class="bg-pink-50 p-2 rounded-xl border border-pink-100">
+                            <p class="text-[10px] font-bold text-pink-400 uppercase mb-0.5">🌸 Consolação</p>
+                            <p class="text-sm font-bold text-pink-600">Algodão Doce</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tomba Pecado -->
+            <div class="card-game bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="bg-red-500 p-4 text-center">
+                    <span class="text-4xl">🥫</span>
+                </div>
+                <div class="p-5 flex flex-col flex-grow">
+                    <h4 class="font-bold text-lg mb-1 text-center">Tomba Pecado</h4>
+                    <div class="w-full text-center mb-3">
+                        <div class="badge-machine inline-block text-[10px] px-2 py-0.5 rounded-md font-bold uppercase">Ficha da Máquina</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Regra</p>
+                        <p class="text-sm font-semibold text-slate-700 leading-tight">3 chances para derrubar 5 latas</p>
+                    </div>
+
+                    <div class="mt-auto space-y-3">
+                        <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
+                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-0.5">🏆 Prêmio Principal</p>
+                            <p class="text-sm font-bold text-blue-800 leading-tight">Brinquedo + Algodão Doce</p>
+                        </div>
+                        <div class="bg-pink-50 p-2 rounded-xl border border-pink-100">
+                            <p class="text-[10px] font-bold text-pink-400 uppercase mb-0.5">🌸 Consolação</p>
+                            <p class="text-sm font-bold text-pink-600">Algodão Doce</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tiro ao Alvo -->
+            <div class="card-game bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="bg-amber-500 p-4 text-center">
+                    <span class="text-4xl">🎯</span>
+                </div>
+                <div class="p-5 flex flex-col flex-grow">
+                    <h4 class="font-bold text-lg mb-1 text-center">Tiro ao Alvo</h4>
+                    <div class="w-full text-center mb-3">
+                        <div class="badge-machine inline-block text-[10px] px-2 py-0.5 rounded-md font-bold uppercase">Ficha da Máquina</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Regra</p>
+                        <p class="text-sm font-semibold text-slate-700">3 chances de lançamento</p>
+                    </div>
+
+                    <div class="mt-auto space-y-3">
+                        <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
+                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-0.5">🏆 Prêmio Principal</p>
+                            <p class="text-sm font-bold text-blue-800 leading-tight">Brinquedo + Algodão Doce</p>
+                        </div>
+                        <div class="bg-pink-50 p-2 rounded-xl border border-pink-100">
+                            <p class="text-[10px] font-bold text-pink-400 uppercase mb-0.5">🌸 Consolação</p>
+                            <p class="text-sm font-bold text-pink-600">Algodão Doce</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boca do Palhaço -->
+            <div class="card-game bg-white rounded-3xl shadow-md border-2 border-green-500 overflow-hidden flex flex-col">
+                <div class="bg-green-500 p-4 text-center">
+                    <span class="text-4xl">🤡</span>
+                </div>
+                <div class="p-5 flex flex-col flex-grow">
+                    <h4 class="font-bold text-lg mb-1 text-center text-green-800">Boca do Palhaço</h4>
+                    <div class="w-full text-center mb-3">
+                        <div class="bg-green-100 text-green-700 inline-block text-[10px] px-2 py-0.5 rounded-md font-bold uppercase border border-green-200">Vale São Francisco</div>
+                    </div>
+                    
+                    <div class="mb-4 text-center">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase mb-1">Regra</p>
+                        <p class="text-sm font-semibold text-slate-700">3 chances de lançamento</p>
+                    </div>
+
+                    <div class="mt-auto space-y-3">
+                        <div class="bg-pink-500 p-3 rounded-xl shadow-sm text-center">
+                            <p class="text-[10px] font-bold text-pink-200 uppercase mb-0.5">🏆 Prêmio Principal</p>
+                            <p class="text-base font-bold text-white">Algodão Doce</p>
+                        </div>
+                        <div class="bg-slate-100 p-2 rounded-xl border border-slate-200 text-center opacity-60">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">🌑 Consolação</p>
+                            <p class="text-sm font-bold text-slate-500">Nada</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Atividade Dona Edite -->
+        <div class="bg-amber-50 border-2 border-amber-200 p-6 rounded-3xl shadow-sm mb-12 flex flex-col md:flex-row items-center gap-6">
+            <div class="bg-amber-100 w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-inner shrink-0">📚</div>
+            <div class="text-center md:text-left">
+                <h4 class="text-xl font-bold text-amber-800 mb-1">Contação de Histórias para Crianças</h4>
+                <p class="text-amber-700 font-medium mb-2">Com Dona Edite</p>
+                <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                    <span class="bg-white border border-amber-300 text-amber-800 px-3 py-1 rounded-lg text-xs md:text-sm font-bold">Dom 08/03</span>
+                    <span class="bg-white border border-amber-300 text-amber-800 px-3 py-1 rounded-lg text-xs md:text-sm font-bold">Dom 15/03</span>
+                    <span class="bg-amber-200 text-amber-900 px-3 py-1 rounded-lg text-xs md:text-sm italic font-medium">Horário a definir</span>
+                </div>
+            </div>
+            <div class="md:ml-auto">
+                <span class="text-amber-500 font-bold text-[10px] md:text-xs uppercase tracking-widest border-2 border-amber-200 px-4 py-2 rounded-full">Atividade Gratuita</span>
+            </div>
+        </div>
+
+        <!-- Fluxo Operacional -->
+        <h2 class="text-2xl font-bold mb-6 text-slate-700 flex items-center">
+            <span class="bg-indigo-700 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+            Fluxo do Cantinho São Francisco
+        </h2>
+
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm mb-12 border border-slate-100 overflow-x-auto">
+            <div class="flex flex-col md:flex-row items-start justify-between gap-8 text-center min-w-[600px] md:min-w-0">
+                
+                <!-- Passo 1 -->
+                <div class="flex-1 step-line w-full">
+                    <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-amber-200 shadow-sm">
+                        <span class="text-2xl">🛍️</span>
+                    </div>
+                    <h5 class="font-bold mb-1 text-sm md:text-base">Recolhimento</h5>
+                    <p class="text-[11px] md:text-xs text-slate-500 px-2 leading-relaxed">Crianças coletam latas ou garrafas em sacolas separadas.</p>
+                </div>
+
+                <!-- Passo 2 -->
+                <div class="flex-1 step-line w-full">
+                    <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-blue-200 shadow-sm">
+                        <span class="text-2xl">⚖️</span>
+                    </div>
+                    <h5 class="font-bold mb-1 text-sm md:text-base">Entrega & Triagem</h5>
+                    <p class="text-[11px] md:text-xs text-slate-500 px-2 leading-relaxed">Sacola <strong>cheia</strong> e <strong>separada</strong> no Cantinho.</p>
+                </div>
+
+                <!-- Passo 3 -->
+                <div class="flex-1 step-line w-full">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-green-200 shadow-sm">
+                        <span class="text-2xl">🎟️</span>
+                    </div>
+                    <h5 class="font-bold mb-1 text-sm md:text-base">Vale São Francisco</h5>
+                    <p class="text-[11px] md:text-xs text-slate-500 px-2 leading-relaxed">Equipe entrega o <strong>Vale São Francisco</strong> para a criança.</p>
+                </div>
+
+                <!-- Passo 4 -->
+                <div class="flex-1 w-full text-center">
+                    <div class="bg-pink-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-pink-200 shadow-sm">
+                        <span class="text-2xl">🤡</span>
+                    </div>
+                    <h5 class="font-bold mb-1 text-sm md:text-base">Prêmio Ecológico</h5>
+                    <p class="text-[11px] md:text-xs text-slate-500 px-2 leading-relaxed">Troca o Vale pelo <strong>Algodão Doce</strong> na Boca do Palhaço.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Manual de Tickets -->
+        <h2 class="text-2xl font-bold mb-6 text-slate-700 flex items-center">
+            <span class="bg-indigo-700 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">3</span>
+            Manual de Tickets para Voluntários
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-200/50 border-2 border-slate-300 p-4 rounded-2xl flex items-center">
+                <div class="w-12 h-12 bg-white rounded-lg mr-4 flex items-center justify-center shadow-inner">
+                    <span class="text-slate-400">🤖</span>
+                </div>
+                <div>
+                    <h6 class="font-bold text-slate-700 text-sm">Ficha da Máquina</h6>
+                    <p class="text-[10px] text-slate-500 italic">Pescaria, Tomba Pecado e Tiro</p>
+                </div>
+            </div>
+            
+            <div class="bg-white border-2 border-green-500 p-4 rounded-2xl flex items-center shadow-sm">
+                <div class="w-12 h-12 bg-green-500 rounded-lg mr-4 flex items-center justify-center shadow-md border-2 border-green-600">
+                    <span class="text-white text-xl">🎟️</span>
+                </div>
+                <div>
+                    <h6 class="font-bold text-green-700 text-sm">Vale São Francisco</h6>
+                    <p class="text-[10px] text-slate-500 italic">Exclusivo: Boca do Palhaço</p>
+                </div>
+            </div>
+
+            <div class="bg-white border-2 border-pink-400 p-4 rounded-2xl flex items-center shadow-sm">
+                <div class="w-12 h-12 bg-pink-400 rounded-lg mr-4 flex items-center justify-center shadow-md border-2 border-pink-600">
+                    <span class="text-white text-xl">☁️</span>
+                </div>
+                <div>
+                    <h6 class="font-bold text-pink-600 text-sm">Vale Algodão Doce</h6>
+                    <p class="text-[10px] text-slate-500 italic">Brinde extra de consolação</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 text-center text-slate-500 text-xs px-4 border-t border-slate-200 pt-8 pb-12">
+        <p class="text-sm mb-2 text-slate-700 uppercase tracking-widest font-bold">
+            Área de brincadeiras - Festa do Padroeiro - Paróquia São José
+        </p>
+        <p class="mb-3 italic text-indigo-600 font-medium">"São José, valei-nos em nossas necessidades e protegei nossas crianças!"</p>
+        <p class="mt-4 text-[10px] font-bold text-slate-400 tracking-tighter uppercase">Março 2025 • Planejamento Logístico Infantil</p>
+    </footer>
+
+</body>
+</html>
