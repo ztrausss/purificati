@@ -136,7 +136,7 @@
         }
 
         function toggleStep(activeIndex) {
-            const steps = document.querySelectorAll('.flow-step');
+            const steps = document.querySelectorAll('.flow-step:not(.hidden)');
             steps.forEach((step, i) => {
                 step.classList.remove('expanded', 'step-active', 'step-future', 'step-seen');
                 
@@ -148,7 +148,7 @@
                     step.classList.add('step-future');
                 }
             });
-            steps[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            steps[activeIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     </script>
 </head>
@@ -159,7 +159,6 @@
             <h1 class="header-font text-2xl font-bold tracking-widest accent-red">VIA CRUCIS</h1>
             <p class="text-[10px] uppercase tracking-tighter opacity-60">Sincronia Inácio & Santo Afonso</p>
         </div>
-        <!-- Logo no canto superior direito -->
         <img src="https://i.imgur.com/TqpKkHV.png" alt="Logo" class="h-10 md:h-12 w-auto">
     </header>
 
@@ -187,7 +186,7 @@
         <div id="station-view" class="hidden space-y-6 fade-in">
             <div class="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold mb-2">
                 <span id="station-number" class="text-red-500 font-bold">Estação I</span>
-                <span id="station-index-label" class="opacity-40">1 / 14</span>
+                <span id="station-index-label" class="opacity-40">1 / 15</span>
             </div>
             <div class="w-full bg-gray-900 h-1 rounded-full overflow-hidden mb-8">
                 <div id="progress-bar" class="h-full bg-red-800 transition-all duration-700" style="width: 0%"></div>
@@ -203,30 +202,30 @@
             </div>
 
             <!-- FLUXO VERTICAL DA ESTAÇÃO -->
-            <div class="relative pl-8 space-y-5 pb-12">
+            <div class="relative pl-8 space-y-5 pb-12" id="main-flow-container">
                 <div class="absolute left-[15px] top-4 bottom-4 flow-line opacity-30"></div>
 
-                <!-- 1. Composição de Lugar -->
-                <div class="flow-step step-active expanded border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(0)">
+                <!-- 1. Passo 1 -->
+                <div id="step-1" class="flow-step step-active expanded border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(0)">
                     <div class="absolute left-[10px] step-dot"></div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest flex justify-between items-center">
+                    <h3 id="label-1" class="text-sm font-bold uppercase tracking-widest flex justify-between items-center">
                         <span>1. Composição de Lugar</span>
                         <span class="text-[10px] opacity-70 font-sans">Sentidos</span>
                     </h3>
                     <div id="place-content" class="collapsible-content italic text-xl leading-relaxed font-serif text-gray-200 text-justify"></div>
                 </div>
 
-                <!-- 2. Colóquio Pessoal -->
-                <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(1)">
+                <!-- 2. Passo 2 -->
+                <div id="step-2" class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(1)">
                     <div class="absolute left-[10px] step-dot"></div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest">2. Colóquio Pessoal</h3>
+                    <h3 id="label-2" class="text-sm font-bold uppercase tracking-widest">2. Colóquio Pessoal</h3>
                     <div id="colloquy-content" class="collapsible-content text-lg leading-relaxed text-gray-300 text-justify"></div>
                 </div>
 
-                <!-- 3. Adoração e Contemplação -->
-                <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(2)">
+                <!-- 3. Passo 3 (Adoração) -->
+                <div id="step-3" class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(2)">
                     <div class="absolute left-[10px] step-dot"></div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest">3. Adoração</h3>
+                    <h3 id="label-3" class="text-sm font-bold uppercase tracking-widest">3. Adoração</h3>
                     <div class="collapsible-content space-y-6">
                         <p class="text-base font-bold border-l-4 border-red-800 pl-4 py-2 bg-red-900/10">
                             ℣. Nós Vos adoramos, ó Cristo, e Vos bendizemos.<br>
@@ -236,26 +235,26 @@
                     </div>
                 </div>
 
-                <!-- 4. Oração de Santo Afonso -->
-                <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(3)">
+                <!-- 4. Passo 4 (Santo Afonso) -->
+                <div id="step-4" class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(3)">
                     <div class="absolute left-[10px] step-dot"></div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest">4. Oração de Santo Afonso</h3>
+                    <h3 id="label-4" class="text-sm font-bold uppercase tracking-widest">4. Oração de Santo Afonso</h3>
                     <div id="prayer-content" class="collapsible-content text-lg leading-relaxed font-serif text-gray-200 text-justify"></div>
                 </div>
 
-                <!-- 5. Orações Finais -->
-                <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(4)">
+                <!-- 5. Passo 5 (Orações Finais) -->
+                <div id="step-5" class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(4)">
                     <div class="absolute left-[10px] step-dot"></div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest">5. Orações de Conclusão</h3>
+                    <h3 id="label-5" class="text-sm font-bold uppercase tracking-widest">5. Orações de Conclusão</h3>
                     <div class="collapsible-content text-base opacity-90 text-center py-4 italic bg-white/5 rounded-lg">
                         Reza-se em silêncio um Pai Nosso, uma Ave Maria e um Glória ao Pai.
                     </div>
                 </div>
 
-                <!-- 6. Hino Final -->
-                <div class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(5)">
+                <!-- 6. Passo 6 (Hino) -->
+                <div id="step-6" class="flow-step step-future border p-6 rounded-xl transition-all duration-500 cursor-pointer" onclick="toggleStep(5)">
                     <div class="absolute left-[10px] step-dot"></div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest">6. Hino da Estação</h3>
+                    <h3 id="label-6" class="text-sm font-bold uppercase tracking-widest">6. Hino da Estação</h3>
                     <div id="hymn-content" class="collapsible-content text-base text-center italic text-red-400 whitespace-pre-line"></div>
                 </div>
             </div>
@@ -295,7 +294,7 @@
             {
                 title: "Jesus carrega a Cruz",
                 img: "https://i.ibb.co/Mv96Fxx/estacao2.png",
-                place: "Ouça o som surdo da madeira pesada atingindo o chão. Sinta o cheiro de resina da madeira bruta. Imagine o primeiro contacto do madeiro with o ombro já dilacerado pela flagelação. O peso é imediato, o equilíbrio é difícil.",
+                place: "Ouça o som surdo da madeira pesada atingindo o chão. Sinta o cheiro de resina da madeira bruta. Imagine o primeiro contacto do madeiro com o ombro já dilacerado pela flagelação. O peso é imediato, o equilíbrio é difícil.",
                 colloquy: "Jesus, este peso não é Teu, é meu. Ajuda-me a não fugir das minhas pequenas cruzes diárias, mas a abraçá-las com o mesmo amor que vejo nos Teus olhos agora.",
                 contemplation: "Contemplemos como Jesus Cristo, levando a Cruz aos ombros, lembrava-se no caminho de oferecer por nós ao Pai eterno a morte que havia de sofrer.",
                 prayer: "Ó amabilíssimo Jesus, abraço todas as adversidades que, por vossa vontade, hei de tolerar até a morte e, pelo duro sofrimento que suportastes carregando a Cruz, peço-vos que me deis forças para que também eu possa carregar minha própria cruz." + conclusion,
@@ -324,15 +323,15 @@
                 img: "https://i.ibb.co/b5JRTbT7/estacao5.png",
                 place: "Sinta a resistência muscular de Simão sendo vencida pela compaixão. Toque a madeira áspera ao lado de Jesus. Sinta o calor do corpo d'Ele perto do seu. O fôlego d'Ele é curto e pesado.",
                 colloquy: "Senhor, que eu não seja um ajudante por obrigação, mas por amor. Quem são os 'Cristos' cansados no meu caminho que precisam que eu divida o peso hoje?",
-                contemplation: "Contemplemos como os judeus obrigaram Simão de Cirene a carregar a Cruz atrás do Senhor, vendo Jesus quase expirar a cada passo devido ao cansaço.",
+                contemplation: "Contemplemos como os judeus obrigaram Simão de Cirineu a carregar a Cruz atrás do Senhor, vendo Jesus quase expirar a cada passo devido ao cansaço.",
                 prayer: "Ó dulcíssimo Jesus, não quero, como o Cirineu, repudiar a Cruz. De bom grado a abraço e tomo sobre mim; abraço especialmente a morte que para mim estabelecestes." + conclusion,
-                hymn: "Em extremo desmaiado,\nTeve auxílio, tão cansado,\nRecebendo o Cireneu. (2x)" + hymnEnding
+                hymn: "Em extremo desmaiado,\nTeve auxílio, tão cansado,\nRecebendo o Cirineu. (2x)" + hymnEnding
             },
             {
-                title: "Verónica enxuga o rosto de Jesus",
+                title: "Verônica enxuga o rosto de Jesus",
                 img: "https://i.ibb.co/ksBj0ngc/estacao6.png",
                 place: "Toque a maciez do linho branco contrastando com a pele ferida. Sinta o sangue quente manchando o tecido. O rosto de Jesus deixa uma impressão eterna. Um gesto de doçura em meio à brutalidade.",
-                colloquy: "Senhor, imprime o Teu rosto na minha alma. Que eu tenha a coragem de Verónica para agir com ternura mesmo quando o mundo ao redor é violento.",
+                colloquy: "Senhor, imprime o Teu rosto na minha alma. Que eu tenha a coragem de Verônica para agir com ternura mesmo quando o mundo ao redor é violento.",
                 contemplation: "Contemplemos como aquela santa mulher Verônica, vendo Jesus abatido pelas dores, estendeu-lhe um pano em que Ele deixou impressa sua imagem.",
                 prayer: "Ó meu Jesus, formosa era antes a vossa face; mas agora não aparece assim! Vós somente, meu Redentor, lhe podeis restituir a antiga beleza." + conclusion,
                 hymn: "O seu rosto ensanguentado,\nPor Verônica enxugado,\nEis, no pano, apareceu. (2x)" + hymnEnding
@@ -349,7 +348,7 @@
             {
                 title: "Jesus consola as mulheres",
                 img: "https://i.ibb.co/wrKFhMD1/estacao8.png",
-                place: "Ouça o som do choro lamentoso. Sinta a humidade das lágrimas. A voz de Jesus é rouca, mas clara: 'Não choreis por mim...'. Sinta o peso da responsabilidade espiritual que Ele nos entrega.",
+                place: "Ouça o som do choro lamentoso. Sinta a umidade das lágrimas. A voz de Jesus é rouca, mas clara: 'Não choreis por mim...'. Sinta o peso da responsabilidade espiritual que Ele nos entrega.",
                 colloquy: "Senhor, que eu não chore apenas por sentimentos passageiros, mas que as minhas lágrimas se transformem em conversão real para mim e para os meus.",
                 contemplation: "Contemplemos como estas mulheres são tocadas de comiseração e choram copiosamente. Mas, voltando-se a elas, Ele diz: 'Não choreis por mim; antes, chorai por vós mesmas'.",
                 prayer: "Ó doloroso Jesus, choro os pecados que cometi contra vós, pela tristeza que vos causaram a vós, que tanto me amastes. Amo-vos mais do que a mim mesmo." + conclusion,
@@ -387,7 +386,7 @@
                 img: "https://i.ibb.co/DH0G2XT2/estacao12.png",
                 place: "Foca-te no último suspiro. O silêncio que se abate sobre a Terra. Sinta o tremor do chão sob os seus pés. A sede extrema. Olhe para o lado aberto de onde sai sangue e água.",
                 colloquy: "Meu Deus e meu Tudo. No Teu último suspiro, entrego o meu espírito. Obrigado por não teres guardado nada para Ti, mas teres dado tudo por mim.",
-                contemplation: "Contemplemos como Jesus, depois de três horas de agonia na Cruz, consumido de dores, morre por fim, deixando cair a cabeça sobre el peito.",
+                contemplation: "Contemplemos como Jesus, depois de três horas de agonia na Cruz, consumido de dores, morre por fim, deixando cair a cabeça sobre o peito.",
                 prayer: "Ó meu morto Jesus, beijo com amor esta Cruz em que por meu amor morrestes. Eu mereci morrer em castigo de meus pecados; mas a vossa morte é minha esperança." + conclusion,
                 hymn: "Meu Jesus, por nós morrestes,\nPor amor tudo destes,\nÓ fonte de caridade. (2x)" + hymnEnding
             },
@@ -407,7 +406,14 @@
                 colloquy: "Jesus, no silêncio do sepulcro, aguardo Contigo a Ressurreição. Ensina-me a saber esperar as promessas de Deus mesmo quando tudo parece morto.",
                 contemplation: "Contemplemos como os discípulos levaram o corpo de Jesus para o sepultar, acompanhando-o também a sua santa Mãe.",
                 prayer: "Ó meu Jesus sepultado, beijo esta pedra que vos encerra. Mas ressuscitastes ao terceiro dia. Peço-vos que me façais ressuscitar convosco na glória." + conclusion,
-                hymn: "No sepulcro Vos puseram,\nMas os vossos Vos esperam,\nNa glória da Ressurreição. (2x)" + hymnEnding
+                hymn: "No sepulcro vos deixaram,\nSepultado, vos choraram,\nMagoado o coração. (2x)\n\nMeu Jesus, por vossos passos,\nRecebei em vossos braços\nA mim, pobre pecador. (2x)"
+            },
+            {
+                isConclusion: true,
+                title: "Finalização da Via-sacra",
+                img: "https://i.imgur.com/TqpKkHV.png",
+                prayer1: "Eis-me aqui, ó meu bom e dulcíssimo Jesus! Humildemente prostrado de joelhos em vossa presença, peço e suplico-vos, com todo o fervor de minha alma, que vos digneis gravar em meu coração os mais vivos sentimentos de fé, esperança e caridade, de verdadeiro arrependimento de meus pecados, e um firme propósito de emendar-me, enquanto vou considerando, com vivo afeto e dor, as vossas cinco chagas, tendo presentes as palavras que já o profeta Davi punha em vossa boca, ó bom Jesus: “Transpassaram minhas mãos e os meus pés e contaram todos os meus ossos” (Sl 21, 17).",
+                prayer2: "Ó Mãe das Dores, Rainha dos mártires, que tanto chorastes vosso Filho, morto para me salvar, alcançai-me uma verdadeira contrição dos meus pecados e uma sincera mudança de vida. Mãe, pela dor que experimentastes quando vosso divino Filho, no meio de tantos tormentos, inclinando a cabeça expirou à vossa vista sobre a cruz, eu vos suplico que me alcanceis uma boa morte. Por piedade, ó advogada dos pecadores, não deixeis de amparar a minha alma na aflição e no combate da terrível passagem desta vida à eternidade. E, como é possível que, neste momento, a palavra e a voz me faltem para pronunciar o vosso nome e o de Jesus, rogo-vos, desde já, a vós e a vosso divino Filho, que me socorrais nessa hora extrema, e assim direi: Jesus e Maria, entrego-vos a minha alma. Amém."
             }
         ];
 
@@ -420,7 +426,6 @@
                 const resumeBtn = document.getElementById('resume-btn');
                 if (resumeBtn) resumeBtn.classList.remove('hidden');
             }
-            // Inicia o pré-carregamento de todas as imagens ao carregar o app
             preloadAllImages();
         };
 
@@ -448,15 +453,45 @@
 
         function render() {
             const s = stations[currentIndex];
-            const roman = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV"];
+            const roman = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", ""];
             
-            document.getElementById('station-number').innerText = `Estação ${roman[currentIndex]}`;
+            document.getElementById('station-number').innerText = s.isConclusion ? "" : `Estação ${roman[currentIndex]}`;
             document.getElementById('station-title').innerText = s.title;
-            document.getElementById('place-content').innerText = s.place;
-            document.getElementById('colloquy-content').innerText = s.colloquy;
-            document.getElementById('contemplation-content').innerText = s.contemplation;
-            document.getElementById('prayer-content').innerText = s.prayer;
-            document.getElementById('hymn-content').innerText = s.hymn;
+
+            // Elementos das caixas
+            const step3 = document.getElementById('step-3');
+            const step4 = document.getElementById('step-4');
+            const step5 = document.getElementById('step-5');
+            const step6 = document.getElementById('step-6');
+            
+            if (s.isConclusion) {
+                // Layout de Finalização
+                document.getElementById('label-1').innerHTML = "<span>Oração final a Jesus crucificado</span>";
+                document.getElementById('place-content').innerText = s.prayer1;
+                document.getElementById('label-2').innerHTML = "<span>A Nossa Senhora das Dores</span>";
+                document.getElementById('colloquy-content').innerText = s.prayer2;
+                
+                // Esconder passos que não fazem parte da finalização
+                step3.classList.add('hidden');
+                step4.classList.add('hidden');
+                step5.classList.add('hidden');
+                step6.classList.add('hidden');
+            } else {
+                // Layout normal de Estação
+                document.getElementById('label-1').innerHTML = "<span>1. Composição de Lugar</span><span class='text-[10px] opacity-70 font-sans'>Sentidos</span>";
+                document.getElementById('place-content').innerText = s.place;
+                document.getElementById('label-2').innerHTML = "<span>2. Colóquio Pessoal</span>";
+                document.getElementById('colloquy-content').innerText = s.colloquy;
+                document.getElementById('contemplation-content').innerText = s.contemplation;
+                document.getElementById('prayer-content').innerText = s.prayer;
+                document.getElementById('hymn-content').innerText = s.hymn;
+
+                // Mostrar passos
+                step3.classList.remove('hidden');
+                step4.classList.remove('hidden');
+                step5.classList.remove('hidden');
+                step6.classList.remove('hidden');
+            }
             
             const wrapper = document.getElementById('img-wrapper');
             const img = document.getElementById('station-image');
@@ -466,21 +501,21 @@
             delete img.dataset.failed;
             img.src = s.img;
             
-            const progress = ((currentIndex + 1) / 14) * 100;
+            const progress = ((currentIndex + 1) / 15) * 100;
             document.getElementById('progress-bar').style.width = `${progress}%`;
-            document.getElementById('station-index-label').innerText = `${currentIndex + 1} / 14`;
+            document.getElementById('station-index-label').innerText = `${currentIndex + 1} / 15`;
 
             toggleStep(0);
 
             const nextBtn = document.getElementById('next-btn');
-            nextBtn.innerHTML = (currentIndex === 13) ? "Finalizar" : `Próxima Estação <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`;
+            nextBtn.innerHTML = (currentIndex === 14) ? "Terminar" : (currentIndex === 13 ? "Finalização" : `Próxima Estação <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`);
 
             localStorage.setItem('viaSacra_progress', currentIndex);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function nextStation() {
-            if (currentIndex < 13) {
+            if (currentIndex < 14) {
                 currentIndex++;
                 render();
             } else {
