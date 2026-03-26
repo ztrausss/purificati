@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relógio da Paixão - Santo Afonso</title>
+    <!-- Tailwind CSS para estilização rápida -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fontes Google: Cinzel (Títulos) e EB Garamond (Texto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons para ícones -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- React e ReactDOM via CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel para processar JSX no navegador -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body { 
+            background-color: #050505; 
+            color: #d6d3d1; 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden; 
+            margin: 0;
+        }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-eb { font-family: 'EB Garamond', serif; }
+        .animate-spin-slow { animation: spin 15s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* Ajuste de scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #451a03; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const PASSION_HOURS = [
+            { id: 1, time: 18, title: "A Preparação da Páscoa", meditation: "Considerai como Jesus, chegando o tempo de Sua paixão, quis antecipar o sacrifício de Si mesmo. No cenáculo, ardia em desejos de Se dar por nós. 'Desejei ardentemente comer esta páscoa convosco antes de sofrer'. O Amor O movia a instituir o memorial de Sua entrega.", affections: "Ó meu Jesus, quão grande é o Vosso desejo de sofrer por mim! Vós correis à morte para me dar a vida. Inflamai o meu coração com esse mesmo desejo de Vos amar e Vos seguir até o fim." },
+            { id: 2, time: 19, title: "Jesus lava os pés dos discípulos", meditation: "Vede o Criador do universo prostrado aos pés de Suas criaturas. Ele, que sustenta os céus, ajoelha-Se diante de pobres pescadores e até do traidor. 'Dei-vos o exemplo, para que, como Eu vos fiz, façais vós também'. É o aniquilamento total da majestade diante da miséria humana.", affections: "Ó humildade do meu Jesus! Vós Vos humilhais até os meus pés para lavar as minhas manchas. Lavai-me, Senhor, de toda a soberba; ensinai-me a ser o último de todos por Vosso amor." },
+            { id: 3, time: 20, title: "Jesus institui a Eucaristia", meditation: "Não querendo nos deixar órfãos, Jesus inventa o prodígio da caridade. Toma o pão e o vinho, transubstancia-os em Seu Corpo e Sangue. 'Isto é o meu Corpo, que é dado por vós'. Faz-Se nosso alimento para habitar em nós e nunca mais Se separar de nossa alma.", affections: "Ó milagre de amor! Ó excesso de caridade! Fazer-se alimento de Suas próprias criaturas! Eu Vos adoro e Vos amo, ó Pão dos Anjos, prisioneiro de amor no altar por minha causa." },
+            { id: 4, time: 21, title: "Jesus reza no Jardim das Oliveiras", meditation: "Entrou Jesus no jardim e começou a pavorar-Se e a entristecer-Se. 'A minha alma está numa tristeza mortal'. Ele vê diante de Si o mar de todos os pecados e a ingratidão dos homens. Prostrado por terra, Ele aceita o peso da justiça divina por nós.", affections: "Meu Jesus agonizante, enquanto todos dormem, Vós velais e sofreis por mim. Não permitais que eu seja indiferente às Vossas dores. Dai-me a graça de vigiar e orar sempre convosco." },
+            { id: 5, time: 22, title: "Jesus entra em agonia e sua sangue", meditation: "A luta interior torna-se tão violenta que os poros de Jesus se abrem e Ele sua sangue, que corre em gotas até a terra. 'Pai, se é possível, afasta de Mim este cálice; contudo, não se faça a minha vontade, mas a Tua'. Jesus aceita a morte para que nós não morramos eternamente.", affections: "Ó Sangue divino que regais a terra, vinde purificar o meu coração! Por essa agonia mortal, tende piedade de mim na hora da minha morte e aceitai o meu pobre amor como consolo." },
+            { id: 6, time: 23, title: "Jesus recebe o beijo de Judas", meditation: "Eis que chega o traidor com uma turba armada. Judas aproxima-se e profana o Rosto divino com um beijo. Jesus responde com mansidão infinita: 'Amigo, a que vieste?'. Ele aceita a traição do amigo para nos libertar das correntes das nossas infidelidades.", affections: "Meu Jesus, quantas vezes eu também Vos traí com um beijo falso, fingindo Vos amar enquanto pecava! Perdoai a minha ingratidão e prendei-me a Vós com os laços da Vossa misericórdia." },
+            { id: 7, time: 0, title: "Jesus é preso", meditation: "O Senhor do Universo deixa-Se atar com cordas grossas como se fosse o mais perigoso dos malfeitores. Ataram as mãos daquele Senhor que viera soltar as cadeias de todos os escravos. Os discípulos fogem e O deixam só nas mãos dos inimigos.", affections: "Ó Divino Prisioneiro, Vós Vos deixais amarrar para quebrar as correntes dos meus vícios. Eu quero ser Vosso escravo de amor para sempre. Atai a minha vontade à Vossa, para que eu nunca mais me separe de Vós." },
+            { id: 8, time: 1, title: "Jesus é levado a Anás", meditation: "Conduzido à presença de Anás, Jesus é interrogado sobre Sua doutrina. Um servo vil, querendo agradar ao senhor, descarrega uma bofetada sobre aquele Rosto sagrado. Jesus responde com calma: 'Se falei mal, dá testemunho do mal; mas se falei bem, por que me bates?'.", affections: "Meu Jesus, que bofetada cruel recebeu o Vosso Rosto divino! Eu Vos peço perdão por todas as vezes que Vos ofendi com as minhas palavras e pensamentos soberbos. Ensinai-me a Vossa paciência." },
+            { id: 9, time: 2, title: "Jesus é entregue a Caifás", meditation: "No palácio de Caifás, a injustiça reina. O Sumo Sacerdote adjura-O em nome de Deus: 'És Tu o Cristo?'. Jesus afirma Sua divindade. 'Blasfêmia! É réu de morte!', grita a multidão. O Criador é julgado e condenado pela criatura para nos abrir as portas do Céu.", affections: "Ó Vítima de amor, condenada por minha causa! Eu Vos agradeço por aceitardes a sentença de morte para me dar a vida eterna. Eu Vos amo acima de todas as coisas, meu Juiz e meu Salvador." },
+            { id: 10, time: 3, title: "Jesus é negado por Pedro", meditation: "Enquanto Jesus sofre, Pedro diz: 'Não conheço este homem!'. Ao cantar do galo, Jesus volta-Se e olha para Pedro. Não é um olhar de condenação, mas de uma compaixão que penetra a alma. Pedro recorda-se das palavras do Mestre e chora amargamente.", affections: "Meu Jesus, olhai para mim como olhastes para Pedro! Que esse olhar de amor atravesse a minha alma e me faça chorar todos os meus pecados com um verdadeiro arrependimento." },
+            { id: 11, time: 4, title: "O Sinédrio entrega Jesus à morte", meditation: "Ao romper da aurora, o conselho reúne-se e confirma a sentença. Jesus é levado a Pilatos, com as mãos atadas, como um criminoso público. Vede como Ele caminha com modéstia divina, ignorando os gritos de ódio. Ele é o Cordeiro de Deus levado ao matadouro.", affections: "Jesus, meu Rei, Vós sois expulso da Vossa própria cidade por aqueles que deveriam Vos amar. Vinde habitar no meu coração, onde desejo Vos acolher com todo o meu afeto e gratidão." },
+            { id: 12, time: 5, title: "Jesus é conduzido a Pilatos", meditation: "Pilatos interroga Jesus e reconhece Sua inocência. 'Não encontro n'Ele crime algum'. Mas, para não desagradar ao povo, procura meios de Se livrar da responsabilidade. Jesus permanece em paz, ensinando-nos que a verdadeira justiça vem de Deus.", affections: "Ó Verdade Infinita, que por mim sois julgada como mentira! Eu creio em Vós, eu espero em Vós, eu Vos amo. Sede Vós o único caminho da minha vida e o guia seguro dos meus passos." },
+            { id: 13, time: 6, title: "Jesus é desprezado por Herodes", meditation: "Herodes esperava ver algum milagre, mas Jesus guarda um silêncio absoluto. Desprezado, Herodes faz com que O vistam com uma túnica branca, tratando-O como um louco. Jesus aceita ser tomado por louco por nosso amor, para nos dar a verdadeira sabedoria.", affections: "Meu Jesus, por amor a mim Vós quisestes passar por louco perante Herodes. Ó Sabedoria eterna, dai-me a graça de desprezar as honras do mundo e de buscar apenas a glória da Vossa cruz." },
+            { id: 14, time: 7, title: "Herodes devolve Jesus a Pilatos", meditation: "Jesus volta para o pretório, exausto sob insultos. Pilatos dá a escolher: 'Quem quereis que solte: Barrabás ou Jesus?'. E o povo ruge: 'Barrabás!'. Vede o Salvador colocado abaixo de um assassino. Quantas vezes preferimos nossas paixões à amizade divina?", affections: "Ó meu amado Jesus, quanto dói ver-Vos trocado por um Barrabás! Eu Vos peço perdão por todas as vezes que escolhi a criatura em vez do Criador. De hoje em diante, só a Vós eu escolho." },
+            { id: 15, time: 8, title: "Jesus é flagelado", meditation: "Então Pilatos tomou a Jesus e mandou-O flagelar. Os carrascos despem-No e O atam à coluna. Começa o suplício: os açoites dilaceram a carne imaculada de Jesus. O Sangue corre em abundância. 'Ele foi ferido pelos nossos crimes'. Ele se torna uma só chaga por nós.", affections: "Ó meu Jesus, as minhas sensualidades foram os açoites que rasgaram a Vossa carne divina. Eu Vos peço perdão e prometo, com a Vossa ajuda, mortificar os meus sentidos para Vos consolar." },
+            { id: 16, time: 9, title: "Jesus é coroado de espinhos", meditation: "Os soldados tecem uma coroa de espinhos e a cravam com força na cabeça de Jesus. Dão-Lhe um cetro de cana e um manto de púrpura velha. Pilatos apresenta-O: 'Ecce Homo - Eis o Homem'. Vede o vosso Rei, coroado de dores, mas cheio de majestade.", affections: "Meu Rei e meu Deus, coroado de dores por causa dos meus maus pensamentos! Arrancai do meu coração todo o orgulho e fazei que eu viva sempre sob o Vosso domínio de amor." },
+            { id: 17, time: 10, title: "Jesus é condenado à morte", meditation: "A multidão grita: 'Crucifica-O!'. Pilatos lava as mãos e pronuncia a sentença de morte. Jesus não reclama, beija a cruz que Lhe é apresentada, pois nela vê o altar de Seu sacrifício. Ele aceita a morte temporal para nos livrar da morte eterna.", affections: "Ó Jesus, Vós aceitais a morte para que eu não morra eternamente. Eu beijo essa sentença de amor e Vos ofereço a minha vida para que eu possa viver e morrer em Vossa santa graça." },
+            { id: 18, time: 11, title: "Jesus recebe a cruz", meditation: "Jesus toma a cruz sobre os Seus ombros chagados. Ele caminha para o Calvário, exausto e cambaleante sob o peso medonho do madeiro e das nossas culpas. Cada passo é um suspiro de amor pela salvação de cada alma. Ele sobe ao Gólgota para morrer por ti.", affections: "Meu querido Salvador, eu quero carregar a minha cruz junto convosco. Não permitais que eu murmure nas provações, mas que eu as abrace com o mesmo amor com que abraçastes a Vossa." },
+            { id: 19, time: 12, title: "Jesus é crucificado", meditation: "Chegado ao cimo, Jesus é estendido sobre a cruz. Ouvem-se as marteladas que fixam Seus pés e mãos. A cruz é levantada e Jesus fica suspenso entre o céu e a terra. 'Pai, perdoa-lhes, porque não sabem o que fazem'. O Sangue jorra para selar a paz.", affections: "Ó meu Jesus, pregado na cruz por meu amor! Cravai o meu coração junto às Vossas chagas, para que eu nunca mais me afaste de Vós e que os meus desejos sejam apenas os Vossos." },
+            { id: 20, time: 13, title: "Jesus converte o bom ladrão", meditation: "Mesmo na agonia, Jesus exerce Sua misericórdia. Ouve o pedido do ladrão arrependido: 'Senhor, lembra-Te de mim'. E responde: 'Hoje mesmo estarás comigo no Paraíso'. Vede como o Coração de Jesus está aberto para acolher o pecador penitente.", affections: "Jesus, meu único bem, lembrai-Vos de mim quando eu estiver na minha agonia final. Abri-me as portas da Vossa misericórdia e dizei-me também: 'Hoje estarás comigo no Paraíso'." },
+            { id: 21, time: 14, title: "Jesus nos deixa Maria por mãe", meditation: "Jesus olha para Maria e para João. 'Mulher, eis aí o teu filho'. No ápice da dor, Ele nos entrega Sua própria Mãe como nossa advogada e refúgio. Ele nos dá o que tem de mais precioso para que nunca nos sintamos sós no caminho da cruz.", affections: "Ó Mãe de dores e Mãe minha, acolhei-me sob o vosso manto! Jesus Vos deu a mim no alto da cruz; aceitai-me como vosso filho e ensinai-me a amar o Vosso Filho como vós O amastes." },
+            { id: 22, time: 15, title: "Jesus morre na Cruz", meditation: "Jesus clama com voz potente: 'Tudo está consumado'. Inclina a cabeça e entrega o espírito ao Pai. Naquele instante, o sol escurece, a terra treme e o véu do Templo se rasga. O Criador morreu para dar vida à criatura. Silêncio e adoração: Deus morreu por ti!", affections: "Meu Jesus, morto por mim! Eu beijo os Vossos pés feridos e Vos agradeço por esse sacrifício infinito. Eu Vos entrego o meu último suspiro e a minha alma inteira." },
+            { id: 23, time: 16, title: "Jesus é transpassado pela lança", meditation: "Para garantir a morte, um soldado abre o lado de Jesus com uma lança. Saem Sangue e Água, fontes de misericórdia para a Igreja. Vede esta ferida aberta: é a porta do Coração de Deus, o refúgio seguro onde as almas encontram descanso.", affections: "Ó Coração aberto de Jesus, morada de amor! Escondei-me dentro dessa chaga divina. Que o Sangue e a Água que dela jorram sejam a minha vida e a minha força para sempre." },
+            { id: 24, time: 17, title: "Jesus é sepultado", meditation: "O corpo de Jesus é envolvido num lençol limpo e levado ao sepulcro novo. Maria dá o último adeus e a pedra é selada. Tudo parece silêncio, mas na escuridão do túmulo reside a semente da Ressurreição. Espera agora com Maria o triunfo da vida.", affections: "Jesus, sepultado por meu amor, fazei do meu coração o Vosso túmulo limpo e novo. Que eu morra para o mundo para ressuscitar convosco na glória eterna. Amém." },
+        ];
+
+        const toRoman = (num) => {
+            const map = { 12: 'XII', 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI' };
+            let h = num % 12;
+            if (h === 0) h = 12;
+            return map[h];
+        };
+
+        const App = () => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [realTime, setRealTime] = useState(new Date());
+            const [isSynced, setIsSynced] = useState(false);
+            const [showDeathEffect, setShowDeathEffect] = useState(false);
+
+            const getSpiritualIndex = (hour) => {
+                if (hour >= 18) return hour - 18;
+                return hour + 6;
+            };
+
+            useEffect(() => {
+                lucide.createIcons();
+            }, []);
+
+            useEffect(() => {
+                // Efeitos Sensoriais baseados no índice atual
+                if (currentIndex === 18) { // 12h - Crucificação
+                    if ("vibrate" in navigator) {
+                        navigator.vibrate([100, 200, 100, 200, 100, 200, 100]);
+                    }
+                } else if (currentIndex === 21) { // 15h - Morte
+                    setShowDeathEffect(true);
+                    if ("vibrate" in navigator) {
+                        navigator.vibrate(3000);
+                    }
+                    const timer = setTimeout(() => setShowDeathEffect(false), 8000);
+                    return () => clearTimeout(timer);
+                } else {
+                    setShowDeathEffect(false);
+                }
+            }, [currentIndex]);
+
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    const now = new Date();
+                    setRealTime(now);
+                    if (isSynced) {
+                        setCurrentIndex(getSpiritualIndex(now.getHours()));
+                    }
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSynced]);
+
+            const nextHour = () => { setIsSynced(false); setCurrentIndex((prev) => (prev + 1) % 24); };
+            const prevHour = () => { setIsSynced(false); setCurrentIndex((prev) => (prev === 0 ? 23 : prev - 1)); };
+
+            const getRelativeData = (offset) => {
+                let idx = (currentIndex + offset) % 24;
+                if (idx < 0) idx += 24;
+                return PASSION_HOURS[idx];
+            };
+
+            const currentData = PASSION_HOURS[currentIndex];
+            const isDeathHour = currentIndex === 21;
+
+            return (
+                <div className={`min-h-screen transition-colors duration-[4000ms] ${isDeathHour ? 'bg-black' : 'bg-[#050505]'} text-stone-200 pb-16`}>
+                    
+                    {/* Impacto da Morte */}
+                    <div className={`fixed inset-0 z-50 pointer-events-none transition-opacity duration-[5000ms] bg-black ${showDeathEffect ? 'opacity-100' : 'opacity-0'}`}></div>
+
+                    {/* Cabeçalho */}
+                    <header className={`relative z-10 p-10 flex flex-col items-center transition-all duration-1000 ${showDeathEffect ? 'opacity-0 -translate-y-10' : 'opacity-100'}`}>
+                        <div className="border-t border-b border-amber-900/50 py-4 px-8 md:px-12 flex flex-col items-center gap-2">
+                            <h1 className="text-3xl md:text-5xl font-cinzel text-amber-600 font-black tracking-widest uppercase text-center drop-shadow-lg">
+                                Relógio da Paixão
+                            </h1>
+                            <p className="text-stone-500 text-[10px] md:text-xs font-serif italic tracking-[0.3em] uppercase">Santo Afonso Maria de Ligório</p>
+                        </div>
+                    </header>
+
+                    {/* Navegação Timeline */}
+                    <nav className={`relative z-10 max-w-2xl mx-auto px-6 mb-12 transition-all duration-1000 ${showDeathEffect ? 'opacity-0 scale-95' : 'opacity-100'}`}>
+                        <div className="flex flex-col items-center gap-6">
+                            <div className="bg-[#0f0f0f] border border-amber-900/20 rounded-3xl py-6 px-4 md:px-10 flex items-center justify-between w-full shadow-2xl backdrop-blur-md relative overflow-hidden">
+                                
+                                <div className="hidden md:flex flex-col items-center opacity-10 scale-75 cursor-pointer" onClick={() => setCurrentIndex((currentIndex - 2 + 24) % 24)}>
+                                    <span className="text-lg font-eb leading-tight">{toRoman(getRelativeData(-2).time)}</span>
+                                    <span className="text-[10px] font-eb">({getRelativeData(-2).time}h)</span>
+                                </div>
+
+                                <div className="flex flex-col items-center opacity-30 scale-90 cursor-pointer" onClick={prevHour}>
+                                    <span className="text-xl font-eb leading-tight">{toRoman(getRelativeData(-1).time)}</span>
+                                    <span className="text-[12px] font-eb">({getRelativeData(-1).time}h)</span>
+                                </div>
+
+                                <div className="flex items-center gap-4 md:gap-8 px-4">
+                                    <button onClick={prevHour} className="p-3 hover:bg-amber-950/20 rounded-full transition-all active:scale-90 text-amber-800 hover:text-amber-500">
+                                        <i data-lucide="chevron-left" style={{width: 32, height: 32}}></i>
+                                    </button>
+                                    
+                                    <div className="flex flex-col items-center min-w-[120px]">
+                                        <span className="text-[9px] text-amber-700 uppercase font-black tracking-widest mb-1">Hora Meditada</span>
+                                        <span className="text-5xl md:text-7xl font-eb font-black text-amber-500 drop-shadow-2xl leading-none">
+                                            {toRoman(currentData.time)}
+                                        </span>
+                                        <span className="text-lg md:text-xl font-eb text-amber-600/70 mt-1 font-bold">
+                                            ({currentData.time}h)
+                                        </span>
+                                    </div>
+
+                                    <button onClick={nextHour} className="p-3 hover:bg-amber-950/20 rounded-full transition-all active:scale-90 text-amber-800 hover:text-amber-500">
+                                        <i data-lucide="chevron-right" style={{width: 32, height: 32}}></i>
+                                    </button>
+                                </div>
+
+                                <div className="flex flex-col items-center opacity-30 scale-90 cursor-pointer" onClick={nextHour}>
+                                    <span className="text-xl font-eb leading-tight">{toRoman(getRelativeData(1).time)}</span>
+                                    <span className="text-[12px] font-eb">({getRelativeData(1).time}h)</span>
+                                </div>
+
+                                <div className="hidden md:flex flex-col items-center opacity-10 scale-75 cursor-pointer" onClick={() => setCurrentIndex((currentIndex + 2) % 24)}>
+                                    <span className="text-lg font-eb leading-tight">{toRoman(getRelativeData(2).time)}</span>
+                                    <span className="text-[10px] font-eb">({getRelativeData(2).time}h)</span>
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={() => setIsSynced(!isSynced)}
+                                className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[10px] font-black tracking-widest transition-all border ${
+                                    isSynced ? 'bg-amber-900/30 border-amber-600 text-amber-400' : 'bg-stone-900 border-stone-800 text-stone-500'
+                                }`}
+                            >
+                                <i data-lucide="refresh-cw" className={isSynced ? 'animate-spin-slow' : ''} style={{width: 14, height: 14}}></i>
+                                {isSynced ? 'MODO LITÚRGICO ATIVO' : 'MODO MANUAL'}
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Conteúdo Central */}
+                    <main className="max-w-4xl mx-auto px-6 relative z-10">
+                        <article className={`transition-all duration-[2000ms] ${isDeathHour ? 'bg-transparent border-none shadow-none' : 'bg-[#121212] rounded-2xl shadow-2xl border-t border-l border-amber-900/20'} overflow-hidden relative`}>
+                            
+                            {!isDeathHour && (
+                                <div className="absolute inset-4 border border-amber-900/10 pointer-events-none rounded-xl"></div>
+                            )}
+
+                            <div className={`p-8 md:p-16 ${isDeathHour ? 'text-center' : ''}`}>
+                                
+                                {(!isDeathHour || !showDeathEffect) && (
+                                    <div className="flex items-center gap-4 mb-8 opacity-30">
+                                        <i data-lucide="quote" className="text-amber-900 fill-current" style={{width: 32, height: 32}}></i>
+                                        <div className="h-[1px] flex-grow bg-gradient-to-r from-amber-900 to-transparent"></div>
+                                        <span className="text-[10px] text-amber-700 font-cinzel tracking-[0.5em] uppercase">Estação {currentData.id}</span>
+                                    </div>
+                                )}
+
+                                <h2 className={`font-eb leading-tight transition-all duration-[3000ms] ${
+                                    isDeathHour 
+                                    ? `text-amber-500 font-black uppercase tracking-widest drop-shadow-2xl ${showDeathEffect ? 'text-6xl md:text-9xl mb-12' : 'text-3xl md:text-5xl mb-10'}`
+                                    : 'text-3xl md:text-5xl mb-10 text-stone-100 font-bold'
+                                }`}>
+                                    {currentData.title}
+                                </h2>
+
+                                <div className={`space-y-8 transition-all duration-[2000ms] ${isDeathHour ? 'max-w-4xl mx-auto' : ''} ${showDeathEffect && isDeathHour ? 'opacity-0' : 'opacity-100'}`}>
+                                    <p className="leading-[1.8] font-eb italic text-stone-300 text-xl md:text-3xl">
+                                        {currentData.meditation}
+                                    </p>
+                                </div>
+
+                                {!isDeathHour && (
+                                    <div className="mt-12 pt-12 border-t border-amber-900/20">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <i data-lucide="heart" className="text-red-900 fill-red-900/20" style={{width: 24, height: 24}}></i>
+                                            <span className="text-[11px] text-amber-600 font-cinzel tracking-widest uppercase">Afetos e Súplicas</span>
+                                        </div>
+                                        <p className="text-amber-500 text-xl md:text-4xl font-eb italic leading-snug">
+                                            "{currentData.affections}"
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {!isDeathHour && (
+                                <footer className="px-10 py-8 bg-black/40 border-t border-amber-900/10 flex justify-center">
+                                    <span className="text-amber-900/40 font-eb italic text-sm tracking-widest uppercase text-center">
+                                        "Pela sua dolorosa Paixão, tende misericórdia de nós."
+                                    </span>
+                                </footer>
+                            )}
+                            
+                            {isDeathHour && (
+                                <footer className={`mt-32 flex flex-col items-center transition-opacity duration-1000 ${showDeathEffect ? 'opacity-100' : 'opacity-30'}`}>
+                                    <div className="w-1 h-40 bg-gradient-to-b from-amber-600 to-transparent mb-10 opacity-30"></div>
+                                    <span className="text-amber-600 font-eb text-lg md:text-2xl uppercase tracking-[1.5em] font-black animate-pulse">
+                                        Consummatum Est
+                                    </span>
+                                </footer>
+                            )}
+                        </article>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+
+        // Atualiza ícones após renderização
+        setTimeout(() => lucide.createIcons(), 500);
+    </script>
+</body>
+</html>
