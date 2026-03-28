@@ -3,354 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Cronograma - Grupo de Jovens</title>
-    
-    <!-- Tailwind CSS para Estilização -->
+    <title>Cronograma Pastoral Jovem 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome para Ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- SortableJS para o recurso de Arrastar e Soltar (Drag & Drop) -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
                     colors: {
                         brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            900: '#14532d',
+                            bg: '#F8FAFC',
+                            text: '#0F172A',
+                            primary: '#0369A1', // Azul (Doutrinário/Mistagógico)
+                            secondary: '#059669', // Verde (Humanidade)
+                            accent: '#D97706', // Laranja (Querigmático)
+                            contemplative: '#7C3AED', // Roxo (Contemplativo)
+                            mission: '#BE123C' // Vermelho (Missão)
                         }
                     }
                 }
             }
         }
     </script>
-
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        /* Estilos do Drag and Drop */
-        .sortable-ghost { opacity: 0.4; background-color: #f3f4f6; border: 2px dashed #9ca3af; }
-        .sortable-drag { cursor: grabbing !important; opacity: 0.9; }
-        .tema-card { cursor: grab; transition: transform 0.2s, box-shadow 0.2s; }
-        .tema-card:active { cursor: grabbing; }
-        .tema-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-
-        /* Cores das Tags dos Eixos */
-        .tag-querigmatico { background-color: #fee2e2; color: #991b1b; }
-        .tag-humanidade { background-color: #fef3c7; color: #92400e; }
-        .tag-mistagogico { background-color: #e0e7ff; color: #3730a3; }
-        .tag-doutrinario { background-color: #dbeafe; color: #1e40af; }
-        .tag-espiritual { background-color: #f3e8ff; color: #6b21a8; }
-        .tag-missao { background-color: #dcfce7; color: #166534; }
-
-        /* Estilos para Impressão/PDF */
-        @media print {
-            body { background-color: white; padding: 0; }
-            .no-print { display: none !important; }
-            #print-area { width: 100%; display: block; }
-            .tema-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; margin-bottom: 8px; }
-            #cronograma-lista { min-height: auto; border: none; background: transparent; padding: 0; }
-            .print-header { display: block !important; margin-bottom: 20px; text-align: center; }
-            .print-header h1 { font-size: 24px; font-weight: bold; }
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
         }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .card-enter {
+            animation: slideUp 0.4s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .badge-doutrinario, .badge-mistagogico { background-color: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+        .badge-humanidade { background-color: #D1FAE5; color: #059669; border: 1px solid #A7F3D0; }
+        .badge-saude-mental { background-color: #ECFDF5; color: #047857; border: 1px solid #6EE7B7; }
+        .badge-querigmatico { background-color: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; }
+        .badge-contemplativo { background-color: #EDE9FE; color: #7C3AED; border: 1px solid #DDD6FE; }
+        .badge-missao { background-color: #FFE4E6; color: #BE123C; border: 1px solid #FECDD3; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-gray-100 h-screen flex flex-col overflow-hidden">
+<body class="font-sans antialiased selection:bg-blue-200">
 
-    <!-- Print Header (Hidden on Screen) -->
-    <div class="print-header hidden">
-        <h1>Cronograma do Grupo de Jovens - 2026</h1>
-        <p>Lista de temas selecionados para os encontros.</p>
-        <hr class="mt-4 border-gray-300">
-    </div>
+    <!-- Chosen Palette: Cool Slate Backgrounds with Vibrant Semantic Accents (Blue, Green, Orange, Purple, Red) -->
+    <!-- Application Structure Plan: The SPA functions as an interactive dashboard. The primary update is consolidating 'Mental Health' as a subdivision of the 'Humanity' axis. The user filters by 'Humanidade' and sees all human formation themes, but specific mental health topics are visually tagged with a sub-badge. The Doughnut chart dynamically reflects the 5 main macro-axes (Contemplative, Humanity, Doctrinal, Kerygmatic, Mission) to show overall balance. Cards use CSS Grid for responsive organization. -->
+    <!-- Visualization & Content Choices: Dashboard Layout -> Goal: Organize -> Justification: Best for viewing and filtering a large database of 40 themes. Interactive Filters -> Goal: Organize/Explore -> Justification: Allows quick sorting by macro-axis. Doughnut Chart (Chart.js) -> Goal: Inform/Proportions -> Justification: Shows macro-axis balance; specifically shows Humanity as one solid block, simplifying the high-level view. Dual-Badge CSS Grid Cards -> Goal: Organize/Inform -> Justification: Presents the main axis (Humanity) and clearly flags the sub-axis (Mental Health) without clutter. NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
-    <!-- Header Principal da Aplicação -->
-    <header class="bg-slate-800 text-white shadow-md p-4 no-print shrink-0 z-10 relative">
-        <div class="container mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-calendar-days text-2xl text-yellow-400"></i>
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h1 class="text-xl font-bold">Painel Estratégico</h1>
-                    <p class="text-xs text-slate-300">Arraste os temas para montar o cronograma (Baseado no PDF e Ciclo 2026)</p>
+                    <h1 class="font-serif text-2xl md:text-3xl font-bold text-slate-800">&#10014;&#65039; Planejamento Jovem 2026</h1>
+                    <p class="text-sm text-slate-500">Cronograma atualizado com o eixo Contemplativo e subdivisão de Saúde Mental.</p>
                 </div>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition text-sm flex items-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-file-excel"></i> Gerar Planilha
-                </button>
-                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition text-sm flex items-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-file-pdf"></i> Salvar PDF
-                </button>
+                
+                <!-- Filtros -->
+                <div class="flex space-x-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
+                    <button class="filter-btn active px-4 py-2 rounded-full text-sm font-semibold bg-slate-800 text-white transition-colors" data-filter="Todos">Todos</button>
+                    <button class="filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors" data-filter="Contemplativo">Contemplativo</button>
+                    <button class="filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors" data-filter="Humanidade">Humanidade</button>
+                    <button class="filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors" data-filter="Doutrinário">Doutrinário/Mistagógico</button>
+                    <button class="filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors" data-filter="Querigmático">Querigmático</button>
+                    <button class="filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors" data-filter="Missão">Ação Social</button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 overflow-hidden container mx-auto max-w-7xl p-4 flex flex-col md:flex-row gap-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
         
-        <!-- Lado Esquerdo: Banco de Temas (No Print) -->
-        <section class="w-full md:w-1/2 flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-200 no-print">
-            <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-xl shrink-0">
-                <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-boxes-stacked mr-2 text-indigo-600"></i> Banco de Temas</h2>
-                <p class="text-xs text-gray-500 mt-1">Navegue pelas abas e arraste para o lado direito.</p>
+        <!-- Sidebar Esquerda (Gráfico e Contexto) -->
+        <aside class="w-full lg:w-1/3 flex flex-col gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="font-serif text-xl font-bold mb-2">Equilíbrio dos Macro-Eixos</h2>
+                <p class="text-sm text-slate-600 mb-4">A distribuição visual dos 40 encontros propostos. Note que o eixo 'Humanidade' engloba tanto a formação relacional geral quanto a Saúde Mental.</p>
+                <div class="chart-container">
+                    <canvas id="axisChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-brand-secondary p-6 rounded-2xl shadow-sm text-white">
+                <h3 class="font-bold text-lg mb-2">&#129504; Foco em Saúde Mental</h3>
+                <p class="text-sm text-green-100 leading-relaxed">
+                    Dentro do eixo <strong>Humanidade</strong>, você notará uma etiqueta especial indicando os temas focados em Saúde Mental. Isso garante a visão integral do jovem (corpo, mente e espírito) sem criar uma fragmentação desnecessária da Doutrina.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Área Principal (Cards de Temas) -->
+        <section class="w-full lg:w-2/3">
+            <div id="themes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Cards injetados via JS -->
             </div>
             
-            <div class="flex-1 overflow-y-auto p-4 bg-gray-50" id="banco-temas-container">
-                <!-- Eixo Querigmático -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-gray-700 mb-2 border-b pb-1 text-sm uppercase"><i class="fa-solid fa-fire text-red-600 mr-1"></i> Querigmático</h3>
-                    <div id="lista-querigmatico" class="sortable-list space-y-2 min-h-[60px] bg-white p-2 rounded-lg border border-dashed border-gray-300">
-                        <!-- Itens gerados via JS -->
-                    </div>
-                </div>
-
-                <!-- Eixo Humanidade -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-gray-700 mb-2 border-b pb-1 text-sm uppercase"><i class="fa-solid fa-users text-amber-600 mr-1"></i> Humanidade</h3>
-                    <div id="lista-humanidade" class="sortable-list space-y-2 min-h-[60px] bg-white p-2 rounded-lg border border-dashed border-gray-300"></div>
-                </div>
-
-                <!-- Eixo Mistagógico -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-gray-700 mb-2 border-b pb-1 text-sm uppercase"><i class="fa-solid fa-droplet text-indigo-600 mr-1"></i> Mistagógico</h3>
-                    <div id="lista-mistagogico" class="sortable-list space-y-2 min-h-[60px] bg-white p-2 rounded-lg border border-dashed border-gray-300"></div>
-                </div>
-
-                <!-- Eixo Doutrinário -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-gray-700 mb-2 border-b pb-1 text-sm uppercase"><i class="fa-solid fa-book-open text-blue-600 mr-1"></i> Doutrinário / Apologética</h3>
-                    <div id="lista-doutrinario" class="sortable-list space-y-2 min-h-[60px] bg-white p-2 rounded-lg border border-dashed border-gray-300"></div>
-                </div>
-
-                <!-- Eixo Espiritual -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-gray-700 mb-2 border-b pb-1 text-sm uppercase"><i class="fa-solid fa-hands-praying text-purple-600 mr-1"></i> Espiritual / Adoração</h3>
-                    <div id="lista-espiritual" class="sortable-list space-y-2 min-h-[60px] bg-white p-2 rounded-lg border border-dashed border-gray-300"></div>
-                </div>
-
-                <!-- Eixo Missão / Alternativo -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-gray-700 mb-2 border-b pb-1 text-sm uppercase"><i class="fa-solid fa-rocket text-green-600 mr-1"></i> Missão / Formatos Alternativos</h3>
-                    <div id="lista-missao" class="sortable-list space-y-2 min-h-[60px] bg-white p-2 rounded-lg border border-dashed border-gray-300"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Lado Direito: Cronograma Selecionado -->
-        <section class="w-full md:w-1/2 flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-200" id="print-area">
-            <div class="p-4 border-b border-gray-200 bg-slate-50 rounded-t-xl shrink-0 flex justify-between items-center">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-list-check mr-2 text-slate-600"></i> Seu Cronograma</h2>
-                    <p class="text-xs text-gray-500 mt-1">Solte os temas aqui. (<span id="contador-temas">0</span> temas selecionados)</p>
-                </div>
-                <button onclick="limparCronograma()" class="text-xs text-red-500 hover:text-red-700 bg-red-50 px-3 py-1.5 rounded-md no-print transition-colors font-semibold border border-red-200 hover:border-red-300">
-                    <i class="fa-solid fa-trash-can"></i> Limpar Tudo
-                </button>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto p-4 bg-slate-100">
-                <div id="cronograma-lista" class="sortable-list min-h-[300px] h-full rounded-xl border-2 border-dashed border-slate-300 p-2 pb-10 flex flex-col gap-2">
-                    <!-- Onde os itens serão dropados -->
-                    <div class="flex items-center justify-center h-full text-gray-400 no-print empty-message transition-opacity" style="pointer-events: none;">
-                        <div class="text-center">
-                            <i class="fa-solid fa-arrow-turn-down text-4xl mb-3 text-slate-300"></i>
-                            <p class="font-medium text-slate-500">Arraste os encontros para cá</p>
-                        </div>
-                    </div>
-                </div>
+            <div id="empty-state" class="hidden text-center py-20">
+                <div class="text-5xl mb-4">&#128269;</div>
+                <h3 class="text-xl font-bold text-slate-700">Nenhum tema encontrado</h3>
+                <p class="text-slate-500">Tente selecionar outro filtro de eixo.</p>
             </div>
         </section>
 
     </main>
 
-    <!-- Base de Dados Inicial em Javascript -->
     <script>
-        // Dados extraídos do PDF e do levantamento de 2026, separados pelos Eixos antigos
-        const bancoDeDados = [
-            { id: 'q1', eixo: 'Querigmático', tema: 'O Amor que Constrange', desc: 'O amor incondicional de Deus e o Querigma básico. Dinâmica: O espelho.', classe: 'tag-querigmatico' },
-            { id: 'q2', eixo: 'Querigmático', tema: 'A Cruz e Eu', desc: 'O sentido do sofrimento e a salvação na cruz. Dinâmica: Prego e Martelo.', classe: 'tag-querigmatico' },
-            { id: 'q3', eixo: 'Querigmático', tema: 'Quem é Jesus para mim hoje?', desc: 'Renovar a fé dos antigos e acolher os novos com o Primeiro Anúncio.', classe: 'tag-querigmatico' },
+        // BANCO DE DADOS DOS TEMAS (Inéditos, evitando repetição 24/25)
+        const themesData = [
+            // EIXO CONTEMPLATIVO (Novo Macro-eixo)
+            { week: 1, axis: "Contemplativo", badge: "badge-contemplativo", title: "O Deserto e o Silêncio", desc: "Como ouvir a voz de Deus na era do ruído digital e da dopamina rápida (TikTok/Reels).", dynamic: "15 min de silêncio absoluto na igreja com um diário espiritual guiado." },
+            { week: 2, axis: "Contemplativo", badge: "badge-contemplativo", title: "Orar com a Beleza (Visio Divina)", desc: "A via pulchritudinis (via da beleza). Como a arte sagrada eleva a alma a Deus.", dynamic: "Projeção de obras de arte clássicas (ex: O Filho Pródigo) com música instrumental e meditação." },
+            { week: 3, axis: "Contemplativo", badge: "badge-contemplativo", title: "Noite de Taizé", desc: "A força da oração repetitiva, meditativa e do abandono em Deus.", dynamic: "Encontro com luzes apagadas, velas, ícones no chão e cânticos curtos (estilo Taizé)." },
+            { week: 4, axis: "Contemplativo", badge: "badge-contemplativo", title: "A Noite Escura da Alma", desc: "O que fazer quando a oração fica seca e parece que Deus não escuta? (S. João da Cruz).", dynamic: "Partilha no escuro (anonimato) sobre aridez espiritual e frustrações." },
+            { week: 5, axis: "Contemplativo", badge: "badge-contemplativo", title: "Lectio Divina Prática", desc: "Ensinando o jovem a mastigar a Palavra de Deus em 4 passos práticos.", dynamic: "Oficina prática: divisão em pequenos grupos para aplicar a Lectio em um Evangelho dominical." },
             
-            { id: 'h1', eixo: 'Humanidade', tema: 'Ansiedade e a Paz de Cristo', desc: 'Saúde mental na juventude e a confiança no cuidado de Deus. Dinâmica do Balão.', classe: 'tag-humanidade' },
-            { id: 'h2', eixo: 'Humanidade', tema: 'Amizades que elevam', desc: 'Relacionamentos e influências. Dinâmica da teia da vida.', classe: 'tag-humanidade' },
-            { id: 'h3', eixo: 'Humanidade', tema: 'Qual é o meu chamado?', desc: 'Vocação ampla (religiosa, profissional, matrimonial). Talk Show de testemunhos.', classe: 'tag-humanidade' },
-            { id: 'h4', eixo: 'Humanidade', tema: 'O Peso do Sorriso e Burnout', desc: 'A cultura do perfeccionismo e a prevenção do esgotamento nos jovens.', classe: 'tag-humanidade' },
-            { id: 'h5', eixo: 'Humanidade', tema: 'Cura das Feridas e o Perdão', desc: 'Como lidar com o luto, decepções e o desafio de honrar pai e mãe.', classe: 'tag-humanidade' },
-            
-            { id: 'm1', eixo: 'Mistagógico', tema: 'A Água Viva (Batismo)', desc: 'O Sacramento do Batismo: o que muda em nós? Dinâmica de renovação.', classe: 'tag-mistagogico' },
-            { id: 'm2', eixo: 'Mistagógico', tema: 'O Pão dos Anjos', desc: 'Milagres Eucarísticos e a Presença Real (Carlo Acutis). Adoração guiada.', classe: 'tag-mistagogico' },
-            { id: 'm3', eixo: 'Mistagógico', tema: 'A Liturgia e o Sagrado', desc: 'O que acontece no altar e como participar melhor da Santa Missa.', classe: 'tag-mistagogico' },
-            { id: 'm4', eixo: 'Mistagógico', tema: 'Os Sacramentos Faltantes', desc: 'Compreendendo a profundidade da Unção dos Enfermos e o Sacramento da Ordem.', classe: 'tag-mistagogico' },
+            // EIXO HUMANIDADE (Com subdivisão em Saúde Mental e Geral)
+            { week: 6, axis: "Humanidade", subAxis: "Saúde Mental", badge: "badge-humanidade", title: "Ansiedade e a Providência", desc: "O mal do século sob a ótica da fé. A diferença entre o cuidado prudente e o desespero ansioso.", dynamic: "Painel tipo Talk-Show com um Psicólogo Católico convidado." },
+            { week: 7, axis: "Humanidade", subAxis: "Saúde Mental", badge: "badge-humanidade", title: "O Demônio do Meio-Dia", desc: "A Acídia: a preguiça espiritual e o tédio das coisas divinas que levam à tristeza profunda.", dynamic: "Auditoria de tempo: preencher um gráfico pizza mudo com as horas gastas na semana vs. tempo para a alma." },
+            { week: 8, axis: "Humanidade", subAxis: "Saúde Mental", badge: "badge-humanidade", title: "Autoimagem e Redes Sociais", desc: "Criados à Imagem de Deus vs. A ditadura dos filtros e da comparação no Instagram.", dynamic: "Dinâmica do Espelho na caixa: ver a obra-prima de Deus e escrever afirmações cristãs." },
+            { week: 9, axis: "Humanidade", subAxis: "Saúde Mental", badge: "badge-humanidade", title: "Gestão das Paixões (Emoções)", desc: "Ira, Tristeza e Medo não são pecados em si. Como ordená-las para o bem (S. Tomás de Aquino).", dynamic: "Estudo de casos anônimos reais lidando com explosões de raiva ou medo paralisante." },
+            { week: 10, axis: "Humanidade", subAxis: "Saúde Mental", badge: "badge-humanidade", title: "O Luto e as Perdas", desc: "Como um cristão lida com a morte de parentes, fim de namoros longos ou perda de oportunidades.", dynamic: "Ação simbólica: enterrar sementes (perdas) em um vaso, simbolizando a esperança da ressurreição." },
+            { week: 11, axis: "Humanidade", subAxis: "Geral", badge: "badge-humanidade", title: "Amizades Virtuosas vs Tóxicas", desc: "Como identificar limites saudáveis nos relacionamentos sem perder a caridade e o respeito.", dynamic: "Júri Simulado: julgar situações cotidianas de amizade baseando-se no limite moral." },
+            { week: 12, axis: "Humanidade", subAxis: "Geral", badge: "badge-humanidade", title: "A Cultura do Cancelamento", desc: "O 8º Mandamento (Não levantar falso testemunho) aplicado às fofocas e 'hates' na internet.", dynamic: "Telefone sem fio complexo para mostrar como a fofoca distorce e destrói vidas." },
+            { week: 13, axis: "Humanidade", subAxis: "Geral", badge: "badge-humanidade", title: "O Cristão e o Dinheiro", desc: "Consumismo, inveja, apostas online (bets) e o apego aos bens materiais na juventude.", dynamic: "Leilão de Valores: usar dinheiro falso para 'comprar' bens e analisar as escolhas do grupo." },
+            { week: 14, axis: "Humanidade", subAxis: "Geral", badge: "badge-humanidade", title: "Doutrina Social da Igreja (DSI)", desc: "Opção pelos pobres, dignidade do trabalho e a caridade que vai além de dar esmola.", dynamic: "Jogo da Vida Injusto: um jogo de tabuleiro com regras desiguais para gerar debate social." },
 
-            { id: 'd1', eixo: 'Doutrinário', tema: 'E o Verbo se fez carne', desc: 'A Bíblia: Como ler, entender e rezar com a Palavra. Oficina de Lectio Divina.', classe: 'tag-doutrinario' },
-            { id: 'd2', eixo: 'Doutrinário', tema: 'Roda Viva: Pergunte ao Padre', desc: 'Apologética: Responder dúvidas anônimas polêmicas (sexualidade, dogmas, etc).', classe: 'tag-doutrinario' },
-            { id: 'd3', eixo: 'Doutrinário', tema: 'Escatologia (Os Novíssimos)', desc: 'Donde há de vir julgar os vivos e os mortos: Céu, Purgatório e Inferno.', classe: 'tag-doutrinario' },
-            { id: 'd4', eixo: 'Doutrinário', tema: 'Os Mandamentos e a Defesa da Vida', desc: 'Foco no 5º e 8º mandamento: Aborto, eutanásia, relativismo e Fake News.', classe: 'tag-doutrinario' },
-            { id: 'd5', eixo: 'Doutrinário', tema: 'As Virtudes e a DSI', desc: 'Virtudes Cardeais vs Teologais, e Doutrina Social: O cristão e a política.', classe: 'tag-doutrinario' },
+            // EIXO DOUTRINÁRIO / MISTAGÓGICO
+            { week: 15, axis: "Doutrinário", badge: "badge-doutrinario", title: "Fé e Ciência: O Mito do Conflito", desc: "A Igreja contra a evolução? Galileu? Desmistificando o conflito entre razão e fé.", dynamic: "Debate 'Mitos e Verdades' estilo Quiz com prêmios simbólicos." },
+            { week: 16, axis: "Doutrinário", badge: "badge-doutrinario", title: "Nova Era e Ocultismo", desc: "Signos, Horóscopo, Cristais vs. O Primeiro Mandamento e a Soberania de Cristo.", dynamic: "Fogueira Simbólica: escrever apegos supersticiosos e descartá-los num cesto." },
+            { week: 17, axis: "Doutrinário", badge: "badge-doutrinario", title: "Bioética e o Dom da Vida", desc: "A visão da Igreja sobre o início e o fim da vida (Aborto, Eutanásia, Reprodução).", dynamic: "Análise de notícias polêmicas atuais à luz do Catecismo." },
+            { week: 18, axis: "Doutrinário", badge: "badge-doutrinario", title: "Apologética Prática", desc: "Diferenças fundamentais entre Catolicismo e Protestantismo (Sola Scriptura, Papado).", dynamic: "Roleplay: O coordenador finge ser um questionador e os jovens usam a Bíblia para responder." },
+            { week: 19, axis: "Doutrinário", badge: "badge-doutrinario", title: "História da Igreja", desc: "Como defender a Igreja nas críticas sobre Inquisição, Cruzadas e riquezas do Vaticano.", dynamic: "Caixa de Perguntas Polêmicas: tirar uma pergunta da urna e responder com fatos." },
+            { week: 20, axis: "Doutrinário", subAxis: "Mistagógico", badge: "badge-mistagogico", title: "Sacramentais na Prática", desc: "Diferença entre superstição e fé: como usar Água Benta, Escapulário, Medalhas.", dynamic: "Apresentação física e oração de bênção para quem trouxer seus terços/medalhas." },
+            { week: 21, axis: "Doutrinário", subAxis: "Mistagógico", badge: "badge-mistagogico", title: "Arquitetura Sagrada", desc: "A teologia do espaço físico: formato de cruz, Ambão, Nave, Presbitério.", dynamic: "Encontro Itinerante: Caminhar por dentro da matriz explicando cada elemento litúrgico." },
+            { week: 22, axis: "Doutrinário", subAxis: "Mistagógico", badge: "badge-mistagogico", title: "Unção dos Enfermos", desc: "O sentido redentor da dor e o Sacramento de cura espiritual e preparo.", dynamic: "Testemunho de um paroquiano que venceu ou suporta uma doença através da fé." },
+            { week: 23, axis: "Doutrinário", badge: "badge-doutrinario", title: "O Purgatório e a Misericórdia", desc: "O hospital de almas, o juízo particular, indulgências e oração pelos mortos.", dynamic: "Oração sufragânea coletiva na capela ou no cemitério local." },
 
-            { id: 'e1', eixo: 'Espiritual', tema: 'Vem, Espírito Santo', desc: 'Os dons e frutos do Espírito Santo no dia a dia. Dinâmica de oração pelos dons.', classe: 'tag-espiritual' },
-            { id: 'e2', eixo: 'Espiritual', tema: 'Oficina de Arte e Oração', desc: 'Formato terapêutico/Visio Divina: expressar o que Deus fala através da arte.', classe: 'tag-espiritual' },
-            { id: 'e3', eixo: 'Espiritual', tema: 'A Oração do Coração', desc: 'A importância do silêncio e o combate à superficialidade das redes sociais.', classe: 'tag-espiritual' },
-            { id: 'e4', eixo: 'Espiritual', tema: 'O Pai-Nosso Profundo', desc: 'Aprofundamento teológico de cada uma das 7 petições da oração.', classe: 'tag-espiritual' },
-            { id: 'e5', eixo: 'Espiritual', tema: 'Os Santos e a Humildade', desc: 'Modelos de vida no Céu e a humildade como antídoto para o narcisismo.', classe: 'tag-espiritual' },
+            // EIXO QUERIGMÁTICO
+            { week: 24, axis: "Querigmático", badge: "badge-querigmatico", title: "O Jovem Rico", desc: "O que me falta para entregar tudo a Jesus? O perigo do comodismo religioso.", dynamic: "A Mala de Viagem: escrever do que precisa abrir mão e colocar numa mala." },
+            { week: 25, axis: "Querigmático", badge: "badge-querigmatico", title: "A Mulher Samaritana", desc: "As nossas sedes infinitas (prazer, fama, likes) e os poços errados.", dynamic: "Dinâmica da Água: tentar encher um copo furado (o mundo) vs um vaso intacto." },
+            { week: 26, axis: "Querigmático", badge: "badge-querigmatico", title: "Zaqueu e a Restituição", desc: "O encontro com Cristo que gera mudança prática e reparação dos erros.", dynamic: "Dinâmica da Árvore: o que nos impede de 'ver Jesus' e como subir na graça." },
+            { week: 27, axis: "Querigmático", badge: "badge-querigmatico", title: "A Ovelha Perdida (Resgate)", desc: "A responsabilidade pelos nossos amigos do grupo que se afastaram da Igreja.", dynamic: "Cartões de Resgate: adotar o nome de um amigo afastado para rezar e fazer contato." },
+            { week: 28, axis: "Querigmático", badge: "badge-querigmatico", title: "Testemunho Vivo", desc: "Como pregar o Evangelho na faculdade/trabalho sem necessariamente dar sermões.", dynamic: "Oficina: treinar contar sua história de fé de forma rápida (pitch de 2 minutos)." },
 
-            { id: 'a1', eixo: 'Missão', tema: 'Luau Eucarístico', desc: 'Encontro externo (praça/pátio) com música acústica, fogueira e adoração.', classe: 'tag-missao' },
-            { id: 'a2', eixo: 'Missão', tema: 'Escape Room Bíblico', desc: 'Jogo de pistas e enigmas baseados na bíblia. Foco em trabalho em equipe.', classe: 'tag-missao' },
-            { id: 'a3', eixo: 'Missão', tema: 'Missão Mão na Massa', desc: 'Ação Social: Fazer refeições para rua, triagem de doações, sem pregação teórica.', classe: 'tag-missao' },
-            { id: 'a4', eixo: 'Missão', tema: 'Cine-Pipoca e Fórum', desc: 'Evangelização da cultura: Assistir episódio cristão (The Chosen) e debater.', classe: 'tag-missao' },
-            { id: 'a5', eixo: 'Missão', tema: 'Ilhas de Interesse', desc: 'Especialização: Grupos simultâneos (Terço, Namoro, Redes). O jovem escolhe qual ir.', classe: 'tag-missao' },
-            { id: 'a6', eixo: 'Missão', tema: 'Experiência Nightfever', desc: 'Ação nas ruas para convidar jovens de fora a acender uma vela diante do Santíssimo.', classe: 'tag-missao' },
+            // MISSÃO / AÇÃO SOCIAL (Extra)
+            { week: "Extra 1", axis: "Missão", badge: "badge-missao", title: "Ação: Rota do Frio", desc: "Sair do salão e entregar alimento material e espiritual a pessoas em situação de rua.", dynamic: "Preparo coletivo à tarde e saída à noite em grupos com violão." },
+            { week: "Extra 2", axis: "Missão", badge: "badge-missao", title: "Ação: Visita a Asilo", desc: "Ouvir histórias, cantar e levar a alegria cristã aos idosos esquecidos.", dynamic: "Tarde recreativa com jogos de tabuleiro, música e lanche comunitário." },
+            { week: "Extra 3", axis: "Missão", badge: "badge-missao", title: "Ação: Evangelização de Praça", desc: "Superar o respeito humano e falar de Deus aos transeuntes em espaço público.", dynamic: "Distribuição de 'bilhetes de Deus', terços ou abraços grátis em local movimentado." },
+            { week: "Extra 4", axis: "Missão", badge: "badge-missao", title: "Ação: Mutirão na Paróquia", desc: "Zelo pela casa do Pai. Trabalho braçal em favor da comunidade (limpeza, jardim).", dynamic: "Manhã de sábado de faxina/manutenção ouvindo louvores, seguida de almoço." }
         ];
 
-        // Função para criar o HTML do Card
-        function criarCard(item) {
-            return `
-                <div class="tema-card bg-white p-3 rounded shadow-sm flex flex-col gap-1 border border-gray-200 hover:border-blue-300" data-id="${item.id}" data-eixo="${item.eixo}" data-tema="${item.tema}" data-desc="${item.desc}">
-                    <div class="flex justify-between items-start">
-                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${item.classe}">${item.eixo}</span>
-                        <i class="fa-solid fa-grip-vertical text-gray-300 no-print"></i>
-                    </div>
-                    <h4 class="font-bold text-gray-800 text-sm mt-1">${item.tema}</h4>
-                    <p class="text-xs text-gray-500 leading-tight">${item.desc}</p>
-                </div>
-            `;
+        // LOGIC FOR RENDERING AND FILTERING
+        const grid = document.getElementById('themes-grid');
+        const emptyState = document.getElementById('empty-state');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        let currentChart = null;
+
+        function processLabel(labelStr) {
+            if (labelStr.length <= 16) return labelStr;
+            let wordsArray = labelStr.split(' ');
+            let linesArray = [];
+            let cLine = '';
+            for (let w of wordsArray) {
+                if ((cLine + w).length > 16) {
+                    if (cLine) linesArray.push(cLine.trim());
+                    cLine = w + ' ';
+                } else {
+                    cLine += w + ' ';
+                }
+            }
+            if (cLine) linesArray.push(cLine.trim());
+            return linesArray;
         }
 
-        // Renderizar listas iniciais
-        function renderizarBanco() {
-            const listas = {
-                'Querigmático': document.getElementById('lista-querigmatico'),
-                'Humanidade': document.getElementById('lista-humanidade'),
-                'Mistagógico': document.getElementById('lista-mistagogico'),
-                'Doutrinário': document.getElementById('lista-doutrinario'),
-                'Espiritual': document.getElementById('lista-espiritual'),
-                'Missão': document.getElementById('lista-missao')
+        const commonTooltipConfig = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) return label.join(' ');
+                    return label;
+                }
+            }
+        };
+
+        function updateChart(filteredData) {
+            const counts = {
+                "Contemplativo": 0,
+                "Humanidade": 0,
+                "Doutrinário": 0,
+                "Querigmático": 0,
+                "Missão": 0
             };
 
-            bancoDeDados.forEach(item => {
-                if(listas[item.eixo]) {
-                    listas[item.eixo].innerHTML += criarCard(item);
+            filteredData.forEach(theme => {
+                if(counts[theme.axis] !== undefined) {
+                    counts[theme.axis]++;
                 }
             });
-        }
 
-        // Inicializar aplicação
-        document.addEventListener('DOMContentLoaded', () => {
-            renderizarBanco();
+            const dataValues = [counts["Contemplativo"], counts["Humanidade"], counts["Doutrinário"], counts["Querigmático"], counts["Missão"]];
+            const labels = ["Contemplativo", "Humanidade (Geral + Saúde)", "Doutrinário/Mist.", "Querigmático", "Ação Social"].map(processLabel);
 
-            // Configuração do SortableJS (Drag and Drop)
-            const listasIds = ['lista-querigmatico', 'lista-humanidade', 'lista-mistagogico', 'lista-doutrinario', 'lista-espiritual', 'lista-missao', 'cronograma-lista'];
-            
-            listasIds.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) {
-                    new Sortable(el, {
-                        group: 'shared', // Permite arrastar entre as listas
-                        animation: 150,
-                        ghostClass: 'sortable-ghost',
-                        dragClass: 'sortable-drag',
-                        onSort: atualizarInterface
-                    });
-                }
-            });
-        });
-
-        // Atualiza contadores e esconde mensagem de "Vazio"
-        function atualizarInterface() {
-            const cronogramaLista = document.getElementById('cronograma-lista');
-            const itensCronograma = cronogramaLista.querySelectorAll('.tema-card');
-            const mensagemVazia = cronogramaLista.querySelector('.empty-message');
-            
-            // Atualizar contador
-            document.getElementById('contador-temas').innerText = itensCronograma.length;
-
-            // Mostrar/Ocultar mensagem "Arraste aqui"
-            if (itensCronograma.length > 0) {
-                if(mensagemVazia) mensagemVazia.style.display = 'none';
-            } else {
-                if(mensagemVazia) mensagemVazia.style.display = 'flex';
+            if (currentChart) {
+                currentChart.destroy();
             }
-        }
 
-        // Limpar Cronograma (Volta os cards para suas listas originais)
-        function limparCronograma() {
-            if(!confirm("Tem certeza que deseja limpar todo o cronograma e voltar os temas para o banco?")) return;
-            
-            const cronogramaLista = document.getElementById('cronograma-lista');
-            const itens = cronogramaLista.querySelectorAll('.tema-card');
-            
-            itens.forEach(item => {
-                const eixo = item.getAttribute('data-eixo');
-                let listaAlvo = null;
-                
-                switch(eixo) {
-                    case 'Querigmático': listaAlvo = document.getElementById('lista-querigmatico'); break;
-                    case 'Humanidade': listaAlvo = document.getElementById('lista-humanidade'); break;
-                    case 'Mistagógico': listaAlvo = document.getElementById('lista-mistagogico'); break;
-                    case 'Doutrinário': listaAlvo = document.getElementById('lista-doutrinario'); break;
-                    case 'Espiritual': listaAlvo = document.getElementById('lista-espiritual'); break;
-                    case 'Missão': listaAlvo = document.getElementById('lista-missao'); break;
+            const ctx = document.getElementById('axisChart').getContext('2d');
+            currentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: ['#7C3AED', '#059669', '#0369A1', '#D97706', '#BE123C'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter' }, padding: 15, boxWidth: 12 }
+                        },
+                        tooltip: commonTooltipConfig
+                    }
                 }
-                
-                if(listaAlvo) listaAlvo.appendChild(item);
             });
-            
-            atualizarInterface();
         }
 
-        // Exportar para Excel (CSV)
-        function exportToCSV() {
-            const itens = document.querySelectorAll('#cronograma-lista .tema-card');
+        function renderCards(data) {
+            grid.innerHTML = '';
             
-            if (itens.length === 0) {
-                alert("Seu cronograma está vazio. Arraste alguns temas para a direita primeiro!");
+            if (data.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
                 return;
             }
 
-            // Cabeçalho do CSV
-            let csvContent = "Ordem;Eixo;Tema;Descricao\n";
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
 
-            // Dados
-            itens.forEach((item, index) => {
-                const eixo = item.getAttribute('data-eixo').replace(/;/g, ',');
-                const tema = item.getAttribute('data-tema').replace(/;/g, ',');
-                const desc = item.getAttribute('data-desc').replace(/;/g, ',');
+            data.forEach((theme, index) => {
+                const isExtra = theme.week.toString().includes('Extra');
+                const weekLabel = isExtra ? theme.week : `Semana ${theme.week}`;
                 
-                csvContent += `${index + 1};"${eixo}";"${tema}";"${desc}"\n`;
-            });
+                // Determina se deve renderizar o badge de saúde mental
+                let subBadgeHTML = '';
+                if (theme.subAxis === 'Saúde Mental') {
+                    subBadgeHTML = `<span class="text-[10px] uppercase font-bold px-2 py-1 rounded-full badge-saude-mental flex items-center gap-1">&#129504; Saúde Mental</span>`;
+                } else if (theme.subAxis === 'Mistagógico') {
+                    subBadgeHTML = `<span class="text-[10px] uppercase font-bold px-2 py-1 rounded-full badge-mistagogico flex items-center gap-1">&#128167; Mistagógico</span>`;
+                }
+                
+                const card = document.createElement('div');
+                card.className = `bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow card-enter flex flex-col h-full`;
+                card.style.animationDelay = `${index * 0.03}s`;
 
-            // Criar Blob com suporte a acentuação UTF-8 (BOM)
-            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            
-            // Para navegadores que suportam msSaveOrOpenBlob (IE)
-            if (navigator.msSaveBlob) {
-                navigator.msSaveBlob(blob, "cronograma_jovens_2026.csv");
-            } else {
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", "cronograma_jovens_2026.csv");
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url); // Liberar memória
-            }
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3 flex-wrap gap-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">${weekLabel}</span>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="text-[10px] uppercase font-bold px-2 py-1 rounded-full ${theme.badge}">${theme.axis}</span>
+                            ${subBadgeHTML}
+                        </div>
+                    </div>
+                    <h3 class="font-serif font-bold text-lg text-slate-800 mb-2">${theme.title}</h3>
+                    <p class="text-sm text-slate-600 flex-grow mb-4 leading-relaxed">${theme.desc}</p>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-auto">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm">&#9881;&#65039;</span>
+                            <span class="text-xs font-bold text-slate-700 uppercase">Dinâmica Proposta</span>
+                        </div>
+                        <p class="text-xs text-slate-600">${theme.dynamic}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
         }
+
+        // INIT
+        renderCards(themesData);
+        updateChart(themesData);
+
+        // EVENT LISTENERS
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update active state
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-slate-800', 'text-white');
+                    b.classList.add('bg-slate-100', 'text-slate-600');
+                });
+                e.target.classList.remove('bg-slate-100', 'text-slate-600');
+                e.target.classList.add('bg-slate-800', 'text-white');
+
+                const filterValue = e.target.getAttribute('data-filter');
+                
+                let filtered = themesData;
+                if (filterValue !== 'Todos') {
+                    if(filterValue === 'Doutrinário') {
+                         filtered = themesData.filter(t => t.axis === 'Doutrinário' || t.subAxis === 'Mistagógico');
+                    } else {
+                        filtered = themesData.filter(t => t.axis === filterValue);
+                    }
+                }
+
+                renderCards(filtered);
+                updateChart(filtered);
+            });
+        });
     </script>
 </body>
 </html>
