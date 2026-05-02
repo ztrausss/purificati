@@ -1,0 +1,400 @@
+```html
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Terço da Divina Misericórdia</title>
+    
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for JSX compilation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mercy: {
+                            crimson: '#dc2626', // Carmesim
+                            blue: '#60a5fa',    // Azul pálido/água
+                            darkbg: '#020617',  // Fundo super escuro
+                            card: '#0f172a',    // Fundo do card
+                            text: '#f8fafc',
+                            muted: '#94a3b8'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            color: #f8fafc;
+            overscroll-behavior-y: none; /* Previne o "pull-to-refresh" no mobile */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Fundo de raios sutis (carmesim e azul) inspirado na imagem de Jesus Misericordioso */
+        .mercy-rays {
+            background: 
+                radial-gradient(circle at top left, rgba(220, 38, 38, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at bottom right, rgba(96, 165, 250, 0.15) 0%, transparent 50%);
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+        }
+
+        .step-container {
+            min-height: 16rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="text-mercy-text antialiased min-h-[100dvh] flex flex-col">
+    <div class="mercy-rays"></div>
+    <div id="root" class="flex-1 w-full flex flex-col"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
+
+        // --- DADOS DO TERÇO ---
+        const generateSteps = () => {
+            const steps = [];
+
+            // 0. Introdução
+            steps.push({
+                category: 'Bem-vindo',
+                title: 'A Mensagem da Misericórdia',
+                isIntro: true
+            });
+
+            // 1. Orações Iniciais
+            steps.push({ category: 'Orações Iniciais', title: 'Sinal da Cruz', text: 'Em nome do Pai, e do Filho, e do Espírito Santo. Amém.' });
+            steps.push({ category: 'Orações Iniciais', title: 'Pai Nosso', text: 'Pai Nosso que estais nos Céus, santificado seja o vosso Nome, venha a nós o vosso Reino, seja feita a vossa vontade assim na terra como no Céu. O pão nosso de cada dia nos dai hoje, perdoai-nos as nossas ofensas assim como nós perdoamos a quem nos tem ofendido, e não nos deixeis cair em tentação, mas livrai-nos do mal. Amém.' });
+            steps.push({ category: 'Orações Iniciais', title: 'Ave Maria', text: 'Ave Maria, cheia de graça, o Senhor é convosco, bendita sois vós entre as mulheres e bendito é o fruto do vosso ventre, Jesus. Santa Maria, Mãe de Deus, rogai por nós pecadores, agora e na hora da nossa morte. Amém.' });
+            steps.push({ category: 'Orações Iniciais', title: 'Credo', text: 'Creio em Deus Pai Todo-Poderoso, Criador do céu e da terra. E em Jesus Cristo, seu único Filho, nosso Senhor, que foi concebido pelo poder do Espírito Santo, nasceu da Virgem Maria, padeceu sob Pôncio Pilatos, foi crucificado, morto e sepultado, desceu à mansão dos mortos, ressuscitou ao terceiro dia, subiu aos Céus, está sentado à direita de Deus Pai Todo-Poderoso, donde há de vir a julgar os vivos e os mortos. Creio no Espírito Santo, na Santa Igreja Católica, na comunhão dos Santos, na remissão dos pecados, na ressurreição da carne, na vida eterna. Amém.' });
+
+            // 2. As Cinco Dezenas
+            for (let i = 1; i <= 5; i++) {
+                // Conta Grande
+                steps.push({ 
+                    category: `${i}ª Dezena`, 
+                    title: 'Conta Grande', 
+                    text: 'Eterno Pai, eu Vos ofereço o Corpo e Sangue, Alma e Divindade de Vosso diletíssimo Filho, Nosso Senhor Jesus Cristo, em expiação dos nossos pecados e do mundo inteiro.',
+                    isLargeBead: true
+                });
+
+                // 10 Contas Pequenas
+                for (let j = 1; j <= 10; j++) {
+                    steps.push({ 
+                        category: `${i}ª Dezena`, 
+                        title: `Conta Pequena (${j}/10)`, 
+                        text: 'Pela Sua dolorosa Paixão, tende misericórdia de nós e do mundo inteiro.', 
+                        isSmallBead: true, 
+                        beadIndex: j,
+                        totalBeads: 10
+                    });
+                }
+            }
+
+            // 3. Oração Final (3 vezes)
+            for (let i = 1; i <= 3; i++) {
+                steps.push({ 
+                    category: 'Oração Final', 
+                    title: `Deus Santo (${i}/3)`, 
+                    text: 'Deus Santo, Deus Forte, Deus Imortal, tende piedade de nós e do mundo inteiro.', 
+                    isConclusion: true, 
+                    beadIndex: i,
+                    totalBeads: 3
+                });
+            }
+
+            // 4. Encerramento
+            steps.push({ category: 'Conclusão', title: 'Sinal da Cruz', text: 'Em nome do Pai, e do Filho, e do Espírito Santo. Amém.' });
+
+            return steps;
+        };
+
+        const stepsData = generateSteps();
+
+        // --- COMPONENTES ---
+
+        // Ícones SVG inline
+        const ChevronLeft = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        );
+        const ChevronRight = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        );
+        const RefreshCw = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        );
+
+        // --- COMPONENTE DO TERÇO VISUAL ---
+        const RosaryVisualizer = ({ currentStep }) => {
+            // Pré-calcular as posições das contas do terço
+            const beads = React.useMemo(() => {
+                const b = [];
+                // 1, 2, 3: Pai Nosso, Ave Maria, Credo (Linha reta acima da cruz)
+                b.push({ id: 2, cx: 200, cy: 470, r: 5 });
+                b.push({ id: 3, cx: 200, cy: 430, r: 5 });
+                b.push({ id: 4, cx: 200, cy: 390, r: 5 });
+
+                // Dezenas: Passos 5 a 59 (Formato circular/oval)
+                const startAngle = 115;
+                const endAngle = 425;
+                const angleStep = (endAngle - startAngle) / 54;
+                
+                for (let i = 0; i < 55; i++) {
+                    const angle = (startAngle + i * angleStep) * (Math.PI / 180);
+                    const cx = 200 + 110 * Math.cos(angle);
+                    const cy = 180 + 130 * Math.sin(angle);
+                    const isLarge = (i % 11 === 0);
+                    b.push({
+                        id: i + 5,
+                        cx, cy,
+                        r: isLarge ? 8 : 4.5
+                    });
+                }
+                return b;
+            }, []);
+
+            const getColor = (stepId, isMedal = false, isCross = false) => {
+                const crimsonActive = '#ef4444'; // Carmesim brilhante (conta atual)
+                const crimsonPast = '#991b1b';   // Carmesim escuro (contas já rezadas)
+                const blueFuture = '#3b82f6';    // Azul (contas por rezar / inicial)
+
+                // Na introdução, o terço repousa na cor inicial (azul)
+                if (currentStep === 0) return blueFuture;
+
+                if (isCross) {
+                    if (currentStep === 1 || currentStep === 63) return crimsonActive;
+                    if (currentStep > 1 && currentStep < 63) return crimsonPast;
+                    return blueFuture;
+                }
+                if (isMedal) {
+                    if (currentStep >= 60 && currentStep <= 62) return crimsonActive; 
+                    if (currentStep > 4) return crimsonPast; 
+                    return blueFuture;
+                }
+                if (currentStep === stepId) return crimsonActive; 
+                if (currentStep > stepId) return crimsonPast; 
+                return blueFuture; 
+            };
+
+            return (
+                <svg viewBox="0 0 400 600" className="w-full h-full max-h-[35vh] md:max-h-[70vh] drop-shadow-md">
+                    {/* Conexões retas inferiores */}
+                    <line x1="200" y1="510" x2="200" y2="470" stroke="#3b82f6" strokeWidth="2" opacity="0.5"/>
+                    <line x1="200" y1="470" x2="200" y2="430" stroke="#3b82f6" strokeWidth="2" opacity="0.5"/>
+                    <line x1="200" y1="430" x2="200" y2="390" stroke="#3b82f6" strokeWidth="2" opacity="0.5"/>
+                    <line x1="200" y1="390" x2="200" y2="340" stroke="#3b82f6" strokeWidth="2" opacity="0.5"/>
+                    
+                    {/* Conexões da medalha para a coroa (loop) */}
+                    <line x1="200" y1="340" x2={beads[3].cx} y2={beads[3].cy} stroke="#3b82f6" strokeWidth="2" opacity="0.5"/>
+                    <line x1="200" y1="340" x2={beads[beads.length - 1].cx} y2={beads[beads.length - 1].cy} stroke="#3b82f6" strokeWidth="2" opacity="0.5"/>
+
+                    {/* Conexões do loop principal */}
+                    {beads.slice(3).map((bead, i, arr) => {
+                        if (i === arr.length - 1) return null;
+                        const nextBead = arr[i + 1];
+                        return (
+                            <line 
+                                key={`line-${bead.id}`} 
+                                x1={bead.cx} y1={bead.cy} 
+                                x2={nextBead.cx} y2={nextBead.cy} 
+                                stroke="#3b82f6" strokeWidth="2" opacity="0.5"
+                            />
+                        );
+                    })}
+
+                    {/* Cruz */}
+                    <g className="transition-colors duration-500">
+                        <path 
+                            d="M195 510 h10 v20 h20 v10 h-20 v40 h-10 v-40 h-20 v-10 h20 z" 
+                            fill={getColor(null, false, true)} 
+                        />
+                    </g>
+
+                    {/* Contas do Terço */}
+                    {beads.map(bead => (
+                        <circle 
+                            key={bead.id} 
+                            cx={bead.cx} 
+                            cy={bead.cy} 
+                            r={currentStep === bead.id ? bead.r + 3 : bead.r} 
+                            fill={getColor(bead.id)} 
+                            className="transition-all duration-300 ease-out"
+                        />
+                    ))}
+
+                    {/* Medalha Central */}
+                    <ellipse 
+                        cx="200" cy="340" rx="14" ry="18" 
+                        fill={getColor(null, true, false)} 
+                        className="transition-colors duration-500"
+                    />
+                    <ellipse cx="200" cy="340" rx="8" ry="12" fill="#ffffff" opacity="0.2" />
+                </svg>
+            );
+        };
+
+        const App = () => {
+            const [currentStep, setCurrentStep] = useState(0);
+            const [animationKey, setAnimationKey] = useState(0);
+
+            // --- NAVEGAÇÃO ---
+            const handleNext = useCallback(() => {
+                if (currentStep < stepsData.length - 1) {
+                    setCurrentStep(prev => prev + 1);
+                    setAnimationKey(prev => prev + 1);
+                }
+            }, [currentStep]);
+
+            const handlePrev = useCallback(() => {
+                if (currentStep > 0) {
+                    setCurrentStep(prev => prev - 1);
+                    setAnimationKey(prev => prev + 1);
+                }
+            }, [currentStep]);
+
+            const handleReset = () => {
+                if (confirm("Deseja recomeçar o terço?")) {
+                    setCurrentStep(0);
+                    setAnimationKey(prev => prev + 1);
+                }
+            };
+
+            // --- CONTROLES DE TECLADO ---
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        handleNext();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        handlePrev();
+                    }
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [handleNext, handlePrev]);
+
+            // --- CONTROLES DE TOQUE (SWIPE) ---
+            const [touchStart, setTouchStart] = useState(null);
+            const [touchEnd, setTouchEnd] = useState(null);
+            const [touchStartY, setTouchStartY] = useState(null);
+            const [touchEndY, setTouchEndY] = useState(null);
+            const minSwipeDistance = 50;
+
+            const onTouchStart = (e) => {
+                setTouchEnd(null);
+                setTouchEndY(null);
+                setTouchStart(e.targetTouches[0].clientX);
+                setTouchStartY(e.targetTouches[0].clientY);
+            };
+
+            const onTouchMove = (e) => {
+                setTouchEnd(e.targetTouches[0].clientX);
+                setTouchEndY(e.targetTouches[0].clientY);
+            };
+
+            const onTouchEnd = () => {
+                if (!touchStart || !touchEnd) return;
+                const distanceX = touchStart - touchEnd;
+                const distanceY = Math.abs(touchStartY - touchEndY);
+                
+                // Evita swipe acidental se o utilizador estiver a fazer scroll vertical
+                if (distanceY > 40 && distanceY > Math.abs(distanceX)) return;
+
+                const isLeftSwipe = distanceX > minSwipeDistance;
+                const isRightSwipe = distanceX < -minSwipeDistance;
+                
+                if (isLeftSwipe) handleNext();
+                if (isRightSwipe) handlePrev();
+            };
+
+            const step = stepsData[currentStep];
+            const progressPercentage = (currentStep / (stepsData.length - 1)) * 100;
+
+            return (
+                <div 
+                    className="flex-1 flex flex-col items-center justify-between p-4 md:p-8 gap-4"
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                >
+                    {/* Cabeçalho */}
+                    <div className="w-full max-w-6xl pt-2 md:pt-4 pb-2">
+                        <div className="flex justify-between items-center mb-2 md:mb-4 px-2 md:px-0">
+                            <h1 className="text-xl md:text-3xl font-bold text-mercy-text tracking-tight">Terço da Divina Misericórdia</h1>
+                            <button onClick={handleReset} className="text-mercy-muted hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors" title="Recomeçar">
+                                <RefreshCw />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Layout Principal com O Terço Visual e Card */}
+                    <div className="flex-1 w-full max-w-6xl flex flex-col md:flex-row gap-4 md:gap-8">
+                        
+                        {/* Esquerda/Topo: O Terço Visual */}
+                        <div className="w-full md:w-2/5 lg:w-1/3 flex items-center justify-center py-2 bg-mercy-card/50 backdrop-blur-sm rounded-3xl border border-white/5 shadow-inner">
+                            <RosaryVisualizer currentStep={currentStep} />
+                        </div>
+
+                        {/* Direita/Base: Card de Oração */}
+                        <div className="w-full md:w-3/5 lg:w-2/3 flex flex-col justify-center relative">
+                            <div className="flex justify-between items-end mb-2 px-2">
+                                <span className="text-sm font-medium text-mercy-muted">Passo {currentStep + 1} de {stepsData.length}</span>
+                            </div>
+                            
+                            {/* Barra de Progresso simplificada acima do card */}
+                            <div className="w-full bg-slate-800 rounded-full h-1.5 mb-4 overflow-hidden shadow-inner">
+                                <div 
+                                    className="bg-gradient-to-r from-mercy-blue to-mercy-crimson h-1.5 rounded-full transition-all duration-500 ease-out" 
+                                    style={{ width: `${progressPercentage}%` }}
+                                ></div>
+                            </div>
+
+                            <div 
+                                key={animationKey} 
+                                className="bg-mercy-card/80 backdrop-blur-lg rounded-3xl p-6 md:p-10 shadow-2xl border border-white/5 animate-fade-in relative flex flex-col justify-center min-h-[16rem] flex-1"
+                            >
+                                {/* Decoração de fundo no card */}
+                                {step.isLargeBead && (
+                                    <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-mercy-crimson opacity-10 rounded-full blur-2xl transition-opacity"></div>
+                                )}
+
+                                <span className="inline-block px-3 py-1 bg-mercy-blue/20 text-mercy-blue font-semibold text-xs md:text-sm rounded-full mb-3 md:mb-4 uppercase tracking-wider self-start">
+                                    {step.category}
+                                </span>
+                                
+                                <h2 className="text-2xl md:text-3xl font-bold text-mercy-text mb-4 md:mb-6">
+                                    {step.title}
+                                </h2>
+                                
+                                {step.isIntro ? (
+                                    <div className="space-y-4">
+                                        <p className="text-lg md:text-xl text-slat
